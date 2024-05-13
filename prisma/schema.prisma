@@ -1,0 +1,169 @@
+// This is your Prisma schema file
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  CASHIER
+  CUSTOMER
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum Status {
+  SUDAH_DIGUNAKAN
+  DAPAT_DIGUNAKAN
+  EXPIRED
+  MENUNGGU_PEMBAYARAN
+}
+
+model Guide {
+  id          String        @id @default(uuid())
+  name        String
+  email       String        @unique
+  gender      Gender
+  birthdate   DateTime
+  image       String?
+  desc        String?
+  detailTrans DetailTrans[]
+}
+
+model User {
+  id            String        @id @default(uuid())
+  name          String
+  email         String        @unique
+  number        String?
+  password      String
+  role          Role
+  nationality   Nationality?  @relation(fields: [nationalityId], references: [id])
+  nationalityId String?
+  transaction   Transaction[]
+  tokens        Tokens[]
+}
+
+model Tokens {
+  id     String @id
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+}
+
+model Order {
+  id             String        @id @default(uuid())
+  image          String?
+  name           String
+  desc           String?
+  price          Decimal       @db.Decimal(18, 2)
+  createdAt      DateTime      @default(now())
+  detailTrans    DetailTrans[]
+  category       Category?     @relation(fields: [categoryId], references: [id])
+  categoryId     Int?
+  orderType      OrderType?    @relation(fields: [orderTypeId], references: [id])
+  orderTypeId    Int?
+  orderSubType   OrderSubType? @relation(fields: [orderSubTypeId], references: [id])
+  orderSubTypeId Int?
+}
+
+model Category {
+  id    Int     @id @default(autoincrement())
+  name  String  @unique
+  color String
+  order Order[]
+}
+
+model OrderType {
+  id           Int            @id @default(autoincrement())
+  name         String         @unique
+  OrderSubType OrderSubType[]
+  Order        Order[]
+}
+
+model OrderSubType {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique
+  orderType   OrderType @relation(fields: [orderTypeId], references: [id])
+  orderTypeId Int
+  Order       Order[]
+}
+
+model Transaction {
+  id            String        @id @default(uuid())
+  total         Decimal       @db.Decimal(18, 2)
+  method        String
+  status        Status
+  plannedDate   DateTime
+  createdDate   DateTime      @default(now())
+  discount      String
+  cashback      String
+  user          User?         @relation(fields: [userID], references: [id])
+  userID        String?
+  nationality   Nationality?  @relation(fields: [nationalityID], references: [id])
+  nationalityID String?
+  detailTrans   DetailTrans[]
+}
+
+model DetailTrans {
+  id            String      @id @default(uuid())
+  amount        Int
+  createdAt     DateTime    @default(now())
+  transaction   Transaction @relation(fields: [transactionID], references: [id])
+  transactionID String
+  order         Order       @relation(fields: [orderID], references: [id])
+  orderID       String
+  guide         Guide?      @relation(fields: [guideID], references: [id])
+  guideID       String?
+}
+
+model Nationality {
+  id           String        @id @default(uuid())
+  name         String
+  code         String
+  users        User[]
+  transactions Transaction[]
+}
+
+model Contents {
+  id           Int      @id @default(autoincrement())
+  page         Pages    @relation(fields: [pageId], references: [id])
+  pageId       Int
+  sectionName  String   @db.Text
+  sectionOrder Int
+  context      Json
+  updatedAt    DateTime @updatedAt
+  createdAt    DateTime @default(now())
+}
+
+model Pages {
+  id        Int        @id @default(autoincrement())
+  name      String     @unique
+  updatedAt DateTime   @updatedAt
+  createdAt DateTime   @default(now())
+  contents  Contents[]
+}
+
+model Events {
+  id          Int            @id @default(autoincrement())
+  iteration   EventIteration @relation(fields: [iterationId], references: [id])
+  iterationId Int
+  isFree      Boolean
+  price       Float          @default(0)
+  name        String
+  desc        String         @db.Text
+  image       String
+}
+
+model EventIteration {
+  id     Int      @id @default(autoincrement())
+  name   String   @unique
+  events Events[]
+}

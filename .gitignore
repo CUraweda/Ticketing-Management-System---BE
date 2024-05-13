@@ -1,0 +1,7 @@
+node_modules
+public/assets/content/*
+public/assets/items/*
+# prisma/migrations/*
+public/uploads/*
+logs
+*.log
