@@ -27,8 +27,9 @@ const getAll = async (search) => {
           }
         : {},
       include: {
-        order: true,
+        order: { include: { category: true } },
         transaction: { include: { user: true } },
+        guide: true,
       },
     });
   } catch (err) {
