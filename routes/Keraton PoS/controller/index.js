@@ -9,6 +9,7 @@ const controlDetailTrans = require("./detailTrans.controller");
 const controlGuide = require("./guide.controller");
 const controlNationality = require("./nationality.controller");
 const controlCategory = require("./category.controller");
+const controlLogs = require("./logs.controller");
 
 router.use("/user", controlUser);
 router.use("/order", controlOrder);
@@ -19,5 +20,6 @@ router.use("/detail-trans", controlDetailTrans);
 router.use("/guide", controlGuide);
 router.use("/nationality", controlNationality);
 router.use("/category", controlCategory);
+router.use("/logs", controlLogs);
 
 module.exports = router;

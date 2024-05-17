@@ -1,6 +1,34 @@
 const { throwError } = require("../../utils/helper");
 const { prisma } = require("../../utils/prisma");
 
+const getAll = async (search) => {
+  try {
+    return await prisma.logs.findMany({
+      where: search
+        ? {
+            OR: [
+              {
+                user: {
+                  email: {
+                    contains: search,
+                  },
+                },
+              },
+              {
+                activity: search,
+                changedAt: search,
+              },
+            ],
+          }
+        : {},
+      include: {
+        user: true,
+      },
+    });
+  } catch (err) {
+    throwError(err);
+  }
+};
 const logCreate = async (activity, changedAt, status) => {
   const app = require("../../../app");
   try {
@@ -52,6 +80,7 @@ const logDelete = async (activity, changedAt, status) => {
 };
 
 module.exports = {
+  getAll,
   logCreate,
   logUpdate,
   logDelete,
