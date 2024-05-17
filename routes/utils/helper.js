@@ -1,26 +1,7 @@
 require("dotenv").config();
 const fs = require("fs");
-const path = require("path");
 const multer = require("multer");
 
-// Logs Initialization
-const logDirectory = path.join(__dirname, "..", "Keraton Pos", "logs");
-const logFileName = `log-${new Date().toISOString().slice(0, 10)}.txt`;
-const logFilePath = path.join(logDirectory, logFileName);
-
-if (!fs.existsSync(logDirectory)) {
-  console.log(logDirectory);
-  fs.mkdirSync(logDirectory);
-}
-
-const writeLog = (log) => {
-  fs.appendFileSync(logFilePath, log + "\n", (err) => {
-    if (err) {
-      console.error("Gagal menulis log:", err);
-    }
-  });
-};
-// Logs End
 // Multer Initialization
 const allowedMimeTypes = [
   "image/png",
@@ -204,7 +185,6 @@ function convertFilesToURL(filePath) {
 }
 
 module.exports = {
-  writeLog,
   upload,
   today,
   startDate,

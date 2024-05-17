@@ -8,6 +8,7 @@ const {
 } = require("../../utils/helper");
 const { prisma } = require("../../utils/prisma");
 const categoryModel = require("./category.models");
+const logsModel = require("./logs.models");
 
 const isExist = async (id) => {
   try {
@@ -28,7 +29,9 @@ const getOne = async (id) => {
 };
 const getAll = async () => {
   try {
-    return await prisma.order.findMany({ include: { category: true, orderType: true, orderSubType: true } });
+    return await prisma.order.findMany({
+      include: { category: true, orderType: true, orderSubType: true },
+    });
   } catch (err) {
     throwError(err);
   }
@@ -59,8 +62,18 @@ const getRecentData = async (start, end) => {
 };
 const create = async (data) => {
   try {
+    await logsModel.logCreate(
+      `Membuat pesanan ${data.name}`,
+      "Order",
+      "Success"
+    );
     return await prisma.order.create({ data: data });
   } catch (err) {
+    await logsModel.logCreate(
+      `Membuat pesanan ${data.name}`,
+      "Order",
+      "Failed"
+    );
     throwError(err);
   }
 };
@@ -68,8 +81,18 @@ const update = async (id, data) => {
   try {
     const order = await isExist(id);
     if (!order) throw Error("Order ID tidak ditemukan");
+    await logsModel.logCreate(
+      `Mengubah pesanan ${order.name} menjadi ${data.name}`,
+      "Order",
+      "Success"
+    );
     return await prisma.order.update({ where: { id: id }, data: data });
   } catch (err) {
+    await logsModel.logCreate(
+      `Mengubah pesanan ${id} menjadi ${data.name}`,
+      "Order",
+      "Success"
+    );
     throwError(err);
   }
 };

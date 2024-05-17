@@ -1,7 +1,8 @@
-const { writeLog, throwError } = require("../../utils/helper");
+const { throwError } = require("../../utils/helper");
 const { prisma } = require("../../utils/prisma");
 const detailTransModel = require("./detailTrans.models");
 const transactionModel = require("./transaction.models");
+const logsModel = require("./logs.models");
 
 const isExist = async (id) => {
   try {
@@ -13,7 +14,6 @@ const isExist = async (id) => {
     throwError(err);
   }
 };
-
 const deleteOrder = async (id) => {
   try {
     const order = await isExist(id);
@@ -21,31 +21,42 @@ const deleteOrder = async (id) => {
     const detailTrans = await detailTransModel.getFromOrderId(order.id);
     if (detailTrans) {
       const transaction = await transactionModel.getOne(
-        detailTrans.transactionID
+        detailTrans.transactionId
       );
       await transactionModel.updateTransData(transaction, order, detailTrans);
       const deletedDetails = await detailTransModel.deleteDetailTrans(
         detailTrans.id
       );
       for (const detail of deletedDetails) {
-        writeLog(
-          `Detail transaksi dengan ID ${detail.id} yang memiliki kaitan dengan pesanan ${order.name} berhasil dihapus.`
+        await logsModel.logDelete(
+          `Menghapus detail transaksi ${detail.id} yang memiliki kaitan dengan pesanan ${order.name}.`,
+          "Detail Transaction",
+          "Success"
         );
       }
       if (transaction.total < 1) {
         await prisma.transaction.delete({
           where: { id: transaction.id },
         });
-        writeLog(
-          `Transaksi dengan ID ${transaction.id} juga dihapus karena nilai totalnya kosong.`
+        await logsModel.logDelete(
+          `Menghapus tansaksi ${transaction.id} karena nilai totalnya kosong.`,
+          "Transaction",
+          "Success"
         );
       }
     }
-    writeLog(
-      `Pesanan ${order.name} (${order.category.name}) dengan ID ${order.id} berhasil dihapus.`
+    await logsModel.logDelete(
+      `Menghapus pesanan ${order.name} (${order.category.name}) dengan ID ${order.id}.`,
+      "Order",
+      "Success"
     );
     return await prisma.order.delete({ where: { id } });
   } catch (err) {
+    await logsModel.logDelete(
+      `Menghapus pesanan ${id}.`,
+      "Order",
+      "Failed"
+    );
     throwError(err);
   }
 };

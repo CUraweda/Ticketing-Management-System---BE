@@ -28,8 +28,18 @@ const getRelated = async (id) => {
 };
 const create = async (data) => {
   try {
+    await logsModel.logCreate(
+      `Membuat sub-tipe pesanan ${data.name}`,
+      "Order Subtype",
+      "Success"
+    );
     return await prisma.orderSubType.create({ data });
   } catch (err) {
+    await logsModel.logCreate(
+      `Membuat sub-tipe pesanan ${data.name}`,
+      "Order Subtype",
+      "Failed"
+    );
     throwError(err);
   }
 };
@@ -37,23 +47,39 @@ const update = async (id, data) => {
   try {
     const orderSubType = await isExist(id);
     if (!orderSubType) throw Error("ID Order Sub Type tidak ditemukan");
+    await logsModel.logUpdate(
+      `Mengubah sub-tipe pesanan ${orderSubType.name} menjadi ${data.name}`,
+      "Order Subtype",
+      "Success"
+    );
     return await prisma.orderSubType.update({ where: { id }, data });
   } catch (err) {
+    await logsModel.logUpdate(
+      `Mengubah sub-tipe pesanan ${id} menjadi ${data.name}`,
+      "Order Subtype",
+      "Failed"
+    );
     throwError(err);
   }
 };
 const deleteOrderSubType = async (id) => {
   try {
-    const subtype = await isExist(id);
-    if (!subtype) throw Error("ID Order Sub Type tidak ditemukan");
+    const orderSubType = await isExist(id);
+    if (!orderSubType) throw Error("ID Order Sub Type tidak ditemukan");
     const orders = await prisma.order.findMany({
       where: { orderSubTypeId: id },
     });
     for (const order of orders) {
       await orderRelationModel.deleteOrder(order.id);
     }
+    await logsModel.logDelete(
+      `Menghapus sub-tipe pesanan ${orderSubType.name}`,
+      "Order Subtype",
+      "Success"
+    );
     return await prisma.orderSubType.delete({ where: { id } });
   } catch (err) {
+    await logsModel.logDelete(`Menghapus sub-tipe pesanan ${id}`, "Order Subtype", "Failed");
     throwError(err);
   }
 };

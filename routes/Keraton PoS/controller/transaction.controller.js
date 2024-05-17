@@ -12,11 +12,8 @@ expressRouter.get("/income-revenue", async (req, res) => {
 });
 expressRouter.post("/create-transaction", async (req, res) => {
   try {
-    const data = await transactionModel.create(
-      req.body,
-      req.body.name,
-      req.body.nationality
-    );
+    console.log(req.body)
+    const data = await transactionModel.create(req.body);
     return success(res, "Penambahan pesanan berhasil", data);
   } catch (err) {
     return error(res, err.message);

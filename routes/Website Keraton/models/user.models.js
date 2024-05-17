@@ -1,57 +1,44 @@
-const { throwError, generateRandomString } = require("../../utils/helper")
-const { prisma } = require("../../utils/prisma")
-const bcrypt = require('bcrypt')
+const { throwError } = require("../../utils/helper");
+const { prisma } = require("../../utils/prisma");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
-async function isExist(obj) {
-    const data = await prisma.user.findFirst({ where: { ...obj } })
-    return data
-}
-
-const getAll = async () => {
-    try{
-        return await prisma.user.findMany()
-    }catch(err){
-        throwError(err)
-    }
-}
-
-const generateToken = async () => {
-    try {
-        let generatedToken, tokenExist;
-        do {
-            generatedToken = generateRandomString(100);
-            tokenExist = await prisma.tokens.findUnique({ where: { id: generatedToken } }); //Check if token is existed in database
-        } while (tokenExist != null)
-        return generatedToken;
-} catch (err) {
-        throwError(err)
-    }
-}
-
+const getUser = async (name) => {
+  try {
+    return await prisma.user.findFirst({ where: { name: name } });
+  } catch (err) {
+    throwError(err);
+  }
+};
+const isExist = async (id) => {
+  try {
+    return await prisma.user.findFirst({
+      where: { id: id },
+    });
+  } catch (err) {
+    throwError(err);
+  }
+};
 const logIn = async (body) => {
-    let { email, password } = body
-    try {
-        const userExist = await isExist({ email })
-        if (!userExist) throw Error('Email didnt registered')
-        await bcrypt.compare(password, userExist.password).then(match => { if (!match) throw Error('Password didnt Match') })
-        const generatedToken = await generateToken()
-        await prisma.tokens.create({ data: { id: generatedToken, userId: userExist.id } })
-        return { generatedToken, userExist }
-    } catch (err) {
-        throwError(err)
-    }
-}
+  let { name, password } = body;
+  try {
+    const user = await getUser(name);
+    if (!user) throw Error("Username tidak ditemukan!");
+    await bcrypt.compare(password, user.password).then((match) => {
+      if (!match) throw Error("Password tidak sesuai");
+    });
+    const token = jwt.sign(user, process.env.SECRET_KEY_AUTH);
+    return token;
+  } catch (err) {
+    throwError(err);
+  }
+};
+const signUp = async (data) => {
+  try {
+    return await prisma.user.create({ data: data });
+  } catch (err) {
+    throwError(err);
+  }
+};
 
-const logOut = async (id) => {
-    try{
-        return await prisma.tokens.deleteMany({ where: { userId: id } })
-    }catch(err){
-        throwError(err)
-    }
-}
-
-module.exports = {
-    getAll,
-    logIn,
-    logOut
-}
+module.exports = { getUser, isExist, logIn, signUp };

@@ -38,7 +38,7 @@ const getAll = async (search) => {
 };
 const getFromOrderId = async (id) => {
   try {
-    return await prisma.detailTrans.findFirst({ where: { orderID: id } });
+    return await prisma.detailTrans.findFirst({ where: { orderId: id } });
   } catch (err) {
     throwError(err);
   }

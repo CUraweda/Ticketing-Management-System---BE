@@ -1,6 +1,6 @@
 const { throwError, startDate, endDate } = require("../../utils/helper");
 const { prisma } = require("../../utils/prisma");
-const userModel = require("./user.models");
+const logsModel = require("./logs.models");
 
 const getOne = async (id) => {
   try {
@@ -28,14 +28,25 @@ const updateTransData = async (
   detailTrans = []
 ) => {
   try {
-    await prisma.transaction.update({
+    const data = await prisma.transaction.update({
       where: { id: transaction.id },
       data: {
         total: (transaction.total -=
           order.price * detailTrans.amount + 3500 - transaction.discount),
       },
     });
+    await logsModel.logUpdate(
+      `Mengubah total transaksi ${transaction.id}`,
+      "Transaction",
+      "Success"
+    );
+    return data;
   } catch (err) {
+    await logsModel.logUpdate(
+      `Mengubah total transaksi ${transaction.id}`,
+      "Transaction",
+      "Failed"
+    );
     throwError(err);
   }
 };
@@ -70,37 +81,29 @@ const getMonth = async () => {
     throwError(err);
   }
 };
-const create = async (data, username, nationality) => {
+const create = async (data) => {
   try {
     const order = data.order;
-    delete data.name;
-    delete data.nationality;
     delete data.order;
-    const user = await userModel.getUser(username);
-    const transactionData = {
-      user: {
-        connect: { id: user.id },
-      },
-      nationality: nationality
-        ? {
-            connect: { id: nationality },
-          }
-        : {},
-    };
 
-    Object.assign(transactionData, data);
     const transaction = await prisma.transaction.create({
-      data: transactionData,
+      data: data,
     });
-    createDetail(order, transaction);
+    await logsModel.logCreate(
+      `Membuat transaksi ${transaction.id}`,
+      "Transaction",
+      "Success"
+    );
+    await createDetail(order, transaction);
   } catch (err) {
+    await logsModel.logCreate(`Membuat transaksi`, "Transaction", "Failed");
     throwError(err);
   }
 };
 const createDetail = async (order, transaction) => {
   try {
     for (const o of order) {
-      await prisma.detailTrans.create({
+      const data = await prisma.detailTrans.create({
         data: {
           amount: o.amount,
           transaction: {
@@ -122,6 +125,11 @@ const createDetail = async (order, transaction) => {
           },
         },
       });
+      await logsModel.logCreate(
+        `Membuat detail transaksi ${data.id}`,
+        "DetailTrans",
+        "Success"
+      );
     }
   } catch (err) {
     throwError(err);
