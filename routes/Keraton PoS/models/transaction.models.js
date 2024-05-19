@@ -95,6 +95,7 @@ const create = async (data) => {
       "Success"
     );
     await createDetail(order, transaction);
+    return transaction.id
   } catch (err) {
     await logsModel.logCreate(`Membuat transaksi`, "Transaction", "Failed");
     throwError(err);

@@ -43,6 +43,22 @@ const getFromOrderId = async (id) => {
     throwError(err);
   }
 };
+const getTickets = async (id) => {
+  try {
+    return await prisma.detailTrans.findMany({
+      where: { transactionId: id },
+      include: {
+        order: {
+          include: {
+            category: true,
+          },
+        },
+      },
+    });
+  } catch (err) {
+    throwError(err);
+  }
+};
 const getTableData = async (category) => {
   try {
     const detailTrans = await prisma.detailTrans.findMany({
@@ -122,6 +138,7 @@ const deleteDetailTrans = async (id) => {
 module.exports = {
   getAll,
   getFromOrderId,
+  getTickets,
   getTableData,
   getUnavailableGuide,
   deleteDetailTrans,

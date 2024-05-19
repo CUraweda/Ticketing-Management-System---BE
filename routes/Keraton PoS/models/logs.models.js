@@ -1,26 +1,42 @@
 const { throwError } = require("../../utils/helper");
 const { prisma } = require("../../utils/prisma");
 
-const getAll = async (search) => {
+const getAll = async (search, action) => {
   try {
+    const conditions = [];
+
+    if (search) {
+      conditions.push({
+        OR: [
+          {
+            user: {
+              email: {
+                contains: search,
+              },
+            },
+          },
+          {
+            activity: {
+              contains: search,
+            },
+          },
+          {
+            changedAt: {
+              contains: search,
+            },
+          },
+        ],
+      });
+    }
+
+    if (action) {
+      conditions.push({ action: action });
+    }
+
     return await prisma.logs.findMany({
-      where: search
-        ? {
-            OR: [
-              {
-                user: {
-                  email: {
-                    contains: search,
-                  },
-                },
-              },
-              {
-                activity: search,
-                changedAt: search,
-              },
-            ],
-          }
-        : {},
+      where: {
+        AND: conditions.length > 0 ? conditions : undefined,
+      },
       include: {
         user: true,
       },
