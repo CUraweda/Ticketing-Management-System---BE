@@ -79,7 +79,6 @@ const logUpdate = async (activity, changedAt, status) => {
 };
 const logDelete = async (activity, changedAt, status) => {
   const app = require("../../../app");
-  console.log(app);
   try {
     return await prisma.logs.create({
       data: {

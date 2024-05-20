@@ -81,14 +81,14 @@ const update = async (id, data) => {
   try {
     const order = await isExist(id);
     if (!order) throw Error("Order ID tidak ditemukan");
-    await logsModel.logCreate(
+    await logsModel.logUpdate(
       `Mengubah pesanan ${order.name} menjadi ${data.name}`,
       "Order",
       "Success"
     );
     return await prisma.order.update({ where: { id: id }, data: data });
   } catch (err) {
-    await logsModel.logCreate(
+    await logsModel.logUpdate(
       `Mengubah pesanan ${id} menjadi ${data.name}`,
       "Order",
       "Success"
