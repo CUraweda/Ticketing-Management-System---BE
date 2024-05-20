@@ -9,10 +9,17 @@ const subTypes = [
     {
         name: "Paket Silaturahmi",
         orderTypeId: 2,
+        minimumUnits: 35
     },
     {
         name: "Paket Non Silaturahmi",
         orderTypeId: 2,
+        minimumUnits: 40
+    },
+    {
+        name: "Paket Pelajar",
+        orderTypeId: 2,
+        minimumUnits: 50
     },
 ]
 

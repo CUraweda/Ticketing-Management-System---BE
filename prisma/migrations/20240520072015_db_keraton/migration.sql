@@ -34,8 +34,8 @@ CREATE TABLE `Order` (
     `desc` VARCHAR(191) NULL,
     `price` DECIMAL(18, 2) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `posOnly` BOOLEAN NOT NULL DEFAULT false,
     `categoryId` INTEGER NULL,
-    `orderTypeId` INTEGER NULL,
     `orderSubTypeId` INTEGER NULL,
 
     PRIMARY KEY (`id`)
@@ -64,6 +64,7 @@ CREATE TABLE `OrderType` (
 CREATE TABLE `OrderSubType` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
+    `minimumUnits` INTEGER NULL,
     `orderTypeId` INTEGER NOT NULL,
 
     UNIQUE INDEX `OrderSubType_name_key`(`name`),
@@ -166,14 +167,23 @@ CREATE TABLE `Logs` (
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+-- CreateTable
+CREATE TABLE `News` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `title` VARCHAR(191) NOT NULL,
+    `desc` TEXT NOT NULL,
+    `image` VARCHAR(191) NOT NULL,
+    `updatedAt` DATETIME(3) NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 -- AddForeignKey
 ALTER TABLE `User` ADD CONSTRAINT `User_nationalityId_fkey` FOREIGN KEY (`nationalityId`) REFERENCES `Nationality`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Order` ADD CONSTRAINT `Order_categoryId_fkey` FOREIGN KEY (`categoryId`) REFERENCES `Category`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `Order` ADD CONSTRAINT `Order_orderTypeId_fkey` FOREIGN KEY (`orderTypeId`) REFERENCES `OrderType`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Order` ADD CONSTRAINT `Order_orderSubTypeId_fkey` FOREIGN KEY (`orderSubTypeId`) REFERENCES `OrderSubType`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;

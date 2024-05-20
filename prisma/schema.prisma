@@ -65,11 +65,10 @@ model Order {
   desc           String?
   price          Decimal       @db.Decimal(18, 2)
   createdAt      DateTime      @default(now())
+  posOnly        Boolean       @default(false)
   detailTrans    DetailTrans[]
   category       Category?     @relation(fields: [categoryId], references: [id])
   categoryId     Int?
-  orderType      OrderType?    @relation(fields: [orderTypeId], references: [id])
-  orderTypeId    Int?
   orderSubType   OrderSubType? @relation(fields: [orderSubTypeId], references: [id])
   orderSubTypeId Int?
 }
@@ -84,16 +83,16 @@ model Category {
 model OrderType {
   id           Int            @id @default(autoincrement())
   name         String         @unique
-  OrderSubType OrderSubType[]
-  Order        Order[]
+  orderSubType OrderSubType[]
 }
 
 model OrderSubType {
-  id          Int       @id @default(autoincrement())
-  name        String    @unique
-  orderType   OrderType @relation(fields: [orderTypeId], references: [id])
-  orderTypeId Int
-  Order       Order[]
+  id           Int       @id @default(autoincrement())
+  name         String    @unique
+  minimumUnits Int?
+  orderType    OrderType @relation(fields: [orderTypeId], references: [id])
+  orderTypeId  Int
+  order        Order[]
 }
 
 model Transaction {
@@ -176,5 +175,14 @@ model Logs {
   activity  String
   changedAt String
   status    String
+  createdAt DateTime @default(now())
+}
+
+model News {
+  id        Int      @id @default(autoincrement())
+  title     String
+  desc      String   @db.Text
+  image     String
+  updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
 }

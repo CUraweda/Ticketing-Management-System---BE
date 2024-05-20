@@ -1,4 +1,4 @@
-const { throwError } = require("../../utils/helper");
+const { throwError, createQr } = require("../../utils/helper");
 const { prisma } = require("../../utils/prisma");
 
 const getAll = async (search) => {
@@ -45,7 +45,7 @@ const getFromOrderId = async (id) => {
 };
 const getTickets = async (id) => {
   try {
-    return await prisma.detailTrans.findMany({
+    const data = await prisma.detailTrans.findMany({
       where: { transactionId: id },
       include: {
         order: {
@@ -55,6 +55,14 @@ const getTickets = async (id) => {
         },
       },
     });
+    const finalData = data.map((item) => {
+      const qr = createQr(item);
+      return {
+        ...item,
+        qr,
+      };
+    });
+    return finalData;
   } catch (err) {
     throwError(err);
   }

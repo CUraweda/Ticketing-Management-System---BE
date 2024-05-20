@@ -1,6 +1,7 @@
 require("dotenv").config();
 const fs = require("fs");
 const multer = require("multer");
+const qr = require('qr-image');
 
 // Multer Initialization
 const allowedMimeTypes = [
@@ -35,6 +36,25 @@ const upload = multer({
   },
 });
 // Multer End
+
+// QR Start
+const createQr = (data) => {
+  const qrCodes = {};
+  for (let i = 1; i <= data.amount; i++) {
+    const qrData = JSON.stringify({ id: data.id, iteration: i });
+    const qrImage = qr.image(qrData, { type: 'png' });
+    const qrDir = "./public/qrcodes";
+    if (!fs.existsSync(qrDir)) {
+      fs.mkdirSync(qrDir);
+    }
+    const filePath = `${qrDir}/ticket_${data.id}_${i}.png`;
+    qrImage.pipe(fs.createWriteStream(filePath));
+
+    qrCodes[i - 1] = filePath;
+  }
+  return qrCodes;
+};
+// QR End
 
 // Detail Trans Initialization
 const today = new Date();
@@ -189,6 +209,7 @@ module.exports = {
   today,
   startDate,
   endDate,
+  createQr,
   generateYearlyCategory,
   generateMonthlyCategory,
   groupedPurchase,
