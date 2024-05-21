@@ -5,8 +5,8 @@ const auth = (listAccessible = []) => async (req, res, next) => {
     const { authorization } = req.headers;
     try {
         if (!authorization) throw Error('Forbiden Authorization token is not found')
-        const token = authorization.split(' ')[1];        
-    const tokenExist = await prisma.tokens.findFirst({ where: { id: token }, select: { user: true } })
+        const token = authorization.split(' ')[1];
+        const tokenExist = await prisma.tokens.findFirst({ where: { id: token }, select: { user: true } })
         if (!tokenExist) throw Error('Sorry, token didnt exist')
         if (listAccessible.length > 0) {
             const isAccessible = access.some((acc) => tokenExist.user.role.includes(acc))
