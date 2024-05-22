@@ -1,7 +1,53 @@
 const { throwError, startDate, endDate } = require("../../utils/helper");
 const { prisma } = require("../../utils/prisma");
 const logsModel = require("./logs.models");
+const detailTransModel = require("./detailTrans.models");
 
+const getAll = async (search) => {
+  try {
+    return await prisma.transaction.findMany({
+      where: search
+        ? {
+            OR: [
+              {
+                user: {
+                  name: {
+                    contains: search,
+                  },
+                },
+              },
+              {
+                detailTrans: {
+                  some: {
+                    order: {
+                      name: {
+                        contains: search,
+                      },
+                    },
+                  },
+                },
+              },
+            ],
+          }
+        : {},
+      include: {
+        user: true,
+        detailTrans: {
+          include: {
+            guide: true,
+            order: {
+              include: {
+                category: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  } catch (err) {
+    throwError(err);
+  }
+};
 const getOne = async (id) => {
   try {
     return await prisma.transaction.findFirst({ where: { id: id } });
@@ -94,50 +140,16 @@ const create = async (data) => {
       "Transaction",
       "Success"
     );
-    await createDetail(order, transaction);
-    return transaction.id
+    await detailTransModel.create(order, transaction);
+    return transaction.id;
   } catch (err) {
     await logsModel.logCreate(`Membuat transaksi`, "Transaction", "Failed");
     throwError(err);
   }
 };
-const createDetail = async (order, transaction) => {
-  try {
-    for (const o of order) {
-      const data = await prisma.detailTrans.create({
-        data: {
-          amount: o.amount,
-          transaction: {
-            connect: {
-              id: transaction.id,
-            },
-          },
-          guide: o.guideId
-            ? {
-                connect: {
-                  id: o.guideId,
-                },
-              }
-            : {},
-          order: {
-            connect: {
-              id: o.id,
-            },
-          },
-        },
-      });
-      await logsModel.logCreate(
-        `Membuat detail transaksi ${data.id}`,
-        "DetailTrans",
-        "Success"
-      );
-    }
-  } catch (err) {
-    throwError(err);
-  }
-};
 
 module.exports = {
+  getAll,
   getOne,
   getRevenue,
   getYear,
