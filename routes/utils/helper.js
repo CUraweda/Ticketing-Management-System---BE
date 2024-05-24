@@ -38,12 +38,13 @@ const upload = multer({
 // Multer End
 
 // QR Start
+const qrDir = "./public/qrcodes";
+
 const createQr = (data) => {
   const qrCodes = {};
   for (let i = 1; i <= data.amount; i++) {
     const qrData = JSON.stringify({ id: data.id, iteration: i });
     const qrImage = qr.image(qrData, { type: 'png' });
-    const qrDir = "./public/qrcodes";
     if (!fs.existsSync(qrDir)) {
       fs.mkdirSync(qrDir);
     }
@@ -54,6 +55,21 @@ const createQr = (data) => {
   }
   return qrCodes;
 };
+const searchQr = (data) => {
+  const qrCodes = {};
+  for (let i = 1; i <= data.amount; i++) {
+    const filePath = `${qrDir}/ticket_${data.id}_${i}.png`;
+    if (fs.existsSync(filePath)) {
+      qrCodes[i - 1] = filePath;
+    } else {
+      qrCodes[i - 1] = null;
+    }
+  }
+  return qrCodes;
+};
+const decodeQr = (data) => {
+  
+}
 // QR End
 
 // Detail Trans Initialization
@@ -210,6 +226,7 @@ module.exports = {
   startDate,
   endDate,
   createQr,
+  searchQr,
   generateYearlyCategory,
   generateMonthlyCategory,
   groupedPurchase,

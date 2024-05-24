@@ -1,41 +1,7 @@
-const { throwError, createQr } = require("../../utils/helper");
+const { throwError, createQr, searchQr } = require("../../utils/helper");
 const { prisma } = require("../../utils/prisma");
+const logsModel = require("./logs.models");
 
-const getAll = async (search) => {
-  try {
-    return await prisma.detailTrans.findMany({
-      where: search
-        ? {
-            OR: [
-              {
-                transaction: {
-                  user: {
-                    name: {
-                      contains: search,
-                    },
-                  },
-                },
-              },
-              {
-                order: {
-                  name: {
-                    contains: search,
-                  },
-                },
-              },
-            ],
-          }
-        : {},
-      include: {
-        order: { include: { category: true } },
-        transaction: { include: { user: true } },
-        guide: true,
-      },
-    });
-  } catch (err) {
-    throwError(err);
-  }
-};
 const getFromOrderId = async (id) => {
   try {
     return await prisma.detailTrans.findFirst({ where: { orderId: id } });
@@ -55,10 +21,10 @@ const getTickets = async (id) => {
         },
       },
     });
-    const finalData = data.map((item) => {
-      const qr = createQr(item);
+    const finalData = data.map((data) => {
+      const qr = searchQr(data);
       return {
-        ...item,
+        ...data,
         qr,
       };
     });
@@ -133,6 +99,47 @@ const getUnavailableGuide = async (date) => {
     throwError;
   }
 };
+const create = async (order, transaction) => {
+  try {
+    for (const o of order) {
+      const data = await prisma.detailTrans.create({
+        data: {
+          amount: o.amount,
+          transaction: {
+            connect: {
+              id: transaction.id,
+            },
+          },
+          guide: o.guideId
+            ? {
+                connect: {
+                  id: o.guideId,
+                },
+              }
+            : {},
+          order: {
+            connect: {
+              id: o.id,
+            },
+          },
+        },
+      });
+      createQr(data);
+      await logsModel.logCreate(
+        `Membuat detail transaksi ${data.id}`,
+        "DetailTrans",
+        "Success"
+      );
+    }
+  } catch (err) {
+    await logsModel.logCreate(
+      `Membuat detail transaksi dari ID transaksi ${transaction.id}`,
+      "DetailTrans",
+      "Failed"
+    );
+    throwError(err);
+  }
+};
 const deleteDetailTrans = async (id) => {
   try {
     const data = await prisma.detailTrans.findMany({ where: { id: id } });
@@ -144,10 +151,10 @@ const deleteDetailTrans = async (id) => {
 };
 
 module.exports = {
-  getAll,
   getFromOrderId,
   getTickets,
   getTableData,
   getUnavailableGuide,
+  create,
   deleteDetailTrans,
 };

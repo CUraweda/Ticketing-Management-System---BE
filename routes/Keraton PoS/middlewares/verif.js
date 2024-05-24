@@ -3,6 +3,7 @@ const { error } = require("../../utils/response");
 const jwt = require("jsonwebtoken");
 
 const verif = (req, res, next) => {
+  const app = require("../../../app");
   const token = req.headers["authorization"];
 
   if (!token) {
@@ -14,6 +15,7 @@ const verif = (req, res, next) => {
       return error(res, "Token tidak valid!", 401);
     }
     req.user = decoded;
+    app.locals.userId = req.user.id
     next();
   });
 };
