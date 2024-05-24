@@ -3,15 +3,7 @@ const { error, success } = require("../../utils/response");
 const userModel = require("../models/user.models");
 const { verif } = require("../middlewares/verif");
 
-expressRouter.post("/register", async (req, res) => {
-  try {
-    const data = await userModel.signUp(req.body);
-    return success(res, "Register akun berhasil", data);
-  } catch (err) {
-    return error(res, err.message);
-  }
-});
-expressRouter.post("/login", async (req, res) => {
+expressRouter.post("/admin-login", async (req, res) => {
   try {
     const data = await userModel.logIn(req.body);
     return success(res, "Login berhasil", data);
@@ -19,9 +11,11 @@ expressRouter.post("/login", async (req, res) => {
     return error(res, err.message);
   }
 });
-expressRouter.get("/auth", verif, async (req, res) => {
+
+expressRouter.get("/admin-auth", verif, async (req, res) => {
   try {
     const data = await userModel.isExist(req.user.id);
+    req.app.locals.userId = req.user.id;
     return success(res, "Autentikasi berhasil!", data);
   } catch (err) {
     return error(res, err.message);

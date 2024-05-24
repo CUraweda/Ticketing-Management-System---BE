@@ -1,10 +1,10 @@
 const { throwError } = require("../../utils/helper")
 const { prisma } = require("../../utils/prisma")
-const purchasableTypeModel = require('../models/purchasableType.models')
+const orderTypeModel = require('../models/orderType.models')
 
 const isExist = async (id) => {
     try{
-        return await prisma.purchasableSubType.findFirst({ where: { id } })
+        return await prisma.orderSubType.findFirst({ where: { id } })
     }catch(err){
         throwError(err)
     }
@@ -12,7 +12,7 @@ const isExist = async (id) => {
 
 const nameExist = async (name) => {
     try{
-        const nameExist = await prisma.purchasableSubType.findFirst({ where: { name } })
+        const nameExist = await prisma.orderSubType.findFirst({ where: { name } })
         return (nameExist != null)
     }catch(err){
         throwError(err)
@@ -21,8 +21,8 @@ const nameExist = async (name) => {
 
 const getAll = async () => {
     try {
-        return await prisma.purchasableSubType.findMany({
-            include: { Purchasable: true }
+        return await prisma.orderSubType.findMany({
+            include: { order: true }
         })
     } catch (err) {
         throwError(err)
@@ -31,8 +31,8 @@ const getAll = async () => {
 
 const getOne = async (id) => {
     try{
-        return await prisma.purchasableSubType.findFirstOrThrow({
-            where: { id }, include: { Purchasable: true }
+        return await prisma.orderSubType.findFirstOrThrow({
+            where: { id }, include: { order: true }
         })
     }catch(err){
         throwError(err)
@@ -44,10 +44,10 @@ const createUpdate = async (ident,data = { name, typeId }) => {
         if(ident != 'edit'){
             const alreadyExist = await nameExist(data.name)
             if(alreadyExist) throw Error('Sub Type name already exist')
-            const typeExist = await purchasableTypeModel.isExist(data.typeId)
+            const typeExist = await orderTypeModel.isExist(data.typeId)
             if(!typeExist) throw Error('Type didnt exist')
         }
-        return await prisma.purchasableSubType.upsert({
+        return await prisma.orderSubType.upsert({
             where: { name: data.name },
             create: data, update: data
         })

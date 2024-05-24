@@ -3,31 +3,30 @@ const { prisma } = require("../../routes/utils/prisma")
 
 const subTypes = [
     {
-        name: "Tiket Biasa",
-        typeId: 1,
+        name: "Tiket Masuk",
+        orderTypeId: 1,
     },
     {
-        name: "Tiket Full Category",
-        typeId: 1
+        name: "Paket Silaturahmi",
+        orderTypeId: 2,
+        minimumUnits: 35
     },
     {
-        name: "Silaturahmi",
-        typeId: 2,
+        name: "Paket Non Silaturahmi",
+        orderTypeId: 2,
+        minimumUnits: 40
     },
     {
-        name: "Non Silaturahmi",
-        typeId: 2,
+        name: "Paket Pelajar",
+        orderTypeId: 2,
+        minimumUnits: 50
     },
-    {
-        name: "Pelajar",
-        typeId: 2,
-    }
 ]
 
 const subTypeSeed = async () => {
     try{
         for(let subType of subTypes){
-            await prisma.purchasableSubType.upsert({
+            await prisma.orderSubType.upsert({
                 where: { name: subType.name },
                 create: subType, update: subType
             })

@@ -1,13 +1,13 @@
 const success = (res, message, data, status = 200) => {
     return res.status(status).json({
         success: true,
-        message, data
+        message: message, data: data
     })
 }
 
 const error = (res, message, status = 404) =>  {
     res.status(status).json({ 
-        success: false, message
+        success: false, message : message
     })
 }
 

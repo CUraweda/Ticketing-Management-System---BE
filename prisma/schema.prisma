@@ -21,18 +21,6 @@ enum Gender {
   FEMALE
 }
 
-enum Category {
-  UMUM
-  PELAJAR
-  MANCANEGARA
-}
-
-enum Interval {
-  PERMINGGU
-  PERBULAN
-  PERTAHUN
-}
-
 enum Status {
   SUDAH_DIGUNAKAN
   DAPAT_DIGUNAKAN
@@ -40,15 +28,21 @@ enum Status {
   MENUNGGU_PEMBAYARAN
 }
 
+enum Action {
+  CREATE
+  UPDATE
+  DELETE
+}
+
 model Guide {
   id          String        @id @default(uuid())
   name        String
   email       String        @unique
   gender      Gender
-  birthdate   DateTime
+  birthdate   DateTime      @db.Date
   image       String?
   desc        String?
-  DetailTrans DetailTrans[]
+  detailTrans DetailTrans[]
 }
 
 model User {
@@ -61,25 +55,44 @@ model User {
   nationality   Nationality?  @relation(fields: [nationalityId], references: [id])
   nationalityId String?
   transaction   Transaction[]
-  Tokens        Tokens[]
-}
-
-model Tokens {
-  id     String @id
-  user   User   @relation(fields: [userId], references: [id])
-  userId String
+  Logs          Logs[]
 }
 
 model Order {
-  id          String        @id @default(uuid())
-  image       String?
-  name        String
-  desc        String?
-  price       Decimal       @db.Decimal(18, 2)
-  category    Category?
-  interval    Interval?
-  createdAt   DateTime      @default(now())
-  detailTrans DetailTrans[]
+  id             String        @id @default(uuid())
+  image          String?
+  name           String
+  desc           String?
+  price          Decimal       @db.Decimal(18, 2)
+  createdAt      DateTime      @default(now())
+  posOnly        Boolean       @default(false)
+  detailTrans    DetailTrans[]
+  category       Category?     @relation(fields: [categoryId], references: [id])
+  categoryId     Int?
+  orderSubType   OrderSubType? @relation(fields: [orderSubTypeId], references: [id])
+  orderSubTypeId Int?
+}
+
+model Category {
+  id    Int     @id @default(autoincrement())
+  name  String  @unique
+  color String
+  order Order[]
+}
+
+model OrderType {
+  id           Int            @id @default(autoincrement())
+  name         String         @unique
+  orderSubType OrderSubType[]
+}
+
+model OrderSubType {
+  id           Int       @id @default(autoincrement())
+  name         String    @unique
+  minimumUnits Int?
+  orderType    OrderType @relation(fields: [orderTypeId], references: [id])
+  orderTypeId  Int
+  order        Order[]
 }
 
 model Transaction {
@@ -91,22 +104,23 @@ model Transaction {
   createdDate   DateTime      @default(now())
   discount      String
   cashback      String
-  user          User?         @relation(fields: [userID], references: [id])
-  userID        String?
-  nationality   Nationality?  @relation(fields: [nationalityID], references: [id])
-  nationalityID String?
+  user          User?         @relation(fields: [userId], references: [id])
+  userId        String?
+  nationality   Nationality?  @relation(fields: [nationalityId], references: [id])
+  nationalityId String?
   detailTrans   DetailTrans[]
 }
 
 model DetailTrans {
   id            String      @id @default(uuid())
   amount        Int
-  transaction   Transaction @relation(fields: [transactionID], references: [id])
-  transactionID String
-  order         Order       @relation(fields: [orderID], references: [id])
-  orderID       String
-  guide         Guide?      @relation(fields: [guideID], references: [id])
-  guideID       String?
+  createdAt     DateTime    @default(now())
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
+  transactionId String
+  order         Order       @relation(fields: [orderId], references: [id])
+  orderId       String
+  guide         Guide?      @relation(fields: [guideId], references: [id])
+  guideId       String?
 }
 
 model Nationality {
@@ -133,7 +147,7 @@ model Pages {
   name      String     @unique
   updatedAt DateTime   @updatedAt
   createdAt DateTime   @default(now())
-  Contents  Contents[]
+  contents  Contents[]
 }
 
 model Events {
@@ -150,32 +164,25 @@ model Events {
 model EventIteration {
   id     Int      @id @default(autoincrement())
   name   String   @unique
-  Events Events[]
+  events Events[]
 }
 
-model Purchasable {
-  id               Int                @id @default(autoincrement())
-  name             String
-  desc             String             @db.Text
-  unit             String
-  price            Float?
-  priceUmum        Float?
-  priceMancanegara Float?
-  image            String
-  subType          PurchasableSubType @relation(fields: [subTypeId], references: [id])
-  subTypeId        Int
+model Logs {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  action    Action
+  activity  String
+  changedAt String
+  status    String
+  createdAt DateTime @default(now())
 }
 
-model PurchasableType {
-  id                 Int                  @id @default(autoincrement())
-  name               String               @unique
-  PurchasableSubType PurchasableSubType[]
-}
-
-model PurchasableSubType {
-  id          Int             @id @default(autoincrement())
-  name        String          @unique
-  type        PurchasableType @relation(fields: [typeId], references: [id])
-  typeId      Int
-  Purchasable Purchasable[]
+model News {
+  id        Int      @id @default(autoincrement())
+  title     String
+  desc      String   @db.Text
+  image     String
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
 }

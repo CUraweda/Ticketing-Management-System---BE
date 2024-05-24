@@ -27,18 +27,18 @@ const logIn = async (body) => {
     await bcrypt.compare(password, user.password).then((match) => {
       if (!match) throw Error("Password tidak sesuai");
     });
-    const token = jwt.sign(user, process.env.SECRET_KEY_AUTH);
+    if (user.role === "CUSTOMER") {
+      throw Error("User tidak memiliki akses!");
+    }
+    const userToken = {
+      id: user.id,
+      username: user.name,
+    };
+    const token = jwt.sign(userToken, process.env.SECRET_KEY_AUTH);
     return token;
   } catch (err) {
     throwError(err);
   }
 };
-const signUp = async (data) => {
-  try {
-    return await prisma.user.create({ data: data });
-  } catch (err) {
-    throwError(err);
-  }
-};
 
-module.exports = { getUser, isExist, logIn, signUp };
+module.exports = { getUser, isExist, logIn };

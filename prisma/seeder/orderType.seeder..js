@@ -9,7 +9,7 @@ const types = [
 const typeSeed = async () => {
     try{
         for(let type of types){
-            await prisma.purchasableType.upsert({
+            await prisma.orderType.upsert({
                 where: { name: type },
                 create: { name: type }, update: { name: type }
             })
