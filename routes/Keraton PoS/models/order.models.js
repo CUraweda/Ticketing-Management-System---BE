@@ -37,6 +37,9 @@ const getAll = async () => {
         category: true,
         orderSubType: { include: { orderType: true } },
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
   } catch (err) {
     throwError(err);

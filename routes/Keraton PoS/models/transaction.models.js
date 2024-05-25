@@ -1,11 +1,17 @@
-const { throwError, startDate, endDate } = require("../../utils/helper");
+const {
+  throwError,
+  startDate,
+  endDate,
+  searchQr,
+  createQr,
+} = require("../../utils/helper");
 const { prisma } = require("../../utils/prisma");
 const logsModel = require("./logs.models");
 const detailTransModel = require("./detailTrans.models");
 
 const getAll = async (search) => {
   try {
-    return await prisma.transaction.findMany({
+    const data = await prisma.transaction.findMany({
       where: search
         ? {
             OR: [
@@ -43,7 +49,20 @@ const getAll = async (search) => {
           },
         },
       },
+      orderBy: {
+        createdDate: 'desc', 
+      },
     });
+
+    const finalData = data.map((transaction) => {
+      const qr = searchQr(transaction, "invoice");
+      return {
+        ...transaction,
+        qr,
+      };
+    });
+
+    return finalData;
   } catch (err) {
     throwError(err);
   }
@@ -51,6 +70,33 @@ const getAll = async (search) => {
 const getOne = async (id) => {
   try {
     return await prisma.transaction.findFirst({ where: { id: id } });
+  } catch (err) {
+    throwError(err);
+  }
+};
+const getTickets = async (id) => {
+  try {
+    const data = await prisma.transaction.findUnique({
+      where: { id: id },
+      include: {
+        detailTrans: {
+          include: {
+            order: { include: { category: true } },
+          },
+        },
+      },
+    });
+    const finalData = {
+      ...data,
+      detailTrans: data.detailTrans.map((detail) => {
+        const qr = searchQr(detail, "ticket");
+        return {
+          ...detail,
+          qr,
+        };
+      }),
+    };
+    return finalData;
   } catch (err) {
     throwError(err);
   }
@@ -140,6 +186,7 @@ const create = async (data) => {
       "Transaction",
       "Success"
     );
+    createQr(transaction, "invoice");
     await detailTransModel.create(order, transaction);
     return transaction.id;
   } catch (err) {
@@ -151,6 +198,7 @@ const create = async (data) => {
 module.exports = {
   getAll,
   getOne,
+  getTickets,
   getRevenue,
   getYear,
   getMonth,

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="./ticket.css">
+</head>
+
+<body>
+    <% tickets.forEach((ticket, i) => { i++ %>
+        <% for (let index = 0; index < ticket.amount; index++) { %>
+    <section class="ticket">
+        <div class="ticket-main_container">
+            <img src="../images/bg-ticket-keraton.png" class="bg-tiket" alt="">
+            <div class="ticket-padding">
+                <div class="ticket-content">
+                    <div class="ticket-main_header">
+                        <p>Tiket Masuk / Entry Pass </p>
+
+                    </div>
+                    <div class="ticket-main_content">
+                        <div class="ticket-logo">
+                            <img src="../images/logo KKC.svg" alt="Keraton Kasepuhan Cirebon">
+                        </div>
+                        <h1>KERATON KASEPUHAN CIREBON</h1>
+                        <div class="ticket-qr">
+                            <img src="../qrcodes/<%= ticket.id %>-<%= index + 1 %>.png" alt="QR Code">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="triangle-divider triangle-polygon1"></div>
+        <div class="triangle-divider triangle-polygon2"></div>
+        <div class="line-divider"></div>
+        <div class="ticket-name_container">
+            <img src="../images/Decor1.png" alt="" class="Decor1">
+            <img src="../images/Decor1.png" alt="" class="Decor1">
+            <div class="ticket-name_content">
+                <img src="../images/logo KKC.svg" alt="" class="logo-name">
+                <span>wisata</span>
+                <h3><%= ticket.name %></h3>
+            </div>
+        </div>
+    </section>
+    <% } %>
+    <% }) %>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title %></title>
+    <link rel="stylesheet" href="./invoice.css" />
+  </head>
+
+  <body>
+    <section class="invoice">
+      <div class="invoice-header">
+        <img src="../images/logo KKC.svg" alt="" class="invoice-logo" />
+        <div class="invoice-header_content">
+          <h6>Kasir</h6>
+          <p><%= cashierName %> (<%= cashierEmail %>)</p>
+          <h6>Nama Pelanggan</h6>
+          <p><%= customerName %> (<%= customerEmail %>)</p>
+          <% if (customerNumber === "") { %> <% } else { %>
+          <p><%= customerNumber %></p>
+          <% } %>
+        </div>
+        <div class="invoice-header_time">
+          <h6>Jadwal Reservasi</h6>
+          <p><%= reserveDate %> | <%= reserveTime %></p>
+        </div>
+      </div>
+      <div class="invoice-main">
+        <h6 class="bold">Reservasi</h6>
+        <% tickets.forEach((ticket, i) => { i++ %>
+        <div class="invoice-ticket">
+          <div class="invoice-ticket_main">
+            <p><%= ticket.name %></p>
+            <p>Rp. <%= ticket.price %> <span>(<%= ticket.amount %>x)</span></p>
+            <% if (ticket.guide === "") { %> <% } else { %>
+            <p>Guide : <span><%= ticket.guide %></span></p>
+            <% } %>
+          </div>
+          <div class="invoice-ticket_total">
+            <p>Rp. <%= ticket.price * ticket.amount %></p>
+          </div>
+        </div>
+        <% }) %>
+      </div>
+    </section>
+  </body>
+</html>
