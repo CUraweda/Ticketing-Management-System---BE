@@ -17,6 +17,7 @@ expressRouter.post(
   async (req, res) => {
     try {
       req.params.id = parseInt(req.params.id)
+      req.body = Object.assign({}, req.body);
       switch (req.params.action) {
         case "create":
           const data = await categoryModel.create(req.body);

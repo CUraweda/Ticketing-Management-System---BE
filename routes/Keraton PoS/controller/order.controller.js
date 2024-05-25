@@ -25,8 +25,6 @@ expressRouter.post(
         : req.body.imgName
         ? req.body.imgName
         : null;
-        console.log(req.body.image)
-        console.log(req.body.imgName)
       delete req.body.imgName;
       req.body.categoryId = parseInt(req.body.categoryId)
       req.body.orderSubTypeId = parseInt(req.body.orderSubTypeId)

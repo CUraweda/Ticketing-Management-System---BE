@@ -40,6 +40,9 @@ const getAll = async (search, action) => {
       include: {
         user: true,
       },
+      orderBy: {
+        createdAt: 'desc',
+      }
     });
   } catch (err) {
     throwError(err);
