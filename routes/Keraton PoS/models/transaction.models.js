@@ -50,7 +50,7 @@ const getAll = async (search) => {
         },
       },
       orderBy: {
-        createdDate: 'desc', 
+        createdDate: "desc",
       },
     });
 
@@ -79,8 +79,10 @@ const getTickets = async (id) => {
     const data = await prisma.transaction.findUnique({
       where: { id: id },
       include: {
+        user: true,
         detailTrans: {
           include: {
+            guide: true,
             order: { include: { category: true } },
           },
         },

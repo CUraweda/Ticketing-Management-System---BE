@@ -4,16 +4,91 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><%= title %></title>
-    <link rel="stylesheet" href="./invoice.css" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+      }
+      .bold {
+        font-weight: 600;
+      }
+      h6,
+      p {
+        padding: 0;
+        margin: 0;
+      }
+      
+      h1,
+      h3 {
+        font-family: "Times New Roman", Times, serif;
+      }
+      h1 {
+        color: #dfb032;
+      }
+      
+      .invoice {
+        width: 100%;
+        border: 1px solid #000;
+        margin: 2rem 0;
+      }
+      .invoice-logo {
+        width: 150px;
+      }
+      
+      .invoice-header {
+        display: flex;
+        gap: 1rem;
+        background-color: #eed184;
+        padding: 1rem;
+      }
+      
+      .invoice h6 {
+        font-weight: 600;
+      }
+      
+      .invoice-header_content {
+        width: 100%;
+        gap: 1rem;
+        background-color: #eed184;
+        padding: 1rem;
+      }
+      .invoice-header_content h6:nth-child(3) {
+        margin-top: 1rem;
+      }
+      .invoice-header_content p {
+        margin-left: 1rem;
+      }
+      .invoice-header_time {
+        min-width: 10rem;
+        padding-top: 1rem;
+      }
+      
+      .invoice-main {
+        padding: 1rem;
+      }
+      
+      .invoice-ticket {
+        display: flex;
+        align-items: center;
+        margin-left: 1rem;
+        margin-top: 1rem;
+      }
+      .invoice-ticket_main {
+        width: 100%;
+      }
+      
+      .invoice-ticket_total {
+        min-width: 6rem;
+      }      
+    </style>
   </head>
 
   <body>
     <section class="invoice">
       <div class="invoice-header">
-        <img src="../images/logo KKC.svg" alt="" class="invoice-logo" />
+        <img src="<%= logoKKC %>" alt="logo" class="invoice-logo" />
         <div class="invoice-header_content">
           <h6>Kasir</h6>
-          <p><%= cashierName %> (<%= cashierEmail %>)</p>
+          <p><%= cashier.name %> (<%= cashier.email %>)</p>
           <h6>Nama Pelanggan</h6>
           <p><%= customerName %> (<%= customerEmail %>)</p>
           <% if (customerNumber === "") { %> <% } else { %>
@@ -27,17 +102,22 @@
       </div>
       <div class="invoice-main">
         <h6 class="bold">Reservasi</h6>
-        <% tickets.forEach((ticket, i) => { i++ %>
+        <% tickets.forEach((ticket, i) => { %>
         <div class="invoice-ticket">
           <div class="invoice-ticket_main">
-            <p><%= ticket.name %></p>
-            <p>Rp. <%= ticket.price %> <span>(<%= ticket.amount %>x)</span></p>
-            <% if (ticket.guide === "") { %> <% } else { %>
-            <p>Guide : <span><%= ticket.guide %></span></p>
+            <p><%= ticket.order && ticket.order.name %></p>
+            <p>
+              Rp. <%= ticket.order && ticket.order.price %>
+              <span> x <%= ticket.amount %> Tiket</span>
+            </p>
+            <% if (ticket.guide) { %>
+            <p>Guide : <span><%= ticket.guide.name %></span></p>
             <% } %>
           </div>
           <div class="invoice-ticket_total">
-            <p>Rp. <%= ticket.price * ticket.amount %></p>
+            <p>
+              Rp. <%= (ticket.order && ticket.order.price) * ticket.amount %>
+            </p>
           </div>
         </div>
         <% }) %>

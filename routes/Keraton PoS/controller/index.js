@@ -10,6 +10,7 @@ const controlGuide = require("./guide.controller");
 const controlNationality = require("./nationality.controller");
 const controlCategory = require("./category.controller");
 const controlLogs = require("./logs.controller");
+const controlEmail = require("./email.controller");
 
 router.use("/user", controlUser);
 router.use("/order", controlOrder);
@@ -21,5 +22,5 @@ router.use("/guide", controlGuide);
 router.use("/nationality", controlNationality);
 router.use("/category", controlCategory);
 router.use("/logs", controlLogs);
-
+router.use("/email", controlEmail);
 module.exports = router;
