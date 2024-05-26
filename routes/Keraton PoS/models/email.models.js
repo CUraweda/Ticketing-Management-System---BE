@@ -16,7 +16,7 @@ const SEND_INTERVAL = 15000;
 const emailTicketPath = path.join(__dirname, "../views/email_ticket.ejs");
 const emailInvoicePath = path.join(__dirname, "../views/email_invoice.ejs");
 const assetsPath = path.join(__dirname, "../../../public/assets/email");
-const qrPath = path.join(__dirname, "../../../public/qrcodes");
+const qrPath = path.join(__dirname, "../../../public/qrcodes/");
 
 const sendEmailToUser = async (data) => {
   const currentTime = Date.now();
@@ -64,14 +64,23 @@ const sendEmailToUser = async (data) => {
     // Membuat PDF per item di ticketData.detailTrans
     const pdfBuffers = await Promise.all(
       data.detailTrans.map(async (tickets, index) => {
+        const qrArray = Object.values(tickets.qr);
+
+        const ticketQR = await Promise.all(qrArray.map(async (qr) => {
+          const formattedQrPath = qr.replace('./public/qrcodes/', '');
+          const qrPathFull = path.join(qrPath, formattedQrPath);
+          const qrBase64 = fs.readFileSync(qrPathFull, { encoding: "base64" });
+          return `data:image/png;base64,${qrBase64}`;
+        }));
+
         const page = await browser.newPage();
         const htmlTicket = await ejs.renderFile(emailTicketPath, {
           title: `Tiket ${data.custName} ${createdDate}_${index + 1}`,
           logoKKC: `data:image/svg+xml;base64,${logoKKC}`,
           ticketBg: `data:image/png;base64,${ticketBg}`,
           decorBg: `data:image/png;base64,${decorBg}`,
-          qrPath,
           tickets: [tickets],
+          ticketQR,
         });
         await page.setContent(htmlTicket, {
           waitUntil: "networkidle0",

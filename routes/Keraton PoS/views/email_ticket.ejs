@@ -28,6 +28,8 @@
         padding: 1.5rem;
         height: 100%;
         width: 100%;
+        position: absolute;
+        z-index: 10;
       }
 
       .ticket {
@@ -49,24 +51,26 @@
         height: 100%;
       }
 
-      .ticket-main_container img.bg-tiket {
+      img.bg-tiket {
         width: 100%;
         height: 100%;
         object-fit: cover;
         position: absolute;
         top: 0;
         left: 0;
+        background-color: #ffedbc;
       }
 
-      .ticket-main_container::after {
+      /* .ticket-main_container::after {
         content: "";
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background: #eed28450; /* Yellow overlay with opacity */
-      }
+        background: #eed28450;
+        z-index: 5;
+      } */
 
       .ticket-content {
         position: relative;
@@ -77,8 +81,8 @@
         gap: 1rem;
         padding: 20px;
         color: #000000;
-        background-color: #ffffffe0;
         border-radius: 0.5rem;
+        background-color: #f0f0f075;
       }
 
       .ticket-main_header p {
@@ -206,7 +210,7 @@
     ticket.amount; index++) { %>
     <section class="ticket">
       <div class="ticket-main_container">
-        <img src="<%= ticketBg %>" class="bg-tiket" alt="" />
+        <img src="<%= ticketBg %>" class="bg-tiket" alt="background images lol" />
         <div class="ticket-padding">
           <div class="ticket-content">
             <div class="ticket-main_header">
@@ -219,7 +223,7 @@
               <h1>KERATON KASEPUHAN CIREBON</h1>
               <div class="ticket-qr">
                 <img
-                  src="<%= qrPath %>/ticket_<%= ticket.id %>_<%= index + 1 %>.png"
+                  src="<%= ticketQR[index] %>"
                   alt="QR Code"
                 />
               </div>
