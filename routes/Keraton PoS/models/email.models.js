@@ -91,13 +91,17 @@ const sendEmailToUser = async (data) => {
           timeout: 60000,
         });
 
-        const contentWidth = await page.evaluate(() => document.documentElement.offsetWidth)
-        const contentHeight = await page.evaluate(() => document.documentElement.offsetHeight)
         const pdfBuffer = await page.pdf({
-          width: `${contentWidth}px`,
-          height: `${contentHeight}px`,
+          width: `874px`,
+          height: `324px`,
           printBackground: true,
           preferCSSPageSize: true,
+          margin: {
+            top: "2px",
+            left: "2px",
+            bottom: "0px",
+            right: "0px",
+          },
         });
         await page.close();
         return {
