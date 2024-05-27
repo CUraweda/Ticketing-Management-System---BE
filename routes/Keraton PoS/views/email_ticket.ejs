@@ -16,12 +16,12 @@
         padding: 0;
         margin: 0;
       }
-
       h1,
       h3 {
         font-family: "Times New Roman", Times, serif;
       }
       h1 {
+        font-size: 38px;
         color: #dfb032;
       }
       .ticket-padding {
@@ -30,17 +30,21 @@
         width: 100%;
         position: absolute;
         z-index: 10;
+        top: 0;
+        left: 0;
       }
 
       .ticket {
         display: flex;
-        width: 900px;
+        width: 870px;
         height: 320px;
         border-radius: 0.5rem;
         overflow: hidden;
         position: relative;
       }
-
+      .ticket_title{
+        width: 250px;
+      }
       .ticket span {
         font-family: "Times New Roman", Times, serif;
       }
@@ -59,30 +63,33 @@
         top: 0;
         left: 0;
         background-color: #ffedbc;
+        opacity: 80%;
+        filter: sepia(0.5) hue-rotate(10deg) brightness(1.2) contrast(-36);
+        z-index: 1;
       }
 
-      /* .ticket-main_container::after {
-        content: "";
+      .image-overlay {
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background: #eed28450;
+        background: #eed284bd;
         z-index: 5;
-      } */
+      }
 
       .ticket-content {
         position: relative;
+        width: 87%;
         z-index: 1;
         display: flex;
         flex-direction: column;
-        height: 100%;
+        height: 73%;
         gap: 1rem;
         padding: 20px;
         color: #000000;
         border-radius: 0.5rem;
-        background-color: #f0f0f075;
+        background-color: #f0f0f0eb;
       }
 
       .ticket-main_header p {
@@ -100,8 +107,8 @@
       }
 
       .ticket-logo img {
-        width: 150px;
-        height: 150px;
+        width: 130px;
+        height: 130px;
       }
 
       .ticket-qr img {
@@ -111,7 +118,7 @@
       }
       .triangle-divider {
         position: absolute;
-        left: 714px;
+        left: 689px;
         width: 0;
         height: 0;
         border-left: 5px solid transparent;
@@ -158,6 +165,7 @@
         height: 50%;
         border: 1px solid #000;
         border-radius: 0.3rem;
+        gap: 1rem;
       }
 
       img.logo-name {
@@ -175,12 +183,16 @@
       }
 
       .ticket-name_container h3 {
-        font-size: 2.5rem;
+        font-size: 2rem;
         color: #6b4226;
         text-transform: uppercase;
         margin: 0;
         text-align: center;
       }
+      .ticket-name_container h3.long-text {
+            font-size: 1.7rem;
+        }
+
 
       img.Decor1 {
         position: absolute;
@@ -202,15 +214,25 @@
         transform: rotate(180deg);
         border-bottom-right-radius: 1rem;
       }
+      .only-pdf {
+        display: none;
+      }
+      @media print {
+        .only-pdf{
+          page-break-before: always;
+          display: block !important;
+        }
+      }
     </style>
   </head>
 
   <body>
+
     <% tickets.forEach((ticket, i) => { i++ %> <% for (let index = 0; index <
     ticket.amount; index++) { %>
     <section class="ticket">
       <div class="ticket-main_container">
-        <img src="<%= ticketBg %>" class="bg-tiket" alt="background images lol" />
+        <img src="<%= ticketBg %>" class="bg-tiket" alt="Background Keraton" />
         <div class="ticket-padding">
           <div class="ticket-content">
             <div class="ticket-main_header">
@@ -220,7 +242,7 @@
               <div class="ticket-logo">
                 <img src="<%= logoKKC %>" alt="Keraton Kasepuhan Cirebon" />
               </div>
-              <h1>KERATON KASEPUHAN CIREBON</h1>
+              <h1 class="ticket_title">KERATON KASEPUHAN CIREBON</h1>
               <div class="ticket-qr">
                 <img
                   src="<%= ticketQR[index] %>"
@@ -240,10 +262,21 @@
         <div class="ticket-name_content">
           <img src="<%= logoKKC %>" alt="" class="logo-name" />
           <span>wisata</span>
-          <h3><%= ticket.order.name %></h3>
+          <h3 class="ticket-name_title"><%= ticket.order.name %></h3>
         </div>
       </div>
     </section>
+    <div class="only-pdf"></div>
     <% } %> <% }) %>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const names = document.querySelectorAll('.ticket-name_title');
+            names.forEach(name => {
+                if (name.textContent.length > 20) {
+                    name.classList.add('long-text');
+                }
+            });
+        });
+    </script>
   </body>
 </html>

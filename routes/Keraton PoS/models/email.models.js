@@ -66,12 +66,16 @@ const sendEmailToUser = async (data) => {
       data.detailTrans.map(async (tickets, index) => {
         const qrArray = Object.values(tickets.qr);
 
-        const ticketQR = await Promise.all(qrArray.map(async (qr) => {
-          const formattedQrPath = qr.replace('./public/qrcodes/', '');
-          const qrPathFull = path.join(qrPath, formattedQrPath);
-          const qrBase64 = fs.readFileSync(qrPathFull, { encoding: "base64" });
-          return `data:image/png;base64,${qrBase64}`;
-        }));
+        const ticketQR = await Promise.all(
+          qrArray.map(async (qr) => {
+            const formattedQrPath = qr.replace("./public/qrcodes/", "");
+            const qrPathFull = path.join(qrPath, formattedQrPath);
+            const qrBase64 = fs.readFileSync(qrPathFull, {
+              encoding: "base64",
+            });
+            return `data:image/png;base64,${qrBase64}`;
+          })
+        );
 
         const page = await browser.newPage();
         const htmlTicket = await ejs.renderFile(emailTicketPath, {
@@ -86,7 +90,15 @@ const sendEmailToUser = async (data) => {
           waitUntil: "networkidle0",
           timeout: 60000,
         });
-        const pdfBuffer = await page.pdf({ format: "Letter" });
+
+        const contentWidth = await page.evaluate(() => document.documentElement.offsetWidth)
+        const contentHeight = await page.evaluate(() => document.documentElement.offsetHeight)
+        const pdfBuffer = await page.pdf({
+          width: `${contentWidth}px`,
+          height: `${contentHeight}px`,
+          printBackground: true,
+          preferCSSPageSize: true,
+        });
         await page.close();
         return {
           buffer: pdfBuffer,
