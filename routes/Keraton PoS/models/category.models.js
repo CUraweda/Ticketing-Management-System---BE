@@ -26,12 +26,15 @@ const findPurchaseCategories = async () => {
 };
 const create = async (data) => {
   try {
-    await logsModel.logCreate(
-      `Membuat kategori ${data.name}`,
-      "Category",
-      "Success"
-    );
-    return await prisma.category.create({ data: data });
+    return await prisma.category
+      .create({ data: data })
+      .then(
+        await logsModel.logCreate(
+          `Membuat kategori ${data.name}`,
+          "Category",
+          "Success"
+        )
+      );
   } catch (err) {
     await logsModel.logCreate(
       `Membuat kategori ${data.name}`,
@@ -45,12 +48,16 @@ const update = async (id, data) => {
   try {
     const category = await isExist(id);
     if (!category) throw Error("ID Category tidak ditemukan");
-    await logsModel.logUpdate(
-      `Mengubah kategori ${category.name} menjadi ${data.name}`,
-      "Category",
-      "Success"
-    );
-    return await prisma.category.update({ where: { id: id }, data: data });
+
+    return await prisma.category
+      .update({ where: { id: id }, data: data })
+      .then(
+        await logsModel.logUpdate(
+          `Mengubah kategori ${category.name} menjadi ${data.name}`,
+          "Category",
+          "Success"
+        )
+      );
   } catch (err) {
     await logsModel.logUpdate(
       `Mengubah kategori ${id} menjadi ${data.name}`,
@@ -68,12 +75,15 @@ const deleteCategory = async (id) => {
     for (const order of orders) {
       await orderRelationModel.deleteOrder(order.id);
     }
-    await logsModel.logDelete(
-      `Menghapus kategori ${category.name}`,
-      "Category",
-      "Success"
-    );
-    return await prisma.category.delete({ where: { id } });
+    return await prisma.category
+      .delete({ where: { id } })
+      .then(
+        await logsModel.logDelete(
+          `Menghapus kategori ${category.name}`,
+          "Category",
+          "Success"
+        )
+      );
   } catch (err) {
     await logsModel.logDelete(`Menghapus kategori ${id}`, "Category", "Failed");
     throwError(err);

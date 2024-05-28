@@ -18,6 +18,14 @@ expressRouter.get("/income-revenue", async (req, res) => {
     return error(res, err.message);
   }
 });
+expressRouter.get("/generate-tickets/:id", async (req, res) => {
+  try {
+    const data = await transactionModel.getTickets(req.params.id);
+    return success(res, "Data Tiket berhasil di-fetch!", data);
+  } catch (err) {
+    return error(res, err.message);
+  }
+});
 expressRouter.post("/create-transaction", async (req, res) => {
   try {
     const data = await transactionModel.create(req.body);

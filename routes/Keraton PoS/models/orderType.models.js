@@ -1,6 +1,7 @@
 const { throwError } = require("../../utils/helper");
 const { prisma } = require("../../utils/prisma");
-const orderRelationModel = require("./orderRelation.models");
+const orderSubTypeModels = require("./orderSubType.models");
+const logsModel = require("./logs.models");
 
 const isExist = async (id) => {
   try {
@@ -18,12 +19,15 @@ const getAll = async () => {
 };
 const create = async (data) => {
   try {
-    await logsModel.logCreate(
-      `Membuat tipe pesanan ${data.name}`,
-      "Order Type",
-      "Success"
-    );
-    return await prisma.orderType.create({ data: data });
+    return await prisma.orderType
+      .create({ data: data })
+      .then(
+        await logsModel.logCreate(
+          `Membuat tipe pesanan ${data.name}`,
+          "Order Type",
+          "Success"
+        )
+      );
   } catch (err) {
     await logsModel.logCreate(
       `Membuat tipe pesanan ${data.name}`,
@@ -37,12 +41,15 @@ const update = async (id, data) => {
   try {
     const orderType = await isExist(id);
     if (!orderType) throw Error("ID Order Type tidak ditemukan");
-    await logsModel.logUpdate(
-      `Mengubah tipe pesanan ${orderType.name} menjadi ${data.name}`,
-      "Order Type",
-      "Success"
-    );
-    return await prisma.orderType.update({ where: { id: id }, data: data });
+    return await prisma.orderType
+      .update({ where: { id: id }, data: data })
+      .then(
+        await logsModel.logUpdate(
+          `Mengubah tipe pesanan ${orderType.name} menjadi ${data.name}`,
+          "Order Type",
+          "Success"
+        )
+      );
   } catch (err) {
     await logsModel.logUpdate(
       `Mengubah tipe pesanan ${id} menjadi ${data.name}`,
@@ -56,17 +63,20 @@ const deleteOrderType = async (id) => {
   try {
     const orderType = await isExist(id);
     if (!orderType) throw Error("ID Order Type tidak ditemukan");
-    const orders = await prisma.order.findMany({ where: { orderTypeId: id } });
-    
-    for (const order of orders) {
-      await orderRelationModel.deleteOrder(order.id);
+    const orderSubTypes = await prisma.orderSubType.findMany({ where: { orderTypeId: id } });
+
+    for (const subType of orderSubTypes) {
+      await orderSubTypeModels.deleteOrderSubType(subType.id);
     }
-    await logsModel.logDelete(
-      `Menghapus tipe pesanan ${orderType.name}`,
-      "Order Type",
-      "Success"
-    );
-    return await prisma.orderType.delete({ where: { id } });
+    return await prisma.orderType
+      .delete({ where: { id } })
+      .then(
+        await logsModel.logDelete(
+          `Menghapus tipe pesanan ${orderType.name}`,
+          "Order Type",
+          "Success"
+        )
+      );
   } catch (err) {
     await logsModel.logDelete(
       `Menghapus tipe pesanan ${id}`,

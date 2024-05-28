@@ -20,6 +20,7 @@ expressRouter.post(
     try {
       req.params.id = parseInt(req.params.id)
       req.body.orderTypeId = parseInt(req.body.orderTypeId)
+      req.body = Object.assign({}, req.body);
       switch (req.params.action) {
         case "create":
           const data = await orderSubTypeModel.create(req.body);

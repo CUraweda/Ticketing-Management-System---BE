@@ -45,18 +45,17 @@ const deleteOrder = async (id) => {
         );
       }
     }
-    await logsModel.logDelete(
-      `Menghapus pesanan ${order.name} (${order.category.name}) dengan ID ${order.id}.`,
-      "Order",
-      "Success"
-    );
-    return await prisma.order.delete({ where: { id } });
+    await prisma.order
+      .delete({ where: { id: order.id } })
+      .then(
+        await logsModel.logDelete(
+          `Menghapus pesanan ${order.name} (${order.category.name}) dengan ID ${order.id}.`,
+          "Order",
+          "Success"
+        )
+      );
   } catch (err) {
-    await logsModel.logDelete(
-      `Menghapus pesanan ${id}.`,
-      "Order",
-      "Failed"
-    );
+    await logsModel.logDelete(`Menghapus pesanan ${id}.`, "Order", "Failed");
     throwError(err);
   }
 };

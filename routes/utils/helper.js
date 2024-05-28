@@ -1,7 +1,7 @@
 require("dotenv").config();
 const fs = require("fs");
 const multer = require("multer");
-const qr = require('qr-image');
+const qr = require("qr-image");
 
 // Multer Initialization
 const allowedMimeTypes = [
@@ -40,36 +40,55 @@ const upload = multer({
 // QR Start
 const qrDir = "./public/qrcodes";
 
-const createQr = (data) => {
+const createQr = (data, type) => {
   const qrCodes = {};
-  for (let i = 1; i <= data.amount; i++) {
-    const qrData = JSON.stringify({ id: data.id, iteration: i });
-    const qrImage = qr.image(qrData, { type: 'png' });
+  if (type === "ticket") {
+    for (let i = 1; i <= data.amount; i++) {
+      const qrData = JSON.stringify({ id: data.id, iteration: i });
+      const qrImage = qr.image(qrData, { type: "png" });
+      if (!fs.existsSync(qrDir)) {
+        fs.mkdirSync(qrDir);
+      }
+      const filePath = `${qrDir}/${type}_${data.id}_${i}.png`;
+      qrImage.pipe(fs.createWriteStream(filePath));
+
+      qrCodes[i - 1] = filePath;
+    }
+  } else if (type === "invoice") {
+    const qrData = JSON.stringify({ id: data.id });
+    const qrImage = qr.image(qrData, { type: "png" });
     if (!fs.existsSync(qrDir)) {
       fs.mkdirSync(qrDir);
     }
-    const filePath = `${qrDir}/ticket_${data.id}_${i}.png`;
+    const filePath = `${qrDir}/${type}_${data.id}.png`;
     qrImage.pipe(fs.createWriteStream(filePath));
 
-    qrCodes[i - 1] = filePath;
+    qrCodes[0] = filePath;
   }
   return qrCodes;
 };
-const searchQr = (data) => {
+const searchQr = (data, type) => {
   const qrCodes = {};
-  for (let i = 1; i <= data.amount; i++) {
-    const filePath = `${qrDir}/ticket_${data.id}_${i}.png`;
+  if (type === "ticket") {
+    for (let i = 1; i <= data.amount; i++) {
+      const filePath = `${qrDir}/${type}_${data.id}_${i}.png`;
+      if (fs.existsSync(filePath)) {
+        qrCodes[i - 1] = filePath;
+      } else {
+        qrCodes[i - 1] = null;
+      }
+    }
+  } else if (type === "invoice") {
+    const filePath = `${qrDir}/${type}_${data.id}.png`;
     if (fs.existsSync(filePath)) {
-      qrCodes[i - 1] = filePath;
+      qrCodes[0] = filePath;
     } else {
-      qrCodes[i - 1] = null;
+      qrCodes[0] = null;
     }
   }
   return qrCodes;
 };
-const decodeQr = (data) => {
-  
-}
+const decodeQr = (data) => {};
 // QR End
 
 // Detail Trans Initialization
@@ -111,6 +130,7 @@ function generateMonthlyCategory(daysInMonth) {
 // Detail Trans End
 
 // Order Initialization
+// Change to get all category and then take the order
 function groupedPurchase(orders, category) {
   const groupedOrders = {};
 
@@ -220,6 +240,25 @@ function convertFilesToURL(filePath) {
   return `${process.env.BASE_URL}/${urlPath}`;
 }
 
+function splitDate (dateTime) {
+  const parts = dateTime.split('T')
+  const dateParts = parts[0].split('-')
+  const timeParts = parts[1].split(':')
+
+  // Memformat tanggal (dd/mm/yyyy)
+  const day = dateParts[2]
+  const month = dateParts[1]
+  const year = dateParts[0]
+  const formattedDate = `${day}/${month}/${year}`
+
+  // Memformat waktu (hh.mm)
+  const hours = timeParts[0]
+  const minutes = timeParts[1]
+  const formattedTime = `${hours}.${minutes}`
+
+  return [formattedDate, formattedTime]
+}
+
 module.exports = {
   upload,
   today,
@@ -235,4 +274,5 @@ module.exports = {
   throwError,
   generateRandomString,
   convertFilesToURL,
+  splitDate
 };
