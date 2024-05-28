@@ -26,6 +26,14 @@ expressRouter.get("/generate-tickets/:id", async (req, res) => {
     return error(res, err.message);
   }
 });
+expressRouter.post("/print-transaction", async (req, res) => {
+  try {
+    await transactionModel.printTransaction(req.body);
+    return success(res, "Data Tiket berhasil diprint!");
+  } catch (err) {
+    return error(res, err.message);
+  }
+});
 expressRouter.post("/create-transaction", async (req, res) => {
   try {
     const data = await transactionModel.create(req.body);

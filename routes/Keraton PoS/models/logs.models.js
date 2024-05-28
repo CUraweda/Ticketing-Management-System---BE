@@ -41,7 +41,7 @@ const getAll = async (search, action) => {
         user: true,
       },
       orderBy: {
-        createdAt: 'desc',
+        createdDate: 'desc',
       }
     });
   } catch (err) {

@@ -38,7 +38,7 @@ const getAll = async () => {
         orderSubType: { include: { orderType: true } },
       },
       orderBy: {
-        createdAt: 'desc',
+        createdDate: 'desc',
       },
     });
   } catch (err) {

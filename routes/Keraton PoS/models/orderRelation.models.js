@@ -27,13 +27,7 @@ const deleteOrder = async (id) => {
       const deletedDetails = await detailTransModel.deleteDetailTrans(
         detailTrans.id
       );
-      for (const detail of deletedDetails) {
-        await logsModel.logDelete(
-          `Menghapus detail transaksi ${detail.id} yang memiliki kaitan dengan pesanan ${order.name}.`,
-          "Detail Transaction",
-          "Success"
-        );
-      }
+      await relationLogs(deletedDetails);
       if (transaction.total < 1) {
         await prisma.transaction.delete({
           where: { id: transaction.id },
@@ -46,7 +40,7 @@ const deleteOrder = async (id) => {
       }
     }
     await prisma.order
-      .delete({ where: { id: order.id } })
+      .delete({ where: { id: id } })
       .then(
         await logsModel.logDelete(
           `Menghapus pesanan ${order.name} (${order.category.name}) dengan ID ${order.id}.`,
@@ -56,6 +50,19 @@ const deleteOrder = async (id) => {
       );
   } catch (err) {
     await logsModel.logDelete(`Menghapus pesanan ${id}.`, "Order", "Failed");
+    throwError(err);
+  }
+};
+const relationLogs = async (deletedDetails) => {
+  try {
+    for (const detail of deletedDetails) {
+      await logsModel.logDelete(
+        `Menghapus detail transaksi ${detail.id} yang memiliki kaitan dengan pesanan ${order.name}.`,
+        "Detail Transaction",
+        "Success"
+      );
+    }
+  } catch (err) {
     throwError(err);
   }
 };

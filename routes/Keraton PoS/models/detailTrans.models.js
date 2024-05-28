@@ -75,7 +75,7 @@ const getUnavailableGuide = async (date) => {
     throwError;
   }
 };
-const create = async (order, transaction) => {
+const create = async (order, transaction, customer) => {
   try {
     for (const o of order) {
       const data = await prisma.detailTrans.create({
@@ -102,15 +102,15 @@ const create = async (order, transaction) => {
       });
       createQr(data, "ticket");
       await logsModel.logCreate(
-        `Membuat detail transaksi ${data.id}`,
-        "DetailTrans",
+        `Membuat detail transaksi ${data.id} untuk pelanggan ${customer.name}`,
+        "Detail Transaction",
         "Success"
       );
     }
   } catch (err) {
     await logsModel.logCreate(
-      `Membuat detail transaksi dari ID transaksi ${transaction.id}`,
-      "DetailTrans",
+      `Membuat detail transaksi dari ID transaksi ${transaction.id} untuk pelanggan ${customer.name}`,
+      "Detail Transaction",
       "Failed"
     );
     throwError(err);
