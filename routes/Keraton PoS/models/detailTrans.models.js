@@ -4,7 +4,7 @@ const logsModel = require("./logs.models");
 
 const getFromOrderId = async (id) => {
   try {
-    return await prisma.detailTrans.findFirst({ where: { orderId: id } });
+    return await prisma.detailTrans.findMany({ where: { orderId: id } });
   } catch (err) {
     throwError(err);
   }

@@ -16,7 +16,7 @@ const logsModel = require("./logs.models");
 const detailTransModel = require("./detailTrans.models");
 const BASE_URL = process.env.BASE_URL;
 
-const getAll = async (search) => {
+const getInvoice = async (search) => {
   try {
     const data = await prisma.transaction.findMany({
       where: search
@@ -81,6 +81,13 @@ const getOne = async (id) => {
     throwError(err);
   }
 };
+const getAll = async (id) => {
+  try {
+    return await prisma.transaction.findMany({ where: { id: id } });
+  } catch (err) {
+    throwError(err);
+  }
+};
 const getTickets = async (id) => {
   try {
     const data = await prisma.transaction.findUnique({
@@ -129,13 +136,21 @@ const updateTransData = async (
   detailTrans = []
 ) => {
   try {
+    const formattedDiscount = parseInt(
+      transaction.discount.split("|")[1].trim().replace("%", "")
+    );
+    let orderPrice = order.price * detailTrans.amount;
+    const transTotal = parseFloat(
+      transaction.total -=
+        (orderPrice -
+        (orderPrice * formattedDiscount / 100))
+    )
+    console.log(transTotal)
+    console.log((orderPrice * formattedDiscount / 100))
     const data = await prisma.transaction.update({
       where: { id: transaction.id },
       data: {
-        total: (transaction.total -=
-          order.price * detailTrans.amount +
-          transaction.additionalFee -
-          transaction.discount),
+        total: transTotal
       },
     });
     await logsModel.logUpdate(
@@ -293,11 +308,9 @@ const printTransaction = async (data) => {
       const pdfUrl = `${BASE_URL}/pdfs/${ticketName} ${data.customer.name} ${formattedDate}.pdf`;
       import("open")
         .then((openModule) => {
-          openModule
-            .default(pdfUrl)
-            .catch((error) => {
-              console.error(`Failed to open ${pdfUrl} in browser:`, error);
-            });
+          openModule.default(pdfUrl).catch((error) => {
+            console.error(`Failed to open ${pdfUrl} in browser:`, error);
+          });
         })
         .catch((error) => {
           console.error(`Failed to import open module:`, error);
@@ -309,6 +322,7 @@ const printTransaction = async (data) => {
 };
 
 module.exports = {
+  getInvoice,
   getAll,
   getOne,
   getTickets,

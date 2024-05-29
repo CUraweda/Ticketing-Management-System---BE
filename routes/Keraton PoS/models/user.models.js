@@ -6,14 +6,17 @@ const jwt = require("jsonwebtoken");
 const getUser = async (name) => {
   try {
     const users = await prisma.user.findMany({ where: { name: name } });
-    const user = users.find(user => user.name === name);
-    return user
+    const user = users.find((user) => user.name === name);
+    return user;
   } catch (err) {
     throwError(err);
   }
 };
 const isExist = async (id) => {
   try {
+    const app = require("../../../app");
+    app.locals.userId = id;
+
     return await prisma.user.findFirst({
       where: { id: id },
     });

@@ -26,8 +26,9 @@ expressRouter.post(
         ? req.body.imgName
         : null;
       delete req.body.imgName;
-      req.body.categoryId = parseInt(req.body.categoryId)
-      req.body.orderSubTypeId = parseInt(req.body.orderSubTypeId)
+      req.body.categoryId = parseInt(req.body.categoryId);
+      req.body.orderSubTypeId = parseInt(req.body.orderSubTypeId);
+      req.body.price = parseFloat(req.body.price);
       switch (req.params.action) {
         case "create":
           const data = await orderModel.create(req.body);
