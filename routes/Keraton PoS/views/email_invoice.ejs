@@ -90,9 +90,9 @@
           <h6>Kasir</h6>
           <p><%= cashier.name %> (<%= cashier.email %>)</p>
           <h6>Nama Pelanggan</h6>
-          <p><%= customerName %> (<%= customerEmail %>)</p>
-          <% if (customerNumber === "") { %> <% } else { %>
-          <p><%= customerNumber %></p>
+          <p><%= customer.name %> (<%= customer.name %>)</p>
+          <% if (!customer.number) { %> <% } else { %>
+          <p><%= customer.number %></p>
           <% } %>
         </div>
         <div class="invoice-header_time">

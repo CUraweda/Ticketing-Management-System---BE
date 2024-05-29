@@ -54,8 +54,17 @@ model User {
   role          Role
   nationality   Nationality?  @relation(fields: [nationalityId], references: [id])
   nationalityId String?
+  carts         Json?         @default("{}")
   transaction   Transaction[]
-  Logs          Logs[]
+  logs          Logs[]
+  token         Token[]
+}
+
+model Token {
+  id     String @id @default(uuid())
+  token  String @db.Text
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
 }
 
 model Order {
@@ -63,13 +72,16 @@ model Order {
   image          String?
   name           String
   desc           String?
-  price          Decimal       @db.Decimal(18, 2)
-  createdAt      DateTime      @default(now())
+  price          Float
+  units          String        @default("orang")
+  createdDate    DateTime      @default(now())
   posOnly        Boolean       @default(false)
+  wisataRelation String?
+  wisataDesc     String?       @db.Text
   detailTrans    DetailTrans[]
-  category       Category     @relation(fields: [categoryId], references: [id])
+  category       Category      @relation(fields: [categoryId], references: [id])
   categoryId     Int
-  orderSubType   OrderSubType @relation(fields: [orderSubTypeId], references: [id])
+  orderSubType   OrderSubType  @relation(fields: [orderSubTypeId], references: [id])
   orderSubTypeId Int
 }
 
@@ -97,18 +109,19 @@ model OrderSubType {
 
 model Transaction {
   id            String        @id @default(uuid())
-  custName      String?
-  custEmail     String?
-  custNumber    String?
+  customer      Json?
+  additionalFee Int
   total         Decimal       @db.Decimal(18, 2)
   method        String
-  status        Status
+  status        Status        @default(MENUNGGU_PEMBAYARAN)
   plannedDate   DateTime
   createdDate   DateTime      @default(now())
   discount      String?
   cashback      String?
-  user          User         @relation(fields: [userId], references: [id])
-  userId        String
+  barcode       BarcodeUsage? @relation(fields: [barcodeUID], references: [id])
+  barcodeUID    String?
+  user          User?         @relation(fields: [userId], references: [id])
+  userId        String?
   nationality   Nationality?  @relation(fields: [nationalityId], references: [id])
   nationalityId String?
   detailTrans   DetailTrans[]
@@ -117,21 +130,42 @@ model Transaction {
 model DetailTrans {
   id            String      @id @default(uuid())
   amount        Int
-  createdAt     DateTime    @default(now())
+  createdDate   DateTime    @default(now())
   transaction   Transaction @relation(fields: [transactionId], references: [id])
   transactionId String
-  order         Order       @relation(fields: [orderId], references: [id])
-  orderId       String
+  order         Order?      @relation(fields: [orderId], references: [id])
+  orderId       String?
+  event         Events?     @relation(fields: [eventId], references: [id])
+  eventId       Int?
   guide         Guide?      @relation(fields: [guideId], references: [id])
   guideId       String?
 }
 
+model Logs {
+  id          Int      @id @default(autoincrement())
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String
+  action      Action
+  activity    String
+  changedAt   String
+  status      String
+  createdDate DateTime @default(now())
+}
+
+model BarcodeUsage {
+  id            String        @id @default(uuid())
+  remainingUses Int
+  expiredAt     DateTime
+  createdAt     DateTime      @default(now())
+  transaction   Transaction[]
+}
+
 model Nationality {
-  id           String        @id @default(uuid())
-  name         String
-  code         String
-  users        User[]
-  transactions Transaction[]
+  id          String        @id @default(uuid())
+  name        String
+  code        String
+  users       User[]
+  transaction Transaction[]
 }
 
 model Contents {
@@ -162,23 +196,13 @@ model Events {
   name        String
   desc        String         @db.Text
   image       String
+  detailTrans DetailTrans[]
 }
 
 model EventIteration {
   id     Int      @id @default(autoincrement())
   name   String   @unique
   events Events[]
-}
-
-model Logs {
-  id        Int      @id @default(autoincrement())
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String
-  action    Action
-  activity  String
-  changedAt String
-  status    String
-  createdAt DateTime @default(now())
 }
 
 model News {
@@ -188,4 +212,24 @@ model News {
   image     String
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
+}
+
+model Subscriber {
+  id            Int     @id @default(autoincrement())
+  email         String
+  stillSubcribe Boolean @default(true)
+}
+
+model GlobalParam {
+  id         Int      @id @default(autoincrement())
+  identifier String
+  data       Json
+  updatedAt  DateTime @updatedAt
+}
+
+model ObjekWisata {
+  id              Int    @id @default(autoincrement())
+  label           String
+  to              String
+  orderIdentifier String
 }

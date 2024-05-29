@@ -3,6 +3,7 @@ public/assets/content/*
 public/assets/items/*
 public/qrcodes/*
 public/uploads/*
+public/pdfs/*
 # prisma/migrations/*
 logs
 *.log

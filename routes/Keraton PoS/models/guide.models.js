@@ -11,7 +11,7 @@ const getOne = async (id) => {
 };
 const getAll = async () => {
   try {
-    return await prisma.guide.findMany();
+    return await prisma.guide.findMany({ orderBy: { name: "asc" } });
   } catch (err) {
     throwError(err);
   }

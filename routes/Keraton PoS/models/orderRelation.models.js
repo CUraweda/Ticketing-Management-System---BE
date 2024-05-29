@@ -18,35 +18,37 @@ const deleteOrder = async (id) => {
   try {
     const order = await isExist(id);
     if (!order) throw Error("Order ID tidak ditemukan");
-    const detailTrans = await detailTransModel.getFromOrderId(order.id);
-    if (detailTrans) {
-      const transaction = await transactionModel.getOne(
-        detailTrans.transactionId
-      );
-      await transactionModel.updateTransData(transaction, order, detailTrans);
-      const deletedDetails = await detailTransModel.deleteDetailTrans(
-        detailTrans.id
-      );
-      for (const detail of deletedDetails) {
-        await logsModel.logDelete(
-          `Menghapus detail transaksi ${detail.id} yang memiliki kaitan dengan pesanan ${order.name}.`,
-          "Detail Transaction",
-          "Success"
+    const detailTransactions = await detailTransModel.getFromOrderId(order.id);
+    if (detailTransactions) {
+      for (const detailTrans of detailTransactions) {
+        const transactions = await transactionModel.getAll(
+          detailTrans.transactionId
         );
-      }
-      if (transaction.total < 1) {
-        await prisma.transaction.delete({
-          where: { id: transaction.id },
-        });
-        await logsModel.logDelete(
-          `Menghapus tansaksi ${transaction.id} karena nilai totalnya kosong.`,
-          "Transaction",
-          "Success"
-        );
+        for (const transaction of transactions) {
+          await transactionModel.updateTransData(
+            transaction,
+            order,
+            detailTrans
+          );
+          const deletedDetails = await detailTransModel.deleteDetailTrans(
+            detailTrans.id
+          );
+          await relationLogs(deletedDetails, order);
+          if (transaction.total <= Number(transaction.additionalFee + 1)) {
+            await prisma.transaction.delete({
+              where: { id: transaction.id },
+            });
+            await logsModel.logDelete(
+              `Menghapus tansaksi ${transaction.id} karena nilai totalnya kosong.`,
+              "Transaction",
+              "Success"
+            );
+          }
+        }
       }
     }
     await prisma.order
-      .delete({ where: { id: order.id } })
+      .delete({ where: { id: id } })
       .then(
         await logsModel.logDelete(
           `Menghapus pesanan ${order.name} (${order.category.name}) dengan ID ${order.id}.`,
@@ -56,6 +58,19 @@ const deleteOrder = async (id) => {
       );
   } catch (err) {
     await logsModel.logDelete(`Menghapus pesanan ${id}.`, "Order", "Failed");
+    throwError(err);
+  }
+};
+const relationLogs = async (deletedDetails, order) => {
+  try {
+    for (const detail of deletedDetails) {
+      await logsModel.logDelete(
+        `Menghapus detail transaksi ${detail.id} yang memiliki kaitan dengan pesanan ${order.name}.`,
+        "Detail Transaction",
+        "Success"
+      );
+    }
+  } catch (err) {
     throwError(err);
   }
 };

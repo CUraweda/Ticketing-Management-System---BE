@@ -2,8 +2,9 @@ var express = require("express");
 var cors = require("cors");
 var cookieParser = require("cookie-parser");
 var bodyParser = require("body-parser");
-var logger = require("morgan");
 var http = require("http");
+var logger = require("morgan");
+const path = require("path");
 
 const keratonWebsiteRouter = require("./routes/Website Keraton/controller/index");
 const keratonPosRouter = require("./routes/Keraton PoS/controller/index");
@@ -59,8 +60,8 @@ io.on("connection", async (socket) => {
 });
 
 //? COMMON MIDDLEWARES
-app.use(logger("dev"));
 app.use(express.json());
+app.use(logger("dev"));
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -80,8 +81,9 @@ app.get("/ping", async (req, res) => {
 //? ROUTES
 app.use("/keraton", keratonWebsiteRouter);
 app.use("/keraton-pos", keratonPosRouter);
-app.use("/uploads", express.static("./public/uploads"));
-app.use("/qrcodes", express.static("./public/qrcodes"));
+app.use("/uploads", express.static(path.join(__dirname, "public", "uploads")));
+app.use("/qrcodes", express.static(path.join(__dirname, "public", "qrcodes")));
+app.use("/pdfs", express.static(path.join(__dirname, "public", "pdfs")));
 
 //? RUN DEVELOPMENT SERVER
 server.listen(port, (err) => {

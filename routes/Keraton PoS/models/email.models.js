@@ -3,6 +3,7 @@ const { throwError } = require("../../utils/helper");
 const { splitDate } = require("../../utils/helper");
 const nodemailer = require("nodemailer");
 const ejs = require("ejs");
+const html_to_pdf = require("html-pdf-node");
 const puppeteer = require("puppeteer");
 const fs = require("fs");
 const path = require("path");
@@ -25,7 +26,7 @@ const sendEmailToUser = async (data) => {
       .status(429)
       .json({ msg: "Tunggu beberapa menit sebelum mengirim lagi" });
   }
-  if (!data.custEmail) {
+  if (!data.customer.email) {
     return throwError("Email tidak ditemukan!");
   }
   const config = {
@@ -61,7 +62,6 @@ const sendEmailToUser = async (data) => {
     const [reserveDate, reserveTime] = splitDate(data.plannedDate);
     const [createdDate, createdTime] = splitDate(data.createdDate);
 
-    // Membuat PDF per item di ticketData.detailTrans
     const pdfBuffers = await Promise.all(
       data.detailTrans.map(async (tickets, index) => {
         const qrArray = Object.values(tickets.qr);
@@ -77,33 +77,34 @@ const sendEmailToUser = async (data) => {
           })
         );
 
-        const page = await browser.newPage();
         const htmlTicket = await ejs.renderFile(emailTicketPath, {
-          title: `Tiket ${data.custName} ${createdDate}_${index + 1}`,
+          title: `Tiket ${data.customer.name} ${createdDate}_${index + 1}`,
           logoKKC: `data:image/svg+xml;base64,${logoKKC}`,
           ticketBg: `data:image/png;base64,${ticketBg}`,
           decorBg: `data:image/png;base64,${decorBg}`,
           tickets: [tickets],
           ticketQR,
         });
-        await page.setContent(htmlTicket, {
-          waitUntil: "networkidle0",
-          timeout: 60000,
+
+        const options = {
+          width: "870px",
+          height: "320px",
+          margin: {
+            top: "1px",
+            left: "1px",
+          },
+          args: ["--no-sandbox", "--disable-setuid-sandbox"],
+          printBackground: true,
+        };
+
+        // Mengelompokkan generatePdf() ke dalam promise baru
+        const pdfBuffer = await new Promise((resolve, reject) => {
+          html_to_pdf
+            .generatePdf({ content: htmlTicket }, options)
+            .then((result) => resolve(result))
+            .catch((err) => reject(err));
         });
 
-        const pdfBuffer = await page.pdf({
-          width: `874px`,
-          height: `324px`,
-          printBackground: true,
-          preferCSSPageSize: true,
-          margin: {
-            top: "2px",
-            left: "2px",
-            bottom: "0px",
-            right: "0px",
-          },
-        });
-        await page.close();
         return {
           buffer: pdfBuffer,
           ticketName: tickets.order.name || `Tiket_${index + 1}`,
@@ -113,12 +114,10 @@ const sendEmailToUser = async (data) => {
 
     // Render HTML untuk invoice dan ambil screenshot
     const htmlInvoice = await ejs.renderFile(emailInvoicePath, {
-      title: `Invoice ${data.custName} ${createdDate}`,
+      title: `Invoice ${data.customer.name} ${createdDate}`,
       logoKKC: `data:image/svg+xml;base64,${logoKKC}`,
       cashier: data.user,
-      customerName: data.custName,
-      customerEmail: data.custEmail,
-      customerNumber: data.custNumber,
+      customer: data.customer,
       reserveDate,
       reserveTime,
       tickets: data.detailTrans,
@@ -130,6 +129,7 @@ const sendEmailToUser = async (data) => {
     });
     const invoiceImageBuffer = await page.screenshot({ type: "jpeg" });
 
+    await browser.close();
     const attachments = pdfBuffers.map(({ buffer, ticketName }, index) => ({
       filename: `${ticketName}.pdf`,
       content: buffer,
@@ -144,15 +144,14 @@ const sendEmailToUser = async (data) => {
 
     const message = {
       from: EMAIL,
-      to: data.custEmail,
-      subject: `Bukti Pembelian KKC ${data.custName} ${createdDate}`,
-      html: `<p>Dear ${data.custName},</p><p>Thank you for your reservation.</p><img src="cid:invoiceImage" />`,
+      to: data.customer.email,
+      subject: `Bukti Pembelian KKC ${data.customer.name} ${createdDate}`,
+      html: `<p>Dear ${data.customer.name},</p><p>Thank you for your reservation.</p><img src="cid:invoiceImage" />`,
       attachments: attachments,
     };
 
     await transporter.sendMail(message);
     lastSentTime = currentTime;
-    await browser.close();
     return "Email diterima!";
   } catch (err) {
     throwError(err);

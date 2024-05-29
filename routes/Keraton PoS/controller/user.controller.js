@@ -11,11 +11,18 @@ expressRouter.post("/admin-login", async (req, res) => {
     return error(res, err.message);
   }
 });
-
 expressRouter.get("/admin-auth", verif, async (req, res) => {
   try {
     const data = await userModel.isExist(req.user.id);
     return success(res, "Autentikasi berhasil!", data);
+  } catch (err) {
+    return error(res, err.message);
+  }
+});
+expressRouter.put("/update-carts", async (req, res) => {
+  try {
+    const data = await userModel.updateCarts(req.body);
+    return success(res, "Update carts user berhasil!", data);
   } catch (err) {
     return error(res, err.message);
   }

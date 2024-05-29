@@ -5,13 +5,18 @@ const jwt = require("jsonwebtoken");
 
 const getUser = async (name) => {
   try {
-    return await prisma.user.findFirst({ where: { name: name } });
+    const users = await prisma.user.findMany({ where: { name: name } });
+    const user = users.find((user) => user.name === name);
+    return user;
   } catch (err) {
     throwError(err);
   }
 };
 const isExist = async (id) => {
   try {
+    const app = require("../../../app");
+    app.locals.userId = id;
+
     return await prisma.user.findFirst({
       where: { id: id },
     });
@@ -28,7 +33,7 @@ const logIn = async (body) => {
       if (!match) throw Error("Password tidak sesuai");
     });
     if (user.role === "CUSTOMER") {
-      throw Error("User tidak memiliki akses!");
+      throwError("User tidak memiliki akses!");
     }
     const userToken = {
       id: user.id,
@@ -40,5 +45,18 @@ const logIn = async (body) => {
     throwError(err);
   }
 };
+const updateCarts = async (data) => {
+  try {
+    const carts = Object.assign(data.carts);
+    const user = await getUser(data.user.name);
+    if (!user) throw Error("User tidak ditemukan!");
+    return await prisma.user.update({
+      where: { id: user.id },
+      data: { carts: carts },
+    });
+  } catch (err) {
+    throwError(err);
+  }
+};
 
-module.exports = { getUser, isExist, logIn };
+module.exports = { getUser, isExist, logIn, updateCarts };
