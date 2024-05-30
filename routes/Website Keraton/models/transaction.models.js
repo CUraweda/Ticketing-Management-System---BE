@@ -46,7 +46,7 @@ const createNew = async (data) => {
     let { user, carts, args } = data, payloads = []
     try {
         if (carts.length < 1) throw Error('No Item to Checkout')
-        if(user) args.customer = user
+        if(user) args.userId = user.id
         args.total = cartModel.countTotal(carts)
         args.additionalFee = 0
         await globalParamModel.getOne({ identifier: process.env.TAX_PARAMS_IDENTIFIER }).then(param => {
