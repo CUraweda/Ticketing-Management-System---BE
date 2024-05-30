@@ -44,7 +44,7 @@ router.post('/invoice/:id', async (req, res) => {
         const emailClass = new Email(process.env.EMAIL_FROM, "nadifdzaikra@gmail.com", "Test")
         emailClass.sendEmailTemplate(
             {
-                email:,
+                email: transactionExist.,
                 name: "Steve",
                 date: new Date().toLocaleDateString(),
                 nomor_invoice: 109109019020,
