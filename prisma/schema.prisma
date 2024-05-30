@@ -83,6 +83,7 @@ model Order {
   categoryId     Int
   orderSubType   OrderSubType  @relation(fields: [orderSubTypeId], references: [id])
   orderSubTypeId Int
+  deleted        Boolean       @default(false)
 }
 
 model Category {
@@ -196,6 +197,7 @@ model Events {
   name        String
   desc        String         @db.Text
   image       String
+  deleted     Boolean        @default(false)
   detailTrans DetailTrans[]
 }
 

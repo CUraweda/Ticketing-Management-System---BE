@@ -5,6 +5,7 @@ const Email = require('../emails/email');
 const { error, success } = require("../../utils/response");
 const { userInfo } = require("os");
 const { splitDate } = require("../../utils/helper");
+const { prisma } = require("../../utils/prisma");
 const emailClass = new Email()
 
 router.get('/render', async (req, res) => {
@@ -47,14 +48,14 @@ router.post('/invoice/:id', async (req, res) => {
             {
                 email: transactionExist.user.email,
                 name: transactionExist.user.name,
-                date: splitDate(transactionExist.plannedDate)[0],
+                date: transactionExist.plannedDate,
                 nomor_invoice: transactionExist.id,
                 method: transactionExist.method,
                 invoices: transactionExist.detailTrans.map(detail => ({
                     item_desc: detail.order.desc,
                     quantity: detail.amount,
                     price: detail.orderId ? detail.order.price : detail.event.price,
-                    total: detail.amount * detail.orderId ? detail.order.price : detail.event.price,
+                    total: detail.amount * (detail.orderId ? detail.order.price : detail.event.price),
                 })),
                 subtotal: transactionExist.total,
                 tax: transactionExist.additionalFee,

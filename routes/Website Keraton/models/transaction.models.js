@@ -3,6 +3,7 @@ const orderModel = require('../models/order.models')
 const eventModel = require('../models/events.models')
 const cartModel = require('../models/carts.model')
 const { prisma } = require("../../utils/prisma")
+const globalParamModel = require('../models/params.models')
 
 const isExist = async (id) => {
     try{
@@ -23,6 +24,14 @@ const getAll = async (userId) => {
     }
 }
 
+const getOneTransaction = async (id) => {
+    try{
+        return await prisma.transaction.findFirstOrThrow({ where: { id }, include: { detailTrans: true }})
+    }catch(err){
+        throwError(err)
+    }
+}
+
 const getOne = async (id) => {
     try{
         const data = await isExist(id)
@@ -37,13 +46,12 @@ const createNew = async (data) => {
     let { user, carts, args } = data, payloads = []
     try {
         if (carts.length < 1) throw Error('No Item to Checkout')
-        if(user){
-            args.custName = user.name
-            args.custEmail =user.email
-            args.userId = user.id
-            if(user.number) args.custNumber = user.number
-        }
+        if(user) args.userId = user.id
         args.total = cartModel.countTotal(carts)
+        args.additionalFee = 0
+        await globalParamModel.getOne({ identifier: process.env.TAX_PARAMS_IDENTIFIER }).then(param => {
+            for(let paramData of Object.values(param.data)) args.additionalFee += paramData.price
+        })
         const createdTransacation = await prisma.transaction.create({ data: { ...args } })
         for (let cart of carts) {
             if (cart.quantity < 1) continue

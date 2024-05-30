@@ -36,18 +36,17 @@ const validate = async (carts) => {
     let dataToMatch = {}, checkedCart = []
     try {
         if (carts.length < 1) throw Error('No Item in carts')
-        await (await prisma.order.findMany()).forEach(order => {
-            dataToMatch["T"|order.id] = {
-                image: order.image,
-                price: order.price
-            }
-        })
-        await (await prisma.events.findMany()).forEach(event => {
-            dataToMatch["E|"+event.id] = {
-                image: event.image,
-                price: event.price
-            }
-        })
+        const tiketDatas =  await prisma.order.findMany()
+        const eventDatas = await prisma.events.findMany()
+        for(let tiket of tiketDatas) dataToMatch["T|" + tiket.id] = {
+            image: tiket.image,
+            price: tiket.price
+        }
+        for(let event of eventDatas) dataToMatch["E|" + event.id] = {
+            image: event.image,
+            price: event.price
+        }
+        
         for(let cart of carts){
             const itemIdentifier = `${cart.type}|${cart.id}`
             const itemExist = dataToMatch[itemIdentifier]
@@ -94,12 +93,7 @@ const updateCartData = async (carts) => {
 const countTotal = (carts) => {
     try {
         let total = 0
-
-        for (let cart of carts) {
-            console.log(cart)
-            total = total + cart.price
-        }
-        console.log(total)
+        for (let cart of carts) total = total + (cart.price * cart.quantity)
         return total
     } catch (err) {
         throwError(err)
