@@ -43,7 +43,6 @@ const createUpdate = async (ident, id, data) => {
                 console.log(imageList[imgIndex])
                 context[`xi${imgIndex + 1}`] = {
                     data:  imageList[imgIndex]?.path ? convertFilesToURL(imageList[imgIndex].path) : imageList[imgIndex],
-                    sub: imageList[imgIndex]?.sub
                 }
             }
             delete data.imageList
@@ -51,7 +50,6 @@ const createUpdate = async (ident, id, data) => {
         }
         if (linkList) {
             for (let linkIndex = 0; linkIndex < linkList.length; linkIndex++) {
-                console.log(linkList[linkIndex])
                 context[`xl${linkIndex + 1}`] = {
                     data: linkList[linkIndex].data,
                     sub: linkList[linkIndex].sub
@@ -61,8 +59,7 @@ const createUpdate = async (ident, id, data) => {
             data.context = context
         }
         let dataToReturn
-        if (ident != 'create') {
-            dataToReturn = await prisma.contents.update({ where: { id }, data: { context } })
+        if (ident != 'create') { dataToReturn = await prisma.contents.update({ where: { id }, data: { context } })
         } else dataToReturn = await prisma.contents.create({ data })
         return dataToReturn
     } catch (err) {

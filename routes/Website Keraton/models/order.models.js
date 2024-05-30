@@ -60,4 +60,12 @@ const createUpdate = async (ident,data = { id, name, desc, unit, price, priceUmu
     }
 }
 
-module.exports = { isExist, getOne, getAll, createUpdate, getRelatedObjekWisata }
+const deleteData = async (id) => {
+    try{
+        return await prisma.order.delete({ where: { id } })
+    }catch(err){
+        throwError(err)
+    }
+}
+
+module.exports = { isExist, getOne, getAll, createUpdate, getRelatedObjekWisata, deleteData }

@@ -28,6 +28,7 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage,
   fileFilter(req, file, cb) {
+    console.log(file)
     if (!allowedMimeTypes.includes(file.mimetype)) {
       req.fileValidationError = "Only image file are allowed";
       cb(null, false);
@@ -54,15 +55,13 @@ router.get("/:id?", async (req, res) => {
 router.post("/:ident/:id?", upload.array("imageList[]"), async (req, res) => {
   let sendedData;
   try {
-    if (req.files) req.body.imageList = req.files;
+    if (req.files) {
+      for(let file of req.files) req.body.imageList.push(file)
+    }
     if (req.body.pageId) req.body.pageId = +req.body.pageId;
     if (req.body.sectionOrder) req.body.sectionOrder = +req.body.sectionOrder;
     if (req.params.ident != "create") {
-      sendedData = await contentModel.createUpdate(
-        "update",
-        +req.params.id,
-        req.body
-      );
+      sendedData = await contentModel.createUpdate("update", +req.params.id, req.body);
     } else
       sendedData = await contentModel.createUpdate("create", null, req.body);
     return success(res, "Action success", sendedData);

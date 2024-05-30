@@ -76,5 +76,15 @@ router.post('/:ident', upload.single('image'), async (req, res) => {
     }
 })
 
+router.delete('/:id', async (req, res) => {
+    try{
+        const dataExist = await orderModel.isExist(+req.params.id)
+        if(!dataExist) throw Error('Event ID Didnt Exist')
+        const deleted = await orderModel.deleteData(dataExist.id)
+        return success(res, `Event ${dataExist.name} Deleted Successfully`, deleted)
+    }catch(err){
+        return error(res, err.message)
+    }
+})
 
 module.exports = router
