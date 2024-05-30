@@ -3,15 +3,72 @@ var router = express.Router();
 const path = require('path')
 const Email = require('../emails/email');
 const { error } = require("../../utils/response");
+const { userInfo } = require("os");
 const emailClass = new Email()
 
 router.get('/render', async (req, res) => {
-    try{
+    try {
         res.render(path.resolve('routes/Website Keraton/emails/templates/invoice'), {
-            email: "Email Here",
-            name: "Name Here"
+            email: "steve@gmail.com",
+            name: "Steve",
+            date: new Date().toLocaleDateString(),
+            nomor_invoice: 109109019020,
+            method: "method",
+            invoices: [
+                {
+                    item_desc: "test",
+                    quantity: "test",
+                    price: "test",
+                    total: "test",
+                },
+                {
+                    item_desc: "test",
+                    quantity: "test",
+                    price: "test",
+                    total: "test",
+                }
+            ],
+            subtotal: 2000,
+            tax: 1000,
+            total: 3000
         })
-    }catch(err){
+    } catch (err) {
+        return error(res, err.message)
+    }
+})
+
+router.post('/invoice/:id', async (req, res) => {
+    try {
+        const transactionExist = await prisma.transaction.findFirstOrThrow({ where: { id: req.params.id }, include: { user: true } })
+        if (!transactionExist) throw Error('Transaction Didnt Exist')
+        const emailClass = new Email(process.env.EMAIL_FROM, "nadifdzaikra@gmail.com", "Test")
+        emailClass.sendEmailTemplate(
+            {
+                email:,
+                name: "Steve",
+                date: new Date().toLocaleDateString(),
+                nomor_invoice: 109109019020,
+                method: method,
+                invoices: [
+                    {
+                        item_desc: "test",
+                        quantity: "test",
+                        price: "test",
+                        total: "test",
+                    },
+                    {
+                        item_desc: "test",
+                        quantity: "test",
+                        price: "test",
+                        total: "test",
+                    }
+                ],
+                subtotal: 2000,
+                tax: 1000,
+                total: 3000
+            }
+        )
+    } catch (err) {
         return error(res, err.message)
     }
 })

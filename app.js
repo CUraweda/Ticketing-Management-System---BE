@@ -71,7 +71,6 @@ app.use(cookieParser());
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors(corsOptions));
-
 app.get("/ping", async (req, res) => {
   try {
     return success(res, "Pinging...", { data: "Pong" });
@@ -87,6 +86,7 @@ app.use("/keraton-pos", keratonPosRouter);
 app.use("/uploads", express.static(path.join(__dirname, "public", "uploads")));
 app.use("/qrcodes", express.static(path.join(__dirname, "public", "qrcodes")));
 app.use("/pdfs", express.static(path.join(__dirname, "public", "pdfs")));
+app.use("/public/assets/email/", express.static(path.join(__dirname, 'public/assets/email')));
 
 //? RUN DEVELOPMENT SERVER
 server.listen(port, (err) => {

@@ -7,8 +7,8 @@ class Emails {
         this.email = nodemailer.createTransport({
             service: 'gmail',
             auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS
+                user: process.env.EMAIL,
+                pass: process.env.PASSWORD
             }
         })
         this.emailTemplate = new Email({
@@ -44,9 +44,9 @@ class Emails {
         return this
     }
     async sendEmail() {
-        try{
+        try {
             await this.email.sendMail(this.mailOptions)
-        }catch(err){
+        } catch (err) {
             console.log(err)
         }
     }
