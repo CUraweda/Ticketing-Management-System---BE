@@ -6,10 +6,10 @@ const pagesModels = require('../models/pages.models')
 
 router.get('/content/:id', async (req, res) => {
     let { id } = req.params
-    try{
+    try {
         const contents = await pagesModels.getAllContent(+id)
         return success(res, 'Success', contents)
-    }catch(err){
+    } catch (err) {
         throwError(err)
     }
 })

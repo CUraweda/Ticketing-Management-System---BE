@@ -3,9 +3,9 @@ const { prisma } = require("../../utils/prisma");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-const getUser = async (name) => {
+const getUser = async (email) => {
   try {
-    return await prisma.user.findFirst({ where: { name: name } });
+    return await prisma.user.findFirst({ where: { email: email } });
   } catch (err) {
     throwError(err);
   }
@@ -20,25 +20,75 @@ const isExist = async (id) => {
   }
 };
 const logIn = async (body) => {
-  let { name, password } = body;
+  const { email, password } = body;
   try {
-    const user = await getUser(name);
-    if (!user) throw Error("Username tidak ditemukan!");
-    await bcrypt.compare(password, user.password).then((match) => {
-      if (!match) throw Error("Password tidak sesuai");
-    });
+    const user = await getUser(email);
+    if (!user) throw new Error("Email tidak ditemukan!");
+
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) throw new Error("Password tidak sesuai");
+
     const token = jwt.sign(user, process.env.SECRET_KEY_AUTH);
-    return token;
+    const tokens = await prisma.token.create({ data: { token, userId: user.id } })
+    console.log(tokens)
+    delete user.password
+    delete user.id
+    return { token, user };
   } catch (err) {
     throwError(err);
   }
 };
+const emailExist = async (email) => {
+  try{
+    return await prisma.user.findFirst({ where: { email } })
+  }catch(err){
+    throwError(err)
+  }
+}
 const signUp = async (data) => {
   try {
-    return await prisma.user.create({ data: data });
+    const { email, password, name } = data;
+    const emailAlreadyExist = await emailExist(email)
+    if(emailAlreadyExist) throw Error('Email Already exist')
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = await prisma.user.create({
+      data: {
+        email,
+        password: hashedPassword,
+        name,
+        role: "CUSTOMER",
+      },
+    });
+
+    const newDataForLog = {
+      email: newUser.email,
+      password: password,
+    };
+
+    data = await logIn(newDataForLog);
+    return data;
   } catch (err) {
     throwError(err);
   }
 };
+const update = async (id, data) => {
+  try {
+    const user = await isExist({ id })
+    if (!user) throw Error('User didnt exist')
+    return await prisma.user.update({ where: { id }, data })
+  } catch (err) {
+    throwError(err)
+  }
+}
 
-module.exports = { getUser, isExist, logIn, signUp };
+const logOUt = async (token) => {
+  try {
+    const isExist = await prisma.token.findFirst({ where: { token } })
+    if (!isExist) throw Error('Token didnt exist in db')
+    return await prisma.token.delete({ where: { id: isExist.id } })
+  } catch (err) {
+    throwError(err)
+  }
+}
+
+module.exports = { getUser, isExist, logIn, signUp, update, logOUt };

@@ -1,28 +1,26 @@
-const { text } = require("express")
-const { throwError, convertFilesToURL } = require("../../utils/helper")
-const { prisma } = require("../../utils/prisma")
+const { throwError, convertFilesToURL } = require("../../utils/helper");
+const { prisma } = require("../../utils/prisma");
 
 async function isExist(id) {
-    const data = await prisma.contents.findFirst({ where: { id } })
-    return data
+    const data = await prisma.contents.findFirst({ where: { id } });
+    return data;
 }
 
 const getAll = async () => {
     try {
-        return await prisma.contents.findMany({ include: { page: true } })
+        return await prisma.contents.findMany({ include: { page: true } });
     } catch (err) {
-        throwError(err)
+        throwError(err);
     }
 }
 
 const getOne = async (id) => {
     try {
-        return await prisma.contents.findFirst({ where: { id } })
+        return await prisma.contents.findFirst({ where: { id } });
     } catch (err) {
-        throwError(err)
+        throwError(err);
     }
 }
-
 
 const createUpdate = async (ident, id, data) => {
     let context = {}
@@ -33,7 +31,8 @@ const createUpdate = async (ident, id, data) => {
             for (let textIndex = 0; textIndex < textList.length; textIndex++) {
                 context[`xs${textIndex + 1}`] = {
                     data: textList[textIndex].data,
-                    textSize: textList[textIndex].textSize
+                    textSize: textList[textIndex].textSize,
+                    sub: textList[textIndex].sub
                 }
             }
             delete data.textList
@@ -41,14 +40,22 @@ const createUpdate = async (ident, id, data) => {
         }
         if (imageList) {
             for (let imgIndex = 0; imgIndex < imageList.length; imgIndex++) {
-                context[`xi${imgIndex + 1}`] = imageList[imgIndex]?.path ? convertFilesToURL(imageList[imgIndex].path) : imageList[imgIndex]
+                console.log(imageList[imgIndex])
+                context[`xi${imgIndex + 1}`] = {
+                    data:  imageList[imgIndex]?.path ? convertFilesToURL(imageList[imgIndex].path) : imageList[imgIndex],
+                    sub: imageList[imgIndex]?.sub
+                }
             }
             delete data.imageList
             data.context = context
         }
         if (linkList) {
             for (let linkIndex = 0; linkIndex < linkList.length; linkIndex++) {
-                context[`xl${linkIndex + 1}`] = linkList[linkIndex]
+                console.log(linkList[linkIndex])
+                context[`xl${linkIndex + 1}`] = {
+                    data: linkList[linkIndex].data,
+                    sub: linkList[linkIndex].sub
+                }
             }
             delete data.linkList
             data.context = context
@@ -59,10 +66,9 @@ const createUpdate = async (ident, id, data) => {
         } else dataToReturn = await prisma.contents.create({ data })
         return dataToReturn
     } catch (err) {
-        throwError(err)
+        throwError(err);
     }
 }
-
 
 module.exports = {
     createUpdate,

@@ -5,22 +5,29 @@ const news = [
   {
     title: "Ambatukam maling",
     desc: "Ditemukan jasad 1 orang",
-    
-  }
+    link: "https://picsum.photos/200/300",
+    image: "https://picsum.photos/200/300"
+  },
+  {
+    title: "Disnut Membeli sayur",
+    desc: "Berjalan 1 KM",
+    link: "https://picsum.photos/200/300",
+    image: "https://picsum.photos/200/300"
+  },
+  {
+    title: "Kambing beli sayur",
+    desc: "Sayur dimakan Kambing",
+    link: "https://picsum.photos/200/300",
+    image: "https://picsum.photos/200/300"
+  },
 ];
 
-const categorySeed = async () => {
+const newsSeed = async () => {
   try {
-    for (let category of categories) {
-      await prisma.category.upsert({
-        where: { name: category.name },
-        create: category,
-        update: category,
-      });
-    }
+    return await prisma.news.createMany({ data: news })
   } catch (err) {
     throwError(err);
   }
 };
 
-module.exports = { categorySeed };
+module.exports = { newsSeed };

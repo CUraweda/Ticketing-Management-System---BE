@@ -59,6 +59,9 @@ io.on("connection", async (socket) => {
   });
 });
 
+//? SETTING
+app.set('view engine', 'ejs')
+
 //? COMMON MIDDLEWARES
 app.use(express.json());
 app.use(logger("dev"));

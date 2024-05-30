@@ -1,9 +1,10 @@
-const { expressRouter } = require("../../utils/router");
+var express = require("express");
+var router = express.Router();
 const { error, success } = require("../../utils/response");
 const userModel = require("../models/user.models");
-const { verif } = require("../middlewares/verif");
+const { auth } = require("../middlewares/auth");
 
-expressRouter.post("/register", async (req, res) => {
+router.post("/register", async (req, res) => {
   try {
     const data = await userModel.signUp(req.body);
     return success(res, "Register akun berhasil", data);
@@ -11,7 +12,27 @@ expressRouter.post("/register", async (req, res) => {
     return error(res, err.message);
   }
 });
-expressRouter.post("/login", async (req, res) => {
+
+router.get('/logout', auth([]), async (req, res) => {
+  try{
+    const deletedToken = await userModel.logOUt(req.token)
+    return success(res, 'Log Out Success', deletedToken)
+  }catch(err){
+    return error(res, err.message)
+  }
+})
+
+router.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return error(res, "Name and password are required.");
+  }
+
+  if (password.length < 6) {
+    return error(res, "password must be more than 6 characters or more")
+  }
+
   try {
     const data = await userModel.logIn(req.body);
     return success(res, "Login berhasil", data);
@@ -19,13 +40,14 @@ expressRouter.post("/login", async (req, res) => {
     return error(res, err.message);
   }
 });
-expressRouter.get("/auth", verif, async (req, res) => {
+
+router.get("/auth", auth([]), async (req, res) => {
   try {
-    const data = await userModel.isExist(req.user.id);
-    return success(res, "Autentikasi berhasil!", data);
+    console.log('Ada disini?')
+    return success(res, "Autentikasi berhasil!", req.user);
   } catch (err) {
     return error(res, err.message);
   }
 });
 
-module.exports = expressRouter;
+module.exports = router;
