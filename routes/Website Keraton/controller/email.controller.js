@@ -2,9 +2,10 @@ var express = require("express");
 var router = express.Router();
 const path = require("path");
 const Email = require("../emails/email");
+require("dotenv").config();
 const { error } = require("../../utils/response");
-const { userInfo } = require("os");
-const emailClass = new Email();
+const transactionModel = require("../models/transaction.models");
+const { prisma } = require("../../utils/prisma");
 
 router.get("/render", async (req, res) => {
   try {
