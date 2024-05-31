@@ -39,4 +39,12 @@ const update = async (id, data) => {
     }
 }
 
-module.exports = { getAll, getOne, create, update }
+const deleteData = async (id) => {
+    try{
+        return await prisma.order.delete({ where: { id } })
+    }catch(err){
+        throwError(err)
+    }
+}
+
+module.exports = { getAll, getOne, create, update, isExist , deleteData}

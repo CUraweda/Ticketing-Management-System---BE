@@ -28,7 +28,7 @@ function decrypt(text) {
       decipher.update(encryptedText), decipher.final()
     ])
     return decrypted.toString()
-  } catch(err) {
+  } catch (err) {
     ThrowError(err)
   }
 }

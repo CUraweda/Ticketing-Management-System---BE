@@ -81,7 +81,7 @@ router.delete('/:id', async (req, res) => {
         const dataExist = await orderModel.isExist(+req.params.id)
         if(!dataExist) throw Error('Order ID Didnt Exist')
         const deleted = await orderModel.deleteData(dataExist.id)
-        return success(res, `Event ${dataExist.name} Deleted Successfully`, deleted)
+        return success(res, `Order ${dataExist.name} Deleted Successfully`, deleted)
     }catch(err){
         return error(res, err.message)
     }
