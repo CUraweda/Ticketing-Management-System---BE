@@ -43,7 +43,6 @@ router.post("/login", async (req, res) => {
 
 router.get("/auth", auth([]), async (req, res) => {
   try {
-    console.log('Ada disini?')
     return success(res, "Autentikasi berhasil!", req.user);
   } catch (err) {
     return error(res, err.message);

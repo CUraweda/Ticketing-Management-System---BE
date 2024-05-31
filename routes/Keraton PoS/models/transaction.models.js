@@ -224,6 +224,8 @@ const create = async (data) => {
     throwError(err);
   }
 };
+
+
 const printTransaction = async (data) => {
   try {
     const emailTicketPath = path.join(__dirname, "../views/email_ticket.ejs");
