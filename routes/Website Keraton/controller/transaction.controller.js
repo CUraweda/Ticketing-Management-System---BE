@@ -2,8 +2,8 @@ const { error, success } = require("../../utils/response");
 const { auth } = require("../middlewares/auth");
 const expressRouter = require("./auth.controller");
 const transactionModel = require('../models/transaction.models')
-var express = require('express');
 const { validateCheckout } = require("../validation/checkout.valid");
+var express = require('express');
 var router = express.Router()
 
 router.get('/all', auth(['SUPER_ADMIN', 'ADMIN'], async (req, res) => {

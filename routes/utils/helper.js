@@ -254,9 +254,25 @@ function splitDate (dateTime) {
   // Memformat waktu (hh.mm)
   const hours = timeParts[0]
   const minutes = timeParts[1]
-  const formattedTime = `${hours}.${minutes}`
+const formattedTime = `${hours}.${minutes}`
 
   return [formattedDate, formattedTime]
+}
+
+const shaHash256 = async (input) => {
+    // Convert the input string to an ArrayBuffer
+    const encoder = new TextEncoder();
+    const data = encoder.encode(input);
+
+    // Use the SubtleCrypto API to hash the data
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+
+    // Convert the ArrayBuffer to a hexadecimal string
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+    return hashHex;
+
 }
 
 module.exports = {
@@ -271,6 +287,7 @@ module.exports = {
   groupedPurchase,
   groupYearData,
   groupMonthData,
+  shaHash256,
   throwError,
   generateRandomString,
   convertFilesToURL,
