@@ -73,7 +73,7 @@ router.post('/invoice/:id', async (req, res) => {
             },
             [
                 "public/assets/email/testqr.jpg",
-                "public/assets/email/logo.jpg",
+                "public/assets/email/logo.png",
             ]
         )
         return success(res, "Email terkirim", 201)
