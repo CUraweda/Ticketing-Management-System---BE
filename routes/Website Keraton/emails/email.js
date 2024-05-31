@@ -1,6 +1,7 @@
 const nodemailer = require('nodemailer')
 const Email = require('email-templates')
 const path = require('path');
+const { readFileSync } = require('fs');
 
 class Emails {
     constructor(from, to, subject = '', text = '') {
@@ -54,12 +55,23 @@ class Emails {
         const html = await this.emailTemplate.render('invoice', variables);
         return html;
     }
-    async sendEmailTemplate(variables) {
+    async sendEmailTemplate(variables, imageAttachment = []) {
+        let attachments = []
         try {
+            for (let imageIndex in imageAttachment) {
+                const indexData = imageAttachment[imageIndex]
+                const imageData = await readFileSync(indexData)
+                attachments.push({
+                    content: imageData,
+                    encoding: 'base64',
+                    cid: imageIndex, // Referenced in the HTML template
+                })
+            }
             const html = await this.renderEmail(variables)
             await this.email.sendMail({
                 ...this.mailOptions,
-                html: html
+                html: html,
+                attachments
             })
         } catch (error) {
             console.log(error);
