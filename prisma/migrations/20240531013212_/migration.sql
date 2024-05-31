@@ -50,6 +50,7 @@ CREATE TABLE `Order` (
     `wisataDesc` TEXT NULL,
     `categoryId` INTEGER NOT NULL,
     `orderSubTypeId` INTEGER NOT NULL,
+    `deleted` BOOLEAN NOT NULL DEFAULT false,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -181,6 +182,7 @@ CREATE TABLE `Events` (
     `name` VARCHAR(191) NOT NULL,
     `desc` TEXT NOT NULL,
     `image` VARCHAR(191) NOT NULL,
+    `deleted` BOOLEAN NOT NULL DEFAULT false,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
