@@ -50,6 +50,7 @@ CREATE TABLE `Order` (
     `wisataDesc` TEXT NULL,
     `categoryId` INTEGER NOT NULL,
     `orderSubTypeId` INTEGER NOT NULL,
+    `deleted` BOOLEAN NOT NULL DEFAULT false,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -132,6 +133,7 @@ CREATE TABLE `Logs` (
 -- CreateTable
 CREATE TABLE `BarcodeUsage` (
     `id` VARCHAR(191) NOT NULL,
+    `qrPath` VARCHAR(191) NOT NULL,
     `remainingUses` INTEGER NOT NULL,
     `expiredAt` DATETIME(3) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
@@ -181,6 +183,7 @@ CREATE TABLE `Events` (
     `name` VARCHAR(191) NOT NULL,
     `desc` TEXT NOT NULL,
     `image` VARCHAR(191) NOT NULL,
+    `deleted` BOOLEAN NOT NULL DEFAULT false,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

@@ -72,7 +72,7 @@ class Emails {
                 ...this.mailOptions,
                 html: html,
                 attachments
-            })
+        })
         } catch (error) {
             console.log(error);
         }

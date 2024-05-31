@@ -13,7 +13,7 @@ router.get('/:id?', async(req, res) => {
     }
 })
 
-router.post('/action/:id?', async (req, res) => {
+router.post('/action/:id?',  async (req, res) => {
     const { id } = req.params
     try{
         const data = id ? await newsModel.create(req.body) : await newsModel.update(+id, req.body)
@@ -28,7 +28,7 @@ router.delete('/:id', async (req, res) => {
         const dataExist = await newsModel.isExist(+req.params.id)
         if(!dataExist) throw Error('News ID Didnt Exist')
         const deleted = await newsModel.deleteData(dataExist.id)
-        return success(res, `News ${dataExist.name} Deleted Successfully`, deleted)
+        return success(res, `News ${dataExist.title} Deleted Successfully`, deleted)
     }catch(err){
         return error(res, err.message)
     }

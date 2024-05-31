@@ -56,11 +56,12 @@ const orders = [
   
   {
     name: "Paket Wisata Silaturahmi I",
-    desc: "Menikmati Keraton dengan guide + snack khas cirebon + silatuhrahmi dan foto bersama dengan Sultan.",
+  desc: "Menikmati Keraton dengan guide + snack khas cirebon + silatuhrahmi dan foto bersama dengan Sultan.",
     image: "https://picsum.photos/200/300",
     price: 85000,
     categoryId: 3,
     orderSubTypeId: 2,
+    units: "paket",
     wisataRelation: "keraton",
     wisataDesc: "Area Keraton - Guide - Snack - Foto bersama Sultan"
   },
@@ -70,6 +71,7 @@ const orders = [
     desc: "Menikmati Keraton dengan guide + snack khas cirebon + silatuhrahmi dan foto bersama dengan Sultan + kesenian.",
     price: 135000,
     categoryId: 3,
+    units: "paket",
     orderSubTypeId: 2,
     wisataRelation: "keraton",
     wisataDesc: "Area Keraton - Guide - Snack - Foto bersama Sultan - Kesenian"
@@ -80,6 +82,7 @@ const orders = [
     desc: "Menikmati Keraton dengan guide + makan (masakan nasional) + silatuhrahmi dan foto bersama dengan Sultan + kesenian",
     price: 200000,
     categoryId: 3,
+    units: "paket",
     orderSubTypeId: 3,
     wisataRelation: "keraton",
     wisataDesc: "Area Keraton - Guide - Makan - Foto bersama Sultan - Kesenian"
@@ -90,6 +93,7 @@ const orders = [
     desc: "Menikmati Keraton dengan guide + snack khas cirebon + kesenian.",
     price: 115000,
     categoryId: 3,
+    units: "paket",
     orderSubTypeId: 2,
     wisataRelation: "keraton",
     wisataDesc: "Area Keraton - Guide - Snack - Kesenian"
@@ -100,6 +104,7 @@ const orders = [
     desc: "Menikmati Keraton dengan guide + makan (masakan nasional) + kesenian.",
     price: 175000,
     categoryId: 3,
+    units: "paket",
     orderSubTypeId: 2,
     wisataRelation: "keraton",
     wisataDesc: "Area Keraton - Guide - Makan - Kesenian"
@@ -110,6 +115,7 @@ const orders = [
     desc: "Menikmati Keraton dengan guide + makan (masakan khas Cirebon) + kesenian.",
     price: 175000,
     categoryId: 3,
+    units: "paket",
     orderSubTypeId: 3,
     wisataRelation: "keraton",
     wisataDesc: "Area Keraton - Guide - Makan - Kesenian"
@@ -120,6 +126,7 @@ const orders = [
     desc: "Menikmati Keraton dengan guide + makan (nasi dus) + belajar sejarah dan kesenian.",
     price: 60000,
     categoryId: 3,
+    units: "paket",
     orderSubTypeId: 4,
     wisataRelation: "keraton",
     wisataDesc: "Area Keraton - Guide - Makan - Sejarah & Kesenian"
