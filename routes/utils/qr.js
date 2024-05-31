@@ -1,12 +1,45 @@
-require('dotenv').config();
+const { encrypt } = require('./encryption')
 
-export default class QrGenerator {
+require('dotenv').config();
+const qr = require('qrcode')
+const fs = require("fs");
+
+class QrGenerator {
     #defaultPath
-    constructor(){
+    #qrStoredName
+    constructor() {
         this.#defaultPath = process.env.QR_PATH
     }
 
-    create(name, storedData){
+    #encryptAndCreateQR(path, data) {
+        const stringifyData = JSON.stringify(data)
+        data = encrypt(stringifyData)
+        qr.toFile(path, data, (err) => {
+            if (err) console.log(err)
+        })
+        return this
+    }
 
+    create(storedData = { uniqueId }) {
+        this.#qrStoredName = `QR-${storedData.uniqueId}`
+        const qrPath = this.#defaultPath + "/" + this.#qrStoredName
+        if (!fs.existsSync(qrPath)) {
+            delete storedData.uniqueId
+            this.#encryptAndCreateQR(qrPath, storedData)
+        }
+        return qrPath
+    }
+
+    update(qrPath, storedData) {
+        try {
+            if (!fs.existsSync) throw Error('QR Path didnt exist')
+            fs.unlink(qrPath)
+            this.#encryptAndCreateQR(qrPath, storedData)
+            return this
+        } catch (err) {
+            console.log(err)
+        }
     }
 }
+
+module.exports = QrGenerator

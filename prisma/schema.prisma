@@ -155,6 +155,7 @@ model Logs {
 
 model BarcodeUsage {
   id            String        @id @default(uuid())
+  qrPath        String
   remainingUses Int
   expiredAt     DateTime
   createdAt     DateTime      @default(now())

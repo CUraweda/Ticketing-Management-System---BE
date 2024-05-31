@@ -4,6 +4,7 @@ const eventModel = require('../models/events.models')
 const cartModel = require('../models/carts.model')
 const { prisma } = require("../../utils/prisma")
 const globalParamModel = require('../models/params.models')
+const barcodeModel =  require('../models/barcode.model')
 
 const isExist = async (id) => {
     try{
@@ -43,7 +44,7 @@ const getOne = async (id) => {
 }
 
 const createNew = async (data) => {
-    let { user, carts, args } = data, payloads = []
+    let { user, carts, args } = data, payloads = [], tiketUses = 0
     try {
         if (carts.length < 1) throw Error('No Item to Checkout')
         if(user) args.userId = user.id
@@ -69,6 +70,7 @@ const createNew = async (data) => {
                 default:
                     break;
             }
+            tiketUses += cart.quantity
             payloads.push({
                 amount: cart.quantity,
                 transactionId: createdTransacation.id,
@@ -76,6 +78,11 @@ const createNew = async (data) => {
             })
         }
         const detailData = createManyDetail(payloads)
+        await barcodeModel.create({
+            uniqueId: createdTransacation.id,
+            remainingUses: tiketUses,
+            detailData
+        })
         return { createdTransacation, detailData }
     } catch (err) {
         throwError(err)
