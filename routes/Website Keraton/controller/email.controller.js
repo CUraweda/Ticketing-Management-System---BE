@@ -15,25 +15,46 @@ router.get('/render', async (req, res) => {
             name: "Steve",
             date: new Date().toLocaleDateString(),
             imageAttachment: '/public/assets/email/testqr.jpg',
-            nomor_invoice: 109109019020,
+            nomor_invoice: 1091090190909090909090909020,
             method: "method",
             invoices: [
                 {
                     item_desc: "test",
                     quantity: "20",
-                    price: "200",
-                    total: "test",
+                    price: parseFloat(3000).toLocaleString("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                    }),
+                    total: parseFloat(3000).toLocaleString("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                    }),
                 },
                 {
                     item_desc: "test",
-                    quantity: "test",
-                    price: "test",
-                    total: "test",
-                }
+                    quantity: "20",
+                    price: parseFloat(3000).toLocaleString("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                    }),
+                    total: parseFloat(3000).toLocaleString("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                    }),
+                },
             ],
-            subtotal: 2000,
-            tax: 1000,
-            total: 3000
+            subtotal: parseFloat(2000).toLocaleString("id-ID", {
+                style: "currency",
+                currency: "IDR",
+            }),
+            tax: parseFloat(1000).toLocaleString("id-ID", {
+                style: "currency",
+                currency: "IDR",
+            }),
+            total: parseFloat(3000).toLocaleString("id-ID", {
+                style: "currency",
+                currency: "IDR",
+            }),
         })
     } catch (err) {
         return error(res, err.message)
@@ -55,7 +76,13 @@ router.post('/invoice/:id', async (req, res) => {
                 invoices: transactionExist.detailTrans.map(detail => ({
                     item_desc: detail.order.desc,
                     quantity: detail.amount,
-                    price: detail.orderId ? detail.order.price : detail.event.price,
+                    price: detail.orderId ? parseFloat(detail.order.price).toLocaleString("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                    }) : parseFloat(detail.event.price).toLocaleString("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                    }),
                     total: detail.amount * (detail.orderId ? detail.order.price : detail.event.price),
                 })),
                 subtotal: parseFloat(transactionExist.total).toLocaleString("id-ID", {
