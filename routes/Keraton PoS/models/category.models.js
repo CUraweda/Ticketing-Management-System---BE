@@ -1,25 +1,20 @@
 const { throwError } = require("../../utils/helper");
 const { prisma } = require("../../utils/prisma");
-const orderRelationModel = require("./orderRelation.models");
+const orderModel = require("./order.models");
 const logsModel = require("./logs.models");
 
 const isExist = async (id) => {
   try {
-    return await prisma.category.findFirst({ where: { id: id } });
+    return await prisma.category.findFirst({
+      where: { id: id, disabled: false },
+    });
   } catch (err) {
     throwError(err);
   }
 };
 const getAll = async () => {
   try {
-    return await prisma.category.findMany();
-  } catch (err) {
-    throwError(err);
-  }
-};
-const findPurchaseCategories = async () => {
-  try {
-    return await prisma.category.findMany({ select: { name: true } });
+    return await prisma.category.findMany({ where: { disabled: false } });
   } catch (err) {
     throwError(err);
   }
@@ -73,10 +68,10 @@ const deleteCategory = async (id) => {
     if (!category) throw Error("ID Category tidak ditemukan");
     const orders = await prisma.order.findMany({ where: { categoryId: id } });
     for (const order of orders) {
-      await orderRelationModel.deleteOrder(order.id);
+      if (!order.disabled) await orderModel.deleteOrder(order.id);
     }
     return await prisma.category
-      .delete({ where: { id } })
+      .update({ where: { id }, data: { disabled: true } })
       .then(
         await logsModel.logDelete(
           `Menghapus kategori ${category.name}`,
@@ -93,7 +88,6 @@ const deleteCategory = async (id) => {
 module.exports = {
   isExist,
   getAll,
-  findPurchaseCategories,
   create,
   update,
   deleteCategory,

@@ -240,25 +240,28 @@ function convertFilesToURL(filePath) {
   return `${process.env.BASE_URL}/${urlPath}`;
 }
 
-function splitDate (dateTime) {
-  const parts = dateTime.split('T')
-  const dateParts = parts[0].split('-')
-  const timeParts = parts[1].split(':')
+function splitDate(dateTime) {
+  const parts = dateTime.split("T");
+  const dateParts = parts[0].split("-");
+  const timeParts = parts[1].split(":");
 
   // Memformat tanggal (dd/mm/yyyy)
-  const day = dateParts[2]
-  const month = dateParts[1]
-  const year = dateParts[0]
-  const formattedDate = `${day}/${month}/${year}`
+  const day = dateParts[2];
+  const month = dateParts[1];
+  const year = dateParts[0];
+  const formattedDate = `${day}/${month}/${year}`;
 
   // Memformat waktu (hh.mm)
-  const hours = timeParts[0]
-  const minutes = timeParts[1]
-  const formattedTime = `${hours}.${minutes}`
+  const hours = timeParts[0];
+  const minutes = timeParts[1];
+  const formattedTime = `${hours}.${minutes}`;
 
-  return [formattedDate, formattedTime]
+  return [formattedDate, formattedTime];
 }
 
+function formatCurrency(value) {
+  return Number(value).toLocaleString("id-ID");
+}
 module.exports = {
   upload,
   today,
@@ -274,5 +277,6 @@ module.exports = {
   throwError,
   generateRandomString,
   convertFilesToURL,
-  splitDate
+  splitDate,
+  formatCurrency
 };

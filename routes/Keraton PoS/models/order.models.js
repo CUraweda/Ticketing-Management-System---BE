@@ -7,12 +7,14 @@ const {
   groupMonthData,
 } = require("../../utils/helper");
 const { prisma } = require("../../utils/prisma");
-const categoryModel = require("./category.models");
 const logsModel = require("./logs.models");
 
 const isExist = async (id) => {
   try {
-    return await prisma.order.findFirst({ where: { id: id } });
+    return await prisma.order.findFirst({
+      where: { id: id, disabled: false },
+      include: { category: true },
+    });
   } catch (err) {
     throwError(err);
   }
@@ -20,7 +22,7 @@ const isExist = async (id) => {
 const getOne = async (id) => {
   try {
     return await prisma.order.findFirst({
-      where: { id: id },
+      where: { id: id, disabled: false },
       include: {
         category: true,
         orderSubType: { include: { orderType: true } },
@@ -33,12 +35,13 @@ const getOne = async (id) => {
 const getAll = async () => {
   try {
     return await prisma.order.findMany({
+      where: { disabled: false },
       include: {
         category: true,
         orderSubType: { include: { orderType: true } },
       },
       orderBy: {
-        createdDate: 'desc',
+        createdDate: "desc",
       },
     });
   } catch (err) {
@@ -48,6 +51,7 @@ const getAll = async () => {
 const getRecentData = async (start, end) => {
   try {
     return await prisma.order.findMany({
+      where: { disabled: false },
       include: {
         category: true,
         detailTrans: {
@@ -71,12 +75,15 @@ const getRecentData = async (start, end) => {
 };
 const create = async (data) => {
   try {
-    await logsModel.logCreate(
-      `Membuat pesanan ${data.name}`,
-      "Order",
-      "Success"
-    );
-    return await prisma.order.create({ data: data });
+    return await prisma.order
+      .create({ data: data })
+      .then(
+        await logsModel.logCreate(
+          `Membuat pesanan ${data.name}`,
+          "Order",
+          "Success"
+        )
+      );
   } catch (err) {
     await logsModel.logCreate(
       `Membuat pesanan ${data.name}`,
@@ -90,12 +97,15 @@ const update = async (id, data) => {
   try {
     const order = await isExist(id);
     if (!order) throw Error("Order ID tidak ditemukan");
-    await logsModel.logUpdate(
-      `Mengubah pesanan ${order.name} menjadi ${data.name}`,
-      "Order",
-      "Success"
-    );
-    return await prisma.order.update({ where: { id: id }, data: data });
+    return await prisma.order
+      .update({ where: { id: id }, data: data })
+      .then(
+        await logsModel.logUpdate(
+          `Mengubah pesanan ${order.name} menjadi ${data.name}`,
+          "Order",
+          "Success"
+        )
+      );
   } catch (err) {
     await logsModel.logUpdate(
       `Mengubah pesanan ${id} menjadi ${data.name}`,
@@ -108,7 +118,10 @@ const update = async (id, data) => {
 const recentPurchase = async () => {
   try {
     const order = await getRecentData(startDate, endDate);
-    const categories = await categoryModel.findPurchaseCategories();
+    const categories = await prisma.category.findMany({
+      where: { disabled: false },
+      select: { name: true },
+    });
     return groupedPurchase(order, categories);
   } catch (err) {
     throwError(err);
@@ -120,7 +133,9 @@ const getYearData = async (targetYear) => {
     startTarget.setHours(7, 0, 0, 0);
     const endTarget = new Date(`${targetYear}-12-31`);
     endTarget.setHours(30, 59, 59, 999);
-    const categories = await categoryModel.getAll();
+    const categories = await prisma.category.findMany({
+      where: { disabled: false },
+    });
 
     const data = await getRecentData(startTarget, endTarget);
 
@@ -141,7 +156,9 @@ const getMonthData = async (targetYear, targetMonthInt) => {
       `${targetYear}-${targetMonthInt}-${daysInMonth}`
     );
     endTarget.setHours(30, 59, 59, 999);
-    const categories = await categoryModel.getAll();
+    const categories = await prisma.category.findMany({
+      where: { disabled: false },
+    });
 
     const data = await getRecentData(startTarget, endTarget);
 
@@ -150,6 +167,24 @@ const getMonthData = async (targetYear, targetMonthInt) => {
 
     return groupMonthData(data, names, colors, daysInMonth);
   } catch (err) {
+    throwError(err);
+  }
+};
+const deleteOrder = async (id) => {
+  try {
+    const order = await isExist(id);
+    if (!order) throw Error("Order ID tidak ditemukan");
+    await prisma.order
+      .update({ where: { id }, data: { disabled: true } })
+      .then(
+        await logsModel.logDelete(
+          `Menghapus pesanan ${order.name} (${order.category.name}) dengan ID ${order.id}.`,
+          "Order",
+          "Success"
+        )
+      );
+  } catch (err) {
+    await logsModel.logDelete(`Menghapus pesanan ${id}.`, "Order", "Failed");
     throwError(err);
   }
 };
@@ -163,4 +198,5 @@ module.exports = {
   recentPurchase,
   getYearData,
   getMonthData,
+  deleteOrder,
 };
