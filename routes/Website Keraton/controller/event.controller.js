@@ -54,6 +54,9 @@ router.post('/:ident/:id?',upload.single('image'), async (req, res) => {
     const { ident } =  req.params
     try{
         if(req.file) req.body.image = convertFilesToURL(req.file.path)
+        req.body.price = parseFloat(req.body.price)
+        req.body.iterationId = parseInt(req.body.iterationId)
+        req.body.isFree = req.body.isFree != "false" ? true : false
         const data = ident != "update" ? await eventModel.create(req.body) : await eventModel.update(+req.params.id, req.body)
         return success(res, 'Action Success', data)
     }catch(err){
