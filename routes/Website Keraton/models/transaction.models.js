@@ -78,10 +78,14 @@ const createNew = async (data) => {
             })
         }
         const detailData = createManyDetail(payloads)
+        const plannedDate = new Date(createdTransacation.plannedDate);
+        const expiredAt = new Date(plannedDate);
+        expiredAt.setDate(expiredAt.getDate() + 1);
+        
         await barcodeModel.create({
             uniqueId: createdTransacation.id,
             remainingUses: tiketUses,
-            detailData
+            expiredAt, detailData
         })
         return { createdTransacation, detailData }
     } catch (err) {
@@ -105,4 +109,12 @@ const createDetail = async (data) => {
     }
 }
 
-module.exports = { createNew, createDetail, createManyDetail, getOne, getAll }
+const update = async (id, data) => {
+    try{
+        return await prisma.transaction.update({ where: { id }, data })
+    }catch(err){
+        throwError(err)
+    }
+}
+
+module.exports = { createNew, createDetail, createManyDetail, getOne, getAll, getOneTransaction, update }
