@@ -229,7 +229,7 @@
 <body>
     <div class="max-w-screen-xl mx-auto container">
         <header class="header">
-            <img src="cid:1" alt="Logo">
+            <img src="cid:0" alt="Logo">
             <div class="text">
                 <h1>Keraton Kesepuhan Cirebon</h1>
                 <h3>Invoice</h3>
@@ -278,15 +278,16 @@
 
                 </section>
                 <section class="w-14">
-                    <!-- <img src="/public/assets/email/testqr.jpg" width="50%"> -->
-                    <img src="cid:0" alt="Embedded Image" width="150px" height="150px">
+                    <% if (qr_exist) { %>
+                        <img src="cid:1" alt="Embedded Image" width="150px" height="150px">
+                    <% } %>
                 </section>
             </div>
             <section>
                 <table class="min-w-full" style="margin-top: 50px;">
                     <thead class="color">
                         <tr>
-                            <th class="py-2 px-4  text-gray-800" ">
+                            <th class="py-2 px-4  text-gray-800">
                                 Description
                             </th>
                             <th class=" py-2 px-4 text-right text-gray-800 dec">Quantity</th>

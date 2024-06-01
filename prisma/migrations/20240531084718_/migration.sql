@@ -97,7 +97,6 @@ CREATE TABLE `Transaction` (
     `createdDate` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `discount` VARCHAR(191) NULL,
     `cashback` VARCHAR(191) NULL,
-    `barcodeUID` VARCHAR(191) NULL,
     `userId` VARCHAR(191) NULL,
     `nationalityId` VARCHAR(191) NULL,
 
@@ -135,6 +134,7 @@ CREATE TABLE `BarcodeUsage` (
     `id` VARCHAR(191) NOT NULL,
     `qrPath` VARCHAR(191) NOT NULL,
     `remainingUses` INTEGER NOT NULL,
+    `transactionId` VARCHAR(191) NOT NULL,
     `expiredAt` DATETIME(3) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
@@ -255,9 +255,6 @@ ALTER TABLE `Order` ADD CONSTRAINT `Order_orderSubTypeId_fkey` FOREIGN KEY (`ord
 ALTER TABLE `OrderSubType` ADD CONSTRAINT `OrderSubType_orderTypeId_fkey` FOREIGN KEY (`orderTypeId`) REFERENCES `OrderType`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Transaction` ADD CONSTRAINT `Transaction_barcodeUID_fkey` FOREIGN KEY (`barcodeUID`) REFERENCES `BarcodeUsage`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE `Transaction` ADD CONSTRAINT `Transaction_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -277,6 +274,9 @@ ALTER TABLE `DetailTrans` ADD CONSTRAINT `DetailTrans_guideId_fkey` FOREIGN KEY 
 
 -- AddForeignKey
 ALTER TABLE `Logs` ADD CONSTRAINT `Logs_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `BarcodeUsage` ADD CONSTRAINT `BarcodeUsage_transactionId_fkey` FOREIGN KEY (`transactionId`) REFERENCES `Transaction`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Contents` ADD CONSTRAINT `Contents_pageId_fkey` FOREIGN KEY (`pageId`) REFERENCES `Pages`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

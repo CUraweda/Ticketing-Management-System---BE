@@ -6,7 +6,14 @@ const { error, success } = require("../../utils/response");
 const { userInfo } = require("os");
 const { splitDate } = require("../../utils/helper");
 const { prisma } = require("../../utils/prisma");
+const { auth } = require("../middlewares/auth");
 const emailClass = new Email()
+
+function transformUrl(url) {
+    const relevantPart = url.replace(process.env.BASE_URL, '');
+    const transformedUrl = `public${relevantPart}`;
+    return transformedUrl
+}
 
 router.get('/render', async (req, res) => {
     try {
@@ -61,18 +68,20 @@ router.get('/render', async (req, res) => {
     }
 })
 
-router.post('/invoice/:id', async (req, res) => {
+router.get('/invoice/:id', auth([]), async (req, res) => {
     try {
-        const transactionExist = await prisma.transaction.findFirstOrThrow({ where: { id: req.params.id }, include: { user: true, detailTrans: { include: { order: true, event: true } } } })
+        const transactionExist = await prisma.transaction.findFirstOrThrow({ where: { id: req.params.id }, include: { user: true, detailTrans: { include: { order: true, event: true } }, BarcodeUsage: true } })
         if (!transactionExist) throw Error('Transaction Didnt Exist')
-        const emailClass = new Email(process.env.EMAIL_FROM, "nadifdzaikra@gmail.com", "Test")
-        await emailClass.sendEmailTemplate(
-            {
+        const emailData = {
+            to: 'rikanaap@gmail.com',
+            subject: "Invoice Transaksi Pesananan - Keraton Kasepuhan Cirebon",
+            data: {
                 email: transactionExist.user.email,
                 name: transactionExist.user.name,
                 date: transactionExist.plannedDate.toLocaleDateString(),
                 nomor_invoice: transactionExist.id,
                 method: transactionExist.method,
+                qr_exist: false,
                 invoices: transactionExist.detailTrans.map(detail => ({
                     item_desc: detail.order.desc,
                     quantity: detail.amount,
@@ -98,13 +107,27 @@ router.post('/invoice/:id', async (req, res) => {
                     currency: "IDR"
                 })
             },
-            [
-                "public/assets/email/testqr.jpg",
+            attachment: [
                 "public/assets/email/logo.png",
             ]
-        )
-        return success(res, "Email terkirim", 201)
+        }
+        for(let barcode of transactionExist.BarcodeUsage){
+            emailData.data.qr_exist = true
+            emailData.attachment.push(transformUrl(barcode.qrPath))
+        }
+        setImmediate(async () => {
+            try {
+                const emailClass = new Email(process.env.EMAIL_FROM, emailData.to, emailData.subject )
+                await emailClass.sendEmailTemplate(emailData.data, emailData.attachment).then(() => {
+                    console.log('Email berhasil terkirim')
+                })
+            } catch (err) {
+                console.log('Error while sending email', err)
+            }
+        })
+        return success(res, "Request sended, please wait", 201)
     } catch (err) {
+        console.log(err)
         return error(res, err.message)
     }
 })
