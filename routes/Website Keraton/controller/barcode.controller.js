@@ -9,11 +9,13 @@ router.post('/use', async (req, res) => {
     try{
         const decryptedData = JSON.parse(decrypt(data))
         const { uniqueId } = decryptedData
-        if(uniqueId) throw Error('Invalid QR Data, cannot be proccessed')
-        const transaction = await barcodeModel.isExist(uniqueId)
-        const updatedTransaction = await barcodeModel.update(transaction.id, { remainingUses: transaction.remainingUses - 1 })
-        return success(res, 'QR Successfully used')
+        if(!uniqueId) throw Error('Invalid QR Data, cannot be proccessed')
+        const barcode = await barcodeModel.isExist(uniqueId)
+        const updatedQR = await barcodeModel.use(barcode.id)
+        return success(res, 'QR Successfully used', updatedQR)
     }catch(err){
         return error(res, err.message)
     }
 })
+
+module.exports = router

@@ -22,7 +22,7 @@ const getAll = async (userId, args) => {
                 ...(d && { plannedDate: d }),
                 ...(stat && { method: stat })
              }
-        }), include: { detailTrans: { include: { order: true, event: true } }, BarcodeUsage: true }, orderBy: { plannedDate: 'desc' }})
+        }), include: { detailTrans: { include: { order: true, event: true } }, BarcodeUsage: true }, orderBy: { createdDate: 'desc' }})
     }catch(err){
         throwError(err)
     }
@@ -87,10 +87,9 @@ const createNew = async (data) => {
         expiredAt.setDate(expiredAt.getDate() + 1);
         const barcode = await barcodeModel.create({
             uniqueId: createdTransacation.id,
-            remainingUses: tiketUses,
+            possibleUses: tiketUses,
             expiredAt
         })
-        console.log(barcode)
         return { createdTransacation, detailData }
     } catch (err) {
         throwError(err)
