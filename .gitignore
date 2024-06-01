@@ -1,6 +1,7 @@
 node_modules
 public/assets/content/*
 public/assets/items/*
+public/assets/events/*
 public/qrcodes/*
 public/uploads/*
 public/pdfs/*
