@@ -18,7 +18,8 @@ router.get('/all', auth(['SUPER_ADMIN', 'ADMIN'], async (req, res) => {
 
 router.get('/pay/:transactionId', async (req, res) => {
     try{
-        const verificationExist = req.headers['X-VER']
+        console.log(req.headers)
+        const verificationExist = req.headers['x-ver']
         if(!verificationExist) throw Error('Verification Header didnt exist')
         if(verificationExist && verificationExist != process.env.ENCRYPTION_PAYMENT) throw Error('Verification Header data is incorrect')
         const transactionExist = await transactionModel.getOneTransaction(req.params.transactionId)
