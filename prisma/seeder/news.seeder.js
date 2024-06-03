@@ -3,20 +3,20 @@ const { prisma } = require("../../routes/utils/prisma");
 
 const news = [
   {
-    title: "Ambatukam maling",
-    desc: "Ditemukan jasad 1 orang",
+    title: "Keraton Kasepuhan Cirebon Ulang Tahun",
+    desc: "Sebuah pencapaian besar dari Keraton Kasepuhan Cirebon",
     link: "https://picsum.photos/200/300",
     image: "https://picsum.photos/200/300"
   },
   {
-    title: "Disnut Membeli sayur",
-    desc: "Berjalan 1 KM",
+    title: "Keraton Kasepuhan Cirebon mencapai 1000 tiket dalam 1 hari",
+    desc: "Pada tanggal 29 November sebuah pencapaian baru bari keraton kasepuhan cirebon",
     link: "https://picsum.photos/200/300",
     image: "https://picsum.photos/200/300"
   },
   {
-    title: "Kambing beli sayur",
-    desc: "Sayur dimakan Kambing",
+    title: "Keraton Kasepuhan Cirebon menjadi spot wisata nomor 1",
+    desc: "Pencapaian yang didapatkan menjadikan Keraton Kasepuhan Cirebon, salah satu spot wisata terbaik di Cirebon",
     link: "https://picsum.photos/200/300",
     image: "https://picsum.photos/200/300"
   },
