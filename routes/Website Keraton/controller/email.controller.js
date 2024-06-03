@@ -72,8 +72,9 @@ router.get('/invoice/:id', auth([]), async (req, res) => {
     try {
         const transactionExist = await prisma.transaction.findFirstOrThrow({ where: { id: req.params.id }, include: { user: true, detailTrans: { include: { order: true, event: true } }, BarcodeUsage: true } })
         if (!transactionExist) throw Error('Transaction Didnt Exist')
+        if(!req.user.email) throw Error('User has no email')
         const emailData = {
-            to: 'rikanaap@gmail.com',
+            to: req.user.email,
             subject: "Invoice Transaksi Pesananan - Keraton Kasepuhan Cirebon",
             data: {
                 email: transactionExist.user.email,
