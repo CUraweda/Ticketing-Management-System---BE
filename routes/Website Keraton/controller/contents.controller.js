@@ -7,16 +7,11 @@ const multer = require("multer");
 const crypto = require("crypto");
 const path = require("path");
 
-function convertFilesToURL(filePath) {
-  const baseURL = "http://localhost:3000";
-  return baseURL + filePath.replace("public", "").split(path.sep).join("/");
-}
-
 // Start Multer
 const allowedMimeTypes = ["image/png", "image/jpg", "image/jpeg", "image/webp"];
 const storage = multer.diskStorage({
   destination: (_req, _file, cb) => {
-    cb(null, "public/assets/content");
+    cb(null, "public/assets/events");
   },
   filename: (_req, file, cb) => {
     crypto.pseudoRandomBytes(16, (_err, raw) => {

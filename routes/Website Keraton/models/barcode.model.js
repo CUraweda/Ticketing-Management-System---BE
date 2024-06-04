@@ -6,7 +6,7 @@ const path = require("path");
 
 
 function convertFilesToURL(filePath) {
-    const baseURL = "http://localhost:3000";
+    const baseURL = 'https://api-prmn.curaweda.com:3031';
     return baseURL + filePath.replace("public", "").split(path.sep).join("/");
   }
   

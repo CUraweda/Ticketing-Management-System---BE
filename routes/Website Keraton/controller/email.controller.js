@@ -10,7 +10,7 @@ const { auth } = require("../middlewares/auth");
 const emailClass = new Email()
 
 function transformUrl(url) {
-    const relevantPart = url.replace(process.env.BASE_URL, '');
+    const relevantPart = url.replace('https://api-prmn.curaweda.com:3031', '');
     const transformedUrl = `public${relevantPart}`;
     return transformedUrl
 }
@@ -72,14 +72,21 @@ router.get('/invoice/:id', auth([]), async (req, res) => {
     try {
         const transactionExist = await prisma.transaction.findFirstOrThrow({ where: { id: req.params.id }, include: { user: true, detailTrans: { include: { order: true, event: true } }, BarcodeUsage: true } })
         if (!transactionExist) throw Error('Transaction Didnt Exist')
-        if(!req.user.email) throw Error('User has no email')
+        if (!req.user.email) throw Error('User has no email')
+        console.log(req.user.email)
         const emailData = {
             to: req.user.email,
             subject: "Invoice Transaksi Pesananan - Keraton Kasepuhan Cirebon",
             data: {
                 email: transactionExist.user.email,
                 name: transactionExist.user.name,
-                date: transactionExist.plannedDate.toLocaleDateString(),
+                date: new Intl.DateTimeFormat("id-ID", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit"
+                }).format(new Date(transactionExist.plannedDate)),
                 nomor_invoice: transactionExist.id,
                 method: transactionExist.method,
                 qr_exist: false,
@@ -112,13 +119,13 @@ router.get('/invoice/:id', auth([]), async (req, res) => {
                 "public/assets/email/logo.png",
             ]
         }
-        for(let barcode of transactionExist.BarcodeUsage){
+        for (let barcode of transactionExist.BarcodeUsage) {
             emailData.data.qr_exist = true
             emailData.attachment.push(transformUrl(barcode.qrPath))
         }
         setImmediate(async () => {
             try {
-                const emailClass = new Email(process.env.EMAIL_FROM, emailData.to, emailData.subject )
+                const emailClass = new Email(process.env.EMAIL_FROM, emailData.to, emailData.subject)
                 await emailClass.sendEmailTemplate(emailData.data, emailData.attachment).then(() => {
                     console.log('Email berhasil terkirim')
                 })
