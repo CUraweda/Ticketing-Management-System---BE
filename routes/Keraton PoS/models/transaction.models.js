@@ -14,7 +14,7 @@ const {
 const { prisma } = require("../../utils/prisma");
 const logsModel = require("./logs.models");
 const detailTransModel = require("./detailTrans.models");
-const BASE_URL = process.env.BASE_URL;
+const BASE_URL = 'https://api-prmn.curaweda.com:3031';
 
 const getInvoice = async (search) => {
   try {
