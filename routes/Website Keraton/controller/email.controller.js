@@ -111,13 +111,13 @@ router.get('/invoice/:id', auth([]), async (req, res) => {
                 "public/assets/email/logo.png",
             ]
         }
-        for(let barcode of transactionExist.BarcodeUsage){
+        for (let barcode of transactionExist.BarcodeUsage) {
             emailData.data.qr_exist = true
             emailData.attachment.push(transformUrl(barcode.qrPath))
         }
         setImmediate(async () => {
             try {
-                const emailClass = new Email(process.env.EMAIL_FROM, emailData.to, emailData.subject )
+                const emailClass = new Email(process.env.EMAIL_FROM, emailData.to, emailData.subject)
                 await emailClass.sendEmailTemplate(emailData.data, emailData.attachment).then(() => {
                     console.log('Email berhasil terkirim')
                 })

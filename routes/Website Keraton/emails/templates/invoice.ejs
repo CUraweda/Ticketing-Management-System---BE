@@ -223,6 +223,52 @@
             padding: 5px;
             text-align: left;
         }
+
+        /* Gaya untuk tombol dropdown */
+        .dropbtn {
+            background-color: #e2e8f0;
+            color: black;
+            padding: 3px 30px;
+            border-radius: 5px;
+            font-size: 16px;
+            border: none;
+            transition: background-color 0.3s, color 0.3s;
+            cursor: pointer;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.039);
+
+        }
+
+        .dropbtn:hover {
+            background-color: #cbd5e0;
+            color: #2d3748;
+        }
+
+        /* Wadah dropdown */
+        .dropdown {
+            position: relative;
+            width: 100%;
+            display: inline-block;
+        }
+
+        /* Konten dropdown (yang akan muncul saat tombol diklik) */
+        .dropdown-content {
+            display: none;
+            position: relative;
+            width: 100%;
+            justify-content: center;
+            /* box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2); */
+            z-index: 1;
+        }
+
+        /* Gaya untuk gambar di dalam dropdown */
+        .dropdown-content .dropdown-img {
+            width: 100%;
+        }
+
+        #arrow {
+            margin-left: 10px;
+            transition: transform 0.3s;
+        }
     </style>
 </head>
 
@@ -236,86 +282,89 @@
             </div>
         </header>
         <main style="width: 100%; ">
-            <% if (qr_exist) { %>
-                <div style="display: flex; justify-content:center; width: 100%; height:200px;">
-                    <img src="cid:1" alt="Embedded Image" width="200px" height="200px">
+            <div class="dropdown">
+
+                <button class="dropbtn" onclick="toggleDropdown()">Show QR<span id="arrow">&#9650;</span></button>
+                <div class="dropdown-content" id="dropdown-content">
+                    <img src="cid:1" alt="Embedded Image" width="100%" height="300px">
+                    <!-- <img src="/public/assets/email/logo.svg" height="300px" width="100%"> -->
                 </div>
-                <% } %>
-                    <div class="flex gap-2">
+            </div>
+            <div class="flex gap-2">
 
-                        <section class="w-34">
-                            <h2 class="text-xl font-semibold text-gray-800">Bill To:</h2>
-                            <table class="block-table">
-                                <tbody>
-                                    <tr>
-                                        <td class="text-gray-600">Name:</td>
-                                        <td>
-                                            <span class="font-semibold">
-                                                <%= name %>
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-gray-600">Email:</td>
-                                        <td>
-                                            <span class="font-semibold">
-                                                <%= email %>
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-gray-600">Invoice:</td>
-                                        <td>
-                                            <span class="font-semibold">
-                                                <%= nomor_invoice %>
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-gray-600">Date:</td>
-                                        <td>
-                                            <span class="font-semibold">
-                                                <%= date %>
-                                            </span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                <section class="w-34">
+                    <h2 class="text-xl font-semibold text-gray-800">Bill To:</h2>
+                    <table class="block-table">
+                        <tbody>
+                            <tr>
+                                <td class="text-gray-600">Name:</td>
+                                <td>
+                                    <span class="font-semibold">
+                                        <%= name %>
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-gray-600">Email:</td>
+                                <td>
+                                    <span class="font-semibold">
+                                        <%= email %>
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-gray-600">Invoice:</td>
+                                <td>
+                                    <span class="font-semibold">
+                                        <%= nomor_invoice %>
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-gray-600">Date:</td>
+                                <td>
+                                    <span class="font-semibold">
+                                        <%= date %>
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
 
-                        </section>
-                    </div>
-                    <section>
-                        <table class="min-w-full" style="margin-top: 50px;">
-                            <thead class="color">
-                                <tr>
-                                    <th class="py-2 px-4  text-gray-800">
-                                        Description
-                                    </th>
-                                    <th class=" py-2 px-4 text-right text-gray-800 dec">Quantity</th>
-                                    <th class="py-2 px-4  text-right text-gray-800">Price</th>
-                                    <th class="py-2 px-4 text-right text-gray-800">Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <% for(var i=0 ; i < invoices.length; i++) { %>
-                                    <tr>
-                                        <td>
-                                            <%= invoices[i].item_desc %>
-                                        </td>
-                                        <td class="text-right">
-                                            <%= invoices[i].quantity %>
-                                        </td>
-                                        <td class="text-right">
-                                            <%= invoices[i].price %>
-                                        </td>
-                                        <td class="text-right">
-                                            <%= invoices[i].total %>
-                                        </td>
-                                    </tr>
-                                    <% } %>
-                            </tbody>
-                        </table>
-                    </section>
+                </section>
+            </div>
+            <section>
+                <table class="min-w-full" style="margin-top: 50px;">
+                    <thead class="color">
+                        <tr>
+                            <th class="py-2 px-4  text-gray-800">
+                                Description
+                            </th>
+                            <th class=" py-2 px-4 text-right text-gray-800 dec">Quantity</th>
+                            <th class="py-2 px-4  text-right text-gray-800">Price</th>
+                            <th class="py-2 px-4 text-right text-gray-800">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% for(var i=0 ; i < invoices.length; i++) { %>
+                            <tr>
+                                <td>
+                                    <%= invoices[i].item_desc %>
+                                </td>
+                                <td class="text-right">
+                                    <%= invoices[i].quantity %>
+                                </td>
+                                <td class="text-right">
+                                    <%= invoices[i].price %>
+                                </td>
+                                <td class="text-right">
+                                    <%= invoices[i].total %>
+                                </td>
+                            </tr>
+                            <% } %>
+                    </tbody>
+                </table>
+            </section>
         </main>
         <footer class="border-t" style="width: 100%; padding-top: 20px;">
             <div class="text-right">
@@ -333,5 +382,33 @@
         </footer>
     </div>
 </body>
+<script>
+    function toggleDropdown() {
+        var dropdownContent = document.getElementById('dropdown-content');
+        var arrow = document.getElementById('arrow');
+        if (dropdownContent.style.display === 'flex') {
+            dropdownContent.style.display = 'none';
+            arrow.innerHTML = '&#9650;';  // Panah ke atas
+        } else {
+            dropdownContent.style.display = 'flex';
+            arrow.innerHTML = '&#9660;';  // Panah ke bawah
+        }
+    }
+
+    // Tutup dropdown jika pengguna mengklik di luar dropdown
+    window.onclick = function (event) {
+        if (!event.target.matches('.dropbtn')) {
+            var dropdowns = document.getElementsByClassName("dropdown-content");
+            for (var i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.style.display === 'flex') {
+                    openDropdown.style.display = 'none';
+                    arrow.innerHTML = '&#9650;';  // Panah ke atas
+                }
+            }
+        }
+    }
+
+</script>
 
 </html>
