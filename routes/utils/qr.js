@@ -22,11 +22,8 @@ class QrGenerator {
 
     create(storedData = { uniqueId }) {
         this.#qrStoredName = `QR-${storedData.uniqueId}`
-        const qrPath = this.#defaultPath + "/" + this.#qrStoredName
-        if (!fs.existsSync(qrPath)) {
-            delete storedData.uniqueId
-            this.#encryptAndCreateQR(qrPath, storedData)
-        }
+        const qrPath = this.#defaultPath + "/" + this.#qrStoredName +'.jpg'
+        if (!fs.existsSync(qrPath)) this.#encryptAndCreateQR(qrPath, storedData)
         return qrPath
     }
 

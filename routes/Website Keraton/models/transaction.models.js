@@ -14,12 +14,15 @@ const isExist = async (id) => {
     }
 }
 
-const getAll = async (userId) => {
-    try{
-        console.log(userId)
+const getAll = async (userId, args) => {
+    const { s, d, stat } = args
+     try{
         return await prisma.transaction.findMany({ ...(userId && {
-            where: { userId }
-        }), include: { detailTrans: { include: { order: true, event: true } } }, orderBy: { plannedDate: 'desc' }})
+            where: { userId, 
+                ...(d && { plannedDate: d }),
+                ...(stat && { method: stat })
+             }
+        }), include: { detailTrans: { include: { order: true, event: true } }, BarcodeUsage: true }, orderBy: { createdDate: 'desc' }})
     }catch(err){
         throwError(err)
     }
@@ -61,16 +64,17 @@ const createNew = async (data) => {
                     cart.typeData = {
                         orderId: cart.id,
                     }
+                    tiketUses += cart.minimumUnit ? cart.minimumUnit * cart.quantity : cart.quantity
                     break;
-                case "E":
-                    cart.typeData = {
-                        eventId: cart.id,
-                    }
+                    case "E":
+                        cart.typeData = {
+                            eventId: cart.id,
+                        }
+                        tiketUses += cart.quantity
                     break;
                 default:
                     break;
             }
-            tiketUses += cart.quantity
             payloads.push({
                 amount: cart.quantity,
                 transactionId: createdTransacation.id,
@@ -81,11 +85,10 @@ const createNew = async (data) => {
         const plannedDate = new Date(createdTransacation.plannedDate);
         const expiredAt = new Date(plannedDate);
         expiredAt.setDate(expiredAt.getDate() + 1);
-        
-        await barcodeModel.create({
+        const barcode = await barcodeModel.create({
             uniqueId: createdTransacation.id,
-            remainingUses: tiketUses,
-            expiredAt, detailData
+            possibleUses: tiketUses,
+            expiredAt
         })
         return { createdTransacation, detailData }
     } catch (err) {
@@ -103,7 +106,7 @@ const createManyDetail = async (datas = [{ amount, transactionId, orderId, event
 
 const createDetail = async (data) => {
     try {
-        return await prisma.detailTrans.create({ data })
+    return await prisma.detailTrans.create({ data })
     } catch (err) {
         throwError(err)
     }

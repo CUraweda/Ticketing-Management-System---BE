@@ -48,7 +48,7 @@ const iterationIdExist = async (id) => {
 
 const create = async (data) => {
     try {
-        await iterationIdExist(+data.iterationId)
+        await iterationIdExist(data.iterationId)
         return await prisma.events.create({ data })
     } catch (err) {
         throwError(err)

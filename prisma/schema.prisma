@@ -109,23 +109,22 @@ model OrderSubType {
 }
 
 model Transaction {
-  id            String        @id @default(uuid())
+  id            String         @id @default(uuid())
   customer      Json?
   additionalFee Int
-  total         Decimal       @db.Decimal(18, 2)
+  total         Decimal        @db.Decimal(18, 2)
   method        String
-  status        Status        @default(MENUNGGU_PEMBAYARAN)
+  status        Status         @default(MENUNGGU_PEMBAYARAN)
   plannedDate   DateTime
-  createdDate   DateTime      @default(now())
+  createdDate   DateTime       @default(now())
   discount      String?
   cashback      String?
-  barcode       BarcodeUsage? @relation(fields: [barcodeUID], references: [id])
-  barcodeUID    String?
-  user          User?         @relation(fields: [userId], references: [id])
+  user          User?          @relation(fields: [userId], references: [id])
   userId        String?
-  nationality   Nationality?  @relation(fields: [nationalityId], references: [id])
+  nationality   Nationality?   @relation(fields: [nationalityId], references: [id])
   nationalityId String?
   detailTrans   DetailTrans[]
+  BarcodeUsage  BarcodeUsage[]
 }
 
 model DetailTrans {
@@ -154,12 +153,13 @@ model Logs {
 }
 
 model BarcodeUsage {
-  id            String        @id @default(uuid())
+  id            String      @id @default(uuid())
   qrPath        String
   remainingUses Int
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
+  transactionId String
   expiredAt     DateTime
-  createdAt     DateTime      @default(now())
-  transaction   Transaction[]
+  createdAt     DateTime    @default(now())
 }
 
 model Nationality {

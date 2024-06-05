@@ -4,11 +4,13 @@ var express = require('express')
 var router = express.Router()
 const orderModel = require('../models/order.models')
 const orderSubTypeModel = require('../models/orderSubType.models')
+const objekWisataModel = require('../models/objekWisata.models')
 const eventIterationModel = require('../models/eventIteration.models')
 const multer = require("multer");
 const crypto = require('crypto');
 const path = require('path');
 const { waitForDebugger } = require("inspector");
+const { convertFilesToURL } = require("../../utils/helper");
 
 //Start Multer
 const allowedMimeTypes = ['image/png', 'image/jpg', 'image/jpeg', 'image/webp']
@@ -45,11 +47,12 @@ router.get('/booking', async (req, res) => {
 })
 
 router.get('/helper', async (req, res) => {
-    try{
+    try {
         const subTypes = await orderSubTypeModel.getAll()
         const iteration = await eventIterationModel.getAll()
-        return success(res, 'Success', { subTypes, iteration })
-    }catch(err){
+        const objekWisata = await objekWisataModel.getAll()
+        return success(res, 'Success', { subTypes, iteration, objekWisata })
+    } catch (err) {
         return error(res, err.message)
     }
 })
@@ -67,22 +70,25 @@ router.get('/:id?', async (req, res) => {
 
 router.post('/:ident', upload.single('image'), async (req, res) => {
     const { ident } = req.params
-    try{
-        if(req.file) req.body.image = convertFilesToURL(req.file.path)
-        const data = await orderModel(ident, req.body)
+    try {
+        if (req.file) req.body.image = convertFilesToURL(req.file.path)
+        req.body.price = parseFloat(req.body.price)
+        req.body.categoryId = parseInt(req.body.categoryId)
+        req.body.orderSubTypeId = parseInt(req.body.subTypeId)
+        const data = await orderModel.createUpdate(ident, req.body)
         return success(res, 'Action Success', data)
-    }catch(err){
+    } catch (err) {
         return error(res, err.message)
     }
 })
 
 router.delete('/:id', async (req, res) => {
-    try{
-        const dataExist = await orderModel.isExist(+req.params.id)
-        if(!dataExist) throw Error('Order ID Didnt Exist')
+    try {
+        const dataExist = await orderModel.isExist(req.params.id)
+        if (!dataExist) throw Error('Order ID Didnt Exist')
         const deleted = await orderModel.deleteData(dataExist.id)
         return success(res, `Order ${dataExist.name} Deleted Successfully`, deleted)
-    }catch(err){
+    } catch (err) {
         return error(res, err.message)
     }
 })
