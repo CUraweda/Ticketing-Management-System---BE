@@ -10,6 +10,15 @@ const getUser = async (email) => {
     throwError(err);
   }
 };
+
+const getAll = async () => {
+  try {
+    return await prisma.user.findMany()
+  } catch (err) {
+    throwError(err)
+  }
+}
+
 const isExist = async (id) => {
   try {
     return await prisma.user.findFirst({
@@ -30,7 +39,6 @@ const logIn = async (body) => {
 
     const token = jwt.sign(user, process.env.SECRET_KEY_AUTH);
     const tokens = await prisma.token.create({ data: { token, userId: user.id } })
-    console.log(tokens)
     delete user.password
     delete user.id
     return { token, user };
@@ -39,9 +47,9 @@ const logIn = async (body) => {
   }
 };
 const emailExist = async (email) => {
-  try{
+  try {
     return await prisma.user.findFirst({ where: { email } })
-  }catch(err){
+  } catch (err) {
     throwError(err)
   }
 }
@@ -49,7 +57,7 @@ const signUp = async (data) => {
   try {
     const { email, password, name } = data;
     const emailAlreadyExist = await emailExist(email)
-    if(emailAlreadyExist) throw Error('Email Already exist')
+    if (emailAlreadyExist) throw Error('Email Already exist')
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await prisma.user.create({
       data: {
@@ -81,6 +89,18 @@ const update = async (id, data) => {
   }
 }
 
+const create = async (data) => {
+  try {
+    const emailAlreadyExist = await emailExist(data.email)
+    if (emailAlreadyExist) throw Error('Email already exist')
+    const salt = await bcrypt.genSalt()
+    data.password = await bcrypt.hash(data.password, salt)
+    return await prisma.user.create({ data })
+  } catch (err) {
+    throwError(err)
+  }
+}
+
 const logOUt = async (token) => {
   try {
     const isExist = await prisma.token.findFirst({ where: { token } })
@@ -91,4 +111,12 @@ const logOUt = async (token) => {
   }
 }
 
-module.exports = { getUser, isExist, logIn, signUp, update, logOUt };
+const deleteSoftUser = async (id) => {
+  try {
+    return await prisma.user.update({ where: { id }, data: { deleted: true } })
+  } catch (err) {
+    throwError(err)
+  }
+}
+
+module.exports = { getUser, isExist, logIn, signUp, update, logOUt, getAll, deleteSoftUser, create };

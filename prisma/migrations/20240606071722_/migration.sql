@@ -22,6 +22,7 @@ CREATE TABLE `User` (
     `role` ENUM('SUPER_ADMIN', 'ADMIN', 'CASHIER', 'CUSTOMER') NOT NULL,
     `nationalityId` VARCHAR(191) NULL,
     `carts` JSON NULL,
+    `deleted` BOOLEAN NOT NULL DEFAULT false,
 
     UNIQUE INDEX `User_email_key`(`email`),
     PRIMARY KEY (`id`)

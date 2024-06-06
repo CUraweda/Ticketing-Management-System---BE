@@ -6,6 +6,7 @@ const contentModel = require("../models/contents.models");
 const multer = require("multer");
 const crypto = require("crypto");
 const path = require("path");
+const { captureRejections } = require("nodemailer/lib/xoauth2");
 
 // Start Multer
 const allowedMimeTypes = ["image/png", "image/jpg", "image/jpeg", "image/webp"];
@@ -23,7 +24,6 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage,
   fileFilter(req, file, cb) {
-    console.log(file)
     if (!allowedMimeTypes.includes(file.mimetype)) {
       req.fileValidationError = "Only image file are allowed";
       cb(null, false);
@@ -37,9 +37,7 @@ const upload = multer({
 router.get("/:id?", async (req, res) => {
   const { id } = req.params;
   try {
-    const data = id
-      ? await contentModel.getOne(+id)
-      : await contentModel.getAll();
+    const data = id ? await contentModel.getOne(+id) : await contentModel.getAll();
     return success(res, "Get Success", data);
   } catch (err) {
     return error(res, err.message);
@@ -48,11 +46,16 @@ router.get("/:id?", async (req, res) => {
 
 // Note : Tolong Jangan ubah imageList jadi imageList[] (unknown field)
 router.post("/:ident/:id?", upload.array("imageList[]"), async (req, res) => {
-  let sendedData;
+  let sendedData, listOfFiles = [], listOfDefaultImage = [], imageDatas = [], currentFileIndex = 0, currentDefaultImageIndex = 0
   try {
-    if (req.files) {
-      for(let file of req.files) req.body.imageList.push(file)
+    if (req.files) listOfFiles = req.files
+    listOfDefaultImage = req.body.imageList
+    for (let imageData of req.body.imageSub) {
+      let data = imageData.isAFile != "false" ? listOfFiles[currentFileIndex] : listOfDefaultImage[currentDefaultImageIndex]
+      imageData.isAFile != "false" ? currentFileIndex++ : currentDefaultImageIndex++
+      imageDatas.push({ data, ...imageData.subData })
     }
+    req.body.imageList = imageDatas
     if (req.body.pageId) req.body.pageId = +req.body.pageId;
     if (req.body.sectionOrder) req.body.sectionOrder = +req.body.sectionOrder;
     if (req.params.ident != "create") {

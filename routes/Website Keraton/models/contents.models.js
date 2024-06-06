@@ -28,38 +28,21 @@ const createUpdate = async (ident, id, data) => {
     try {
         if (ident != "create") await isExist(id).then(exist => { if (!exist) throw Error('Content ID didnt Exist') })
         if (textList) {
-            for (let textIndex = 0; textIndex < textList.length; textIndex++) {
-                context[`xs${textIndex + 1}`] = {
-                    data: textList[textIndex].data,
-                    textSize: textList[textIndex].textSize,
-                    sub: textList[textIndex].sub
-                }
-            }
-            delete data.textList
-            data.context = context
+            for (let textIndex = 0; textIndex < textList.length; textIndex++) context[`xs${textIndex + 1}`] = textList[textIndex]
+        }
+        if (linkList) {
+            for (let linkIndex = 0; linkIndex < linkList.length; linkIndex++) context[`xl${linkIndex + 1}`] = linkList[linkIndex]
         }
         if (imageList) {
             for (let imgIndex = 0; imgIndex < imageList.length; imgIndex++) {
-                console.log(imageList[imgIndex])
-                context[`xi${imgIndex + 1}`] = {
-                    data:  imageList[imgIndex]?.path ? convertFilesToURL(imageList[imgIndex].path) : imageList[imgIndex],
-                }
+                let imageData = imageList[imgIndex]
+                imageData.data = imageData.data?.path ? convertFilesToURL(imageData.data.path) : imageData.data
+                context[`xi${imgIndex + 1}`] = imageData
             }
-            delete data.imageList
-            data.context = context
-        }
-        if (linkList) {
-            for (let linkIndex = 0; linkIndex < linkList.length; linkIndex++) {
-                context[`xl${linkIndex + 1}`] = {
-                    data: linkList[linkIndex].data,
-                    sub: linkList[linkIndex].sub
-                }
-            }
-            delete data.linkList
-            data.context = context
         }
         let dataToReturn
-        if (ident != 'create') { dataToReturn = await prisma.contents.update({ where: { id }, data: { context } })
+        if (ident != 'create') {
+            dataToReturn = await prisma.contents.update({ where: { id }, data: { context } })
         } else dataToReturn = await prisma.contents.create({ data })
         return dataToReturn
     } catch (err) {
