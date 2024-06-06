@@ -14,6 +14,8 @@ const controlParam = require('../controller/params.controller')
 const controlObjekWisata = require('./objekWisata.controller')
 const controlEmail = require('../controller/email.controller')
 const controlQR = require('../controller/barcode.controller')
+const controlUser =  require('../controller/user.controller')
+
 router.use("/content", controlContent);
 router.use("/page", controlPage);
 router.use("/auth", controlAuth);
@@ -28,5 +30,6 @@ router.use("/subscribe", controlSubscribe);
 router.use("/iteration", controlIteration);
 router.use('/param', controlParam)
 router.use('/wisata', controlObjekWisata)
+router.use('/user', controlUser)
 
 module.exports = router;

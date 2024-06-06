@@ -55,6 +55,7 @@ model User {
   nationality   Nationality?  @relation(fields: [nationalityId], references: [id])
   nationalityId String?
   carts         Json?         @default("{}")
+  deleted       Boolean       @default(false)
   transaction   Transaction[]
   logs          Logs[]
   token         Token[]
