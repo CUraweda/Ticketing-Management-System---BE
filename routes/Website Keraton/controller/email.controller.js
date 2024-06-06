@@ -10,7 +10,7 @@ const { auth } = require("../middlewares/auth");
 const emailClass = new Email();
 
 function transformUrl(url) {
-  const relevantPart = url.replace(process.env.BASE_URL, "");
+  const relevantPart = url.replace("https://api-prmn.curaweda.com:3031", "");
   const transformedUrl = `public${relevantPart}`;
   return transformedUrl;
 }
@@ -82,13 +82,21 @@ router.get("/invoice/:id", auth([]), async (req, res) => {
       },
     });
     if (!transactionExist) throw Error("Transaction Didnt Exist");
+    if (!req.user.email) throw Error("User has no email");
+    console.log(req.user.email);
     const emailData = {
-      to: "rikanaap@gmail.com",
+      to: req.user.email,
       subject: "Invoice Transaksi Pesananan - Keraton Kasepuhan Cirebon",
       data: {
         email: transactionExist.user.email,
         name: transactionExist.user.name,
-        date: transactionExist.plannedDate.toLocaleDateString(),
+        date: new Intl.DateTimeFormat("id-ID", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        }).format(new Date(transactionExist.plannedDate)),
         nomor_invoice: transactionExist.id,
         method: transactionExist.method,
         qr_exist: false,

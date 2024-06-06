@@ -234,10 +234,8 @@ function generateRandomString(length) {
 }
 
 function convertFilesToURL(filePath) {
-  // Replace backslashes with forward slashes and remove the leading part of the path
   const urlPath = filePath.replace(/\\/g, "/").replace(/^public\//, "");
-  // Concatenate with the base URL
-  return `${process.env.BASE_URL}/${urlPath}`;
+  return `https://api-prmn.curaweda.com:3031/${urlPath}`;
 }
 
 function splitDate (dateTime) {
