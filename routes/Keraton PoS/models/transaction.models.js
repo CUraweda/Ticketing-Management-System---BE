@@ -185,18 +185,15 @@ const create = async (data) => {
     const order = data.order;
     delete data.order;
 
-    const transaction = await prisma.transaction
-      .create({
-        data: data,
-      })
-      .then(
-        await logsModel.logCreate(
-          `Membuat transaksi ${transaction.id} untuk pelanggan ${data.customer.name}`,
-          "Transaction",
-          "Success"
-        )
-      );
+    const transaction = await prisma.transaction.create({
+      data: data,
+    });
     createQr(transaction, "invoice");
+    await logsModel.logCreate(
+      `Membuat transaksi ${transaction.id} untuk pelanggan ${data.customer.name}`,
+      "Transaction",
+      "Success"
+    );
     await detailTransModel.create(order, transaction, data.customer);
     return transaction.id;
   } catch (err) {
