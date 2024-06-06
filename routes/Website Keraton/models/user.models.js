@@ -13,7 +13,7 @@ const getUser = async (email) => {
 
 const getAll = async () => {
   try {
-    return await prisma.user.findMany()
+    return await prisma.user.findMany({ where: { deleted: false } })
   } catch (err) {
     throwError(err)
   }
