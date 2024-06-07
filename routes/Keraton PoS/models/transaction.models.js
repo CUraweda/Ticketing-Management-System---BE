@@ -21,27 +21,27 @@ const getInvoice = async (search) => {
     const data = await prisma.transaction.findMany({
       where: search
         ? {
-            OR: [
-              {
-                user: {
-                  name: {
-                    contains: search,
-                  },
+          OR: [
+            {
+              user: {
+                name: {
+                  contains: search,
                 },
               },
-              {
-                detailTrans: {
-                  some: {
-                    order: {
-                      name: {
-                        contains: search,
-                      },
+            },
+            {
+              detailTrans: {
+                some: {
+                  order: {
+                    name: {
+                      contains: search,
                     },
                   },
                 },
               },
-            ],
-          }
+            },
+          ],
+        }
         : {},
       include: {
         user: true,
@@ -142,7 +142,7 @@ const updateTransData = async (
     let orderPrice = order.price * detailTrans.amount;
     const transTotal = parseFloat(
       transaction.total -=
-        (orderPrice -
+      (orderPrice -
         (orderPrice * formattedDiscount / 100))
     )
     console.log(transTotal)
@@ -203,19 +203,22 @@ const create = async (data) => {
   try {
     const order = data.order;
     delete data.order;
+    console.log(data)
+    const transaction = await prisma.transaction.create({ data })
 
-    const transaction = await prisma.transaction.create({
-      data: data,
-    });
-    await logsModel.logCreate(
-      `Membuat transaksi ${transaction.id} untuk pelanggan ${data.customer.name}`,
-      "Transaction",
-      "Success"
-    );
+    console.log('RIGHT HERE 2')
+    // await logsModel.logCreate(
+    //   `Membuat transaksi ${transaction.id} untuk pelanggan ${data.customer.name}`,
+    //   "Transaction",
+    //   "Success"
+    // );
+    console.log('RIGHT HERE 3')
     createQr(transaction, "invoice");
+    console.log('RIGHT HERE 4')
     await detailTransModel.create(order, transaction, data.customer);
     return transaction.id;
   } catch (err) {
+    console.log(err)
     await logsModel.logCreate(
       `Membuat transaksi untuk pelanggan ${data.customer.name}`,
       "Transaction",

@@ -85,7 +85,7 @@ const createNew = async (data) => {
         const plannedDate = new Date(createdTransacation.plannedDate);
         const expiredAt = new Date(plannedDate);
         expiredAt.setDate(expiredAt.getDate() + 1);
-        const barcode = await barcodeModel.create({
+        await barcodeModel.create({
             uniqueId: createdTransacation.id,
             possibleUses: tiketUses,
             expiredAt
