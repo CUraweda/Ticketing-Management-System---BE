@@ -1,6 +1,11 @@
 const { throwError } = require("../../utils/helper");
 const { prisma } = require("../../utils/prisma");
 
+const checkUserId = async () => {
+  const app = require("../../../app");
+  return app.locals.userId
+};
+
 const getAll = async (search, action) => {
   try {
     const conditions = [];
@@ -41,19 +46,19 @@ const getAll = async (search, action) => {
         user: true,
       },
       orderBy: {
-        createdDate: 'desc',
-      }
+        createdDate: "desc",
+      },
     });
   } catch (err) {
     throwError(err);
   }
 };
 const logCreate = async (activity, changedAt, status) => {
-  const app = require("../../../app");
+  const userId = await checkUserId();
   try {
     return await prisma.logs.create({
       data: {
-        userId: app.locals.userId,
+        userId,
         action: "CREATE",
         activity: activity,
         changedAt: changedAt,
@@ -65,11 +70,11 @@ const logCreate = async (activity, changedAt, status) => {
   }
 };
 const logUpdate = async (activity, changedAt, status) => {
-  const app = require("../../../app");
+    const userId = await checkUserId();
   try {
     return await prisma.logs.create({
       data: {
-        userId: app.locals.userId,
+        userId,
         action: "UPDATE",
         activity: activity,
         changedAt: changedAt,
@@ -81,11 +86,11 @@ const logUpdate = async (activity, changedAt, status) => {
   }
 };
 const logDelete = async (activity, changedAt, status) => {
-  const app = require("../../../app");
+    const userId = await checkUserId();
   try {
     return await prisma.logs.create({
       data: {
-        userId: app.locals.userId,
+        userId,
         action: "DELETE",
         activity: activity,
         changedAt: changedAt,

@@ -4,7 +4,9 @@ const logsModel = require("./logs.models");
 
 const getFromOrderId = async (id) => {
   try {
-    return await prisma.detailTrans.findMany({ where: { orderId: id } });
+    return await prisma.detailTrans.findMany({
+      where: { orderId: id },
+    });
   } catch (err) {
     throwError(err);
   }
@@ -21,19 +23,9 @@ const getTableData = async (category) => {
             },
           }
         : {},
-      select: {
-        amount: true,
-        transaction: {
-          select: { createdDate: true },
-        },
-        order: {
-          select: {
-            id: true,
-            name: true,
-            category: { select: { name: true } },
-            price: true,
-          },
-        },
+      include: {
+        transaction: true,
+        order: { include: { category: true } },
       },
     });
 
@@ -43,10 +35,7 @@ const getTableData = async (category) => {
       total_price: detailTrans.amount * detailTrans.order.price,
     }));
     finalDetailTrans.sort((a, b) => {
-      return (
-        new Date(b.transaction.createdDate) -
-        new Date(a.transaction.createdDate)
-      );
+      return new Date(b.createdDate) - new Date(a.createdDate);
     });
     return finalDetailTrans;
   } catch (err) {
@@ -116,20 +105,10 @@ const create = async (order, transaction, customer) => {
     throwError(err);
   }
 };
-const deleteDetailTrans = async (id) => {
-  try {
-    const data = await prisma.detailTrans.findMany({ where: { id: id } });
-    await prisma.detailTrans.deleteMany({ where: { id: id } });
-    return data;
-  } catch (err) {
-    throwError(err);
-  }
-};
 
 module.exports = {
   getFromOrderId,
   getTableData,
   getUnavailableGuide,
   create,
-  deleteDetailTrans,
 };
