@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 
 const getUser = async (email) => {
   try {
-    return await prisma.user.findFirst({ where: { email: email } });
+    return await prisma.user.findFirst({ where: { email } });
   } catch (err) {
     throwError(err);
   }
@@ -21,9 +21,8 @@ const getAll = async () => {
 
 const isExist = async (id) => {
   try {
-    return await prisma.user.findFirst({
-      where: { id: id },
-    });
+    id = id?.id ? id.id : id
+    return await prisma.user.findFirst({ where: { id }});
   } catch (err) {
     throwError(err);
   }
@@ -38,7 +37,7 @@ const logIn = async (body) => {
     if (!match) throw new Error("Password tidak sesuai");
 
     const token = jwt.sign(user, process.env.SECRET_KEY_AUTH);
-    const tokens = await prisma.token.create({ data: { token, userId: user.id } })
+    await prisma.token.create({ data: { token, userId: user.id } })
     delete user.password
     delete user.id
     return { token, user };
@@ -102,7 +101,7 @@ const create = async (data) => {
 }
 
 const logOUt = async (token) => {
-  try {
+try {
     const isExist = await prisma.token.findFirst({ where: { token } })
     if (!isExist) throw Error('Token didnt exist in db')
     return await prisma.token.delete({ where: { id: isExist.id } })

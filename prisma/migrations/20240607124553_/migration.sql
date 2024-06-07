@@ -217,6 +217,7 @@ CREATE TABLE `Subscriber` (
     `email` VARCHAR(191) NOT NULL,
     `stillSubcribe` BOOLEAN NOT NULL DEFAULT true,
 
+    UNIQUE INDEX `Subscriber_email_key`(`email`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 

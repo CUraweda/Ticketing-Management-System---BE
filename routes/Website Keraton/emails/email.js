@@ -33,6 +33,7 @@ class Emails {
         return this
     }
     setTo(val) {
+        if (Array.isArray(val)) val = val.join(',')
         this.mailOptions['to'] = val
         return this
     }
@@ -51,11 +52,11 @@ class Emails {
             console.log(err)
         }
     }
-    async renderEmail(variables) {
-        const html = await this.emailTemplate.render('invoice', variables);
+    async renderEmail(templateName, variables) {
+        const html = await this.emailTemplate.render(templateName, variables);
         return html;
     }
-    async sendEmailTemplate(variables, imageAttachment = []) {
+    async sendEmailTemplate(templateName, variables, imageAttachment = []) {
         let attachments = []
         try {
             for (let imageIndex in imageAttachment) {
@@ -67,12 +68,12 @@ class Emails {
                     cid: imageIndex, // Referenced in the HTML template
                 })
             }
-            const html = await this.renderEmail(variables)
+            const html = await this.renderEmail(templateName, variables)
             await this.email.sendMail({
                 ...this.mailOptions,
                 html: html,
                 attachments
-        })
+            })
         } catch (error) {
             console.log(error);
         }

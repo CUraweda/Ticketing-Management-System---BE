@@ -17,8 +17,9 @@ const getAll = async (query = { type, subType }) => {
             where: {
                 orderSubType: {
                     ...(subType != undefined && { id: +subType }),
-                    ...(type != undefined && { typeId: +type })
-                }
+                    ...(type != undefined && { typeId: +type }),
+                },
+                deleted: false
             },
             include: { orderSubType: true, category: true }
         })
@@ -30,7 +31,7 @@ const getAll = async (query = { type, subType }) => {
 const getRelatedObjekWisata = async (identifier) => {
     try {
         return await prisma.order.findMany({
-            where: { wisataRelation: { contains: identifier } },
+            where: { wisataRelation: { contains: identifier }, deleted: false },
             orderBy: { orderSubTypeId: 'asc' }
         })
     } catch (err) {
@@ -41,7 +42,7 @@ const getRelatedObjekWisata = async (identifier) => {
 const getOne = async (id) => {
     try {
         return await prisma.order.findFirstOrThrow({
-            where: { id }
+            where: { id, deleted: false }
         })
     } catch (err) {
         throwError(err)
@@ -49,7 +50,7 @@ const getOne = async (id) => {
 }
 
 const createUpdate = async (ident, data = { id, name, desc, unit, price, image, orderSubTypeId, categoryId }) => {
-    try {        
+    try {
         if (data.categoryId) {
             data.category = {
                 connect: { id: data.categoryId }
@@ -63,7 +64,7 @@ const createUpdate = async (ident, data = { id, name, desc, unit, price, image, 
             delete data.subTypeId
             delete data.orderSubTypeId
         }
-        if(data.id && ident != 'update') delete data.id
+        if (data.id && ident != 'update') delete data.id
         return ident != 'update' ? await prisma.order.create({ data }) : await prisma.order.update({ where: { id: data.id }, data })
     } catch (err) {
         throwError(err)
@@ -72,7 +73,7 @@ const createUpdate = async (ident, data = { id, name, desc, unit, price, image, 
 
 const deleteData = async (id) => {
     try {
-        return await prisma.order.delete({ where: { id } })
+        return await prisma.order.update({ where: { id }, data: { deleted: true } })
     } catch (err) {
         throwError(err)
     }

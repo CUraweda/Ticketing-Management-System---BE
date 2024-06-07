@@ -221,7 +221,7 @@ model News {
 
 model Subscriber {
   id            Int     @id @default(autoincrement())
-  email         String
+  email         String @unique
   stillSubcribe Boolean @default(true)
 }
 
