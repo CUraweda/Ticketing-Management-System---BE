@@ -16,11 +16,10 @@ router.get("/", auth(['SUPER_ADMIN', 'ADMIN']), async (req, res) => {
 })
 
 router.post("/:id?", auth(['SUPER_ADMIN']), async (req, res) => {
-    const { id } = req.params
     let updatedUser
     try {
-        if (id) {
-            const userExist = await userModel.isExist(id)
+        if (req.params.id) {
+            const userExist = await userModel.isExist(req.params.id)
             if (!userExist) throw Error('User didnt exist')
             updatedUser = await userModel.update(userExist.id, req.body)
         } else updatedUser = await userModel.create(req.body)

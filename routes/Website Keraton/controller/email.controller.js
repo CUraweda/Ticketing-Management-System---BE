@@ -7,7 +7,10 @@ const { userInfo } = require("os");
 const { splitDate } = require("../../utils/helper");
 const { prisma } = require("../../utils/prisma");
 const { auth } = require("../middlewares/auth");
+const { route } = require("./contents.controller");
 const emailClass = new Email();
+const orderModel = require("../models/order.models");
+const eventModel = require("../models/events.models");
 
 function transformUrl(url) {
   const relevantPart = url.replace("https://api-prmn.curaweda.com:3031", "");
@@ -71,6 +74,21 @@ router.get("/render", async (req, res) => {
   }
 });
 
+router.get("/render/subscription", async (req, res) => {
+  try {
+    res.render(
+      path.resolve("routes/Website Keraton/emails/templates/subscription"),
+      {
+        title: "Title Here",
+        desc: "Description Here",
+        link: "http://localhost:9000/",
+      }
+    );
+  } catch (err) {
+    return error(res, err.message);
+  }
+});
+
 router.get("/invoice/:id", auth([]), async (req, res) => {
   try {
     const transactionExist = await prisma.transaction.findFirstOrThrow({
@@ -83,7 +101,6 @@ router.get("/invoice/:id", auth([]), async (req, res) => {
     });
     if (!transactionExist) throw Error("Transaction Didnt Exist");
     if (!req.user.email) throw Error("User has no email");
-    console.log(req.user.email);
     const emailData = {
       to: req.user.email,
       subject: "Invoice Transaksi Pesananan - Keraton Kasepuhan Cirebon",
@@ -149,7 +166,7 @@ router.get("/invoice/:id", auth([]), async (req, res) => {
           emailData.subject
         );
         await emailClass
-          .sendEmailTemplate(emailData.data, emailData.attachment)
+          .sendEmailTemplate("invoice", emailData.data, emailData.attachment)
           .then(() => {
             console.log("Email berhasil terkirim");
           });
@@ -163,5 +180,52 @@ router.get("/invoice/:id", auth([]), async (req, res) => {
     return error(res, err.message);
   }
 });
+
+router.post(
+  "/subscription/promote",
+  auth(["SUPER_ADMIN", "ADMIN"]),
+  async (req, res) => {
+    const { identifier, id, sendTo, promoteLink } = req.body;
+    try {
+      const dataReference =
+        identifier != "event"
+          ? await orderModel.getOne(id)
+          : await eventModel.getOne(+id);
+      if (!dataReference) throw Error("Sorry ID didnt Exist");
+      let emailData = {
+        to: sendTo.join(","),
+        subject: "Penawaran - Keraton Kasepuhan Cirebon",
+        data: {
+          title: dataReference.name,
+          desc: dataReference.desc,
+          link: promoteLink,
+        },
+        attachment: [
+          "public/assets/email/logo.png",
+          transformUrl(dataReference.image),
+        ],
+      };
+      setImmediate(async () => {
+        const emailClass = new Email(
+          process.env.EMAIL_FROM,
+          emailData.to,
+          emailData.subject
+        );
+        await emailClass
+          .sendEmailTemplate(
+            "subscription",
+            emailData.data,
+            emailData.attachment
+          )
+          .then(() => {
+            console.log("Email berhasil terkirim");
+          });
+      });
+      return success(res, "Email Request is sended, please wait...");
+    } catch (err) {
+      return error(res, err.message);
+    }
+  }
+);
 
 module.exports = router;

@@ -37,6 +37,7 @@ const createUpdate = async (ident, id, data) => {
             for (let imgIndex = 0; imgIndex < imageList.length; imgIndex++) {
                 let imageData = imageList[imgIndex]
                 imageData.data = imageData.data?.path ? convertFilesToURL(imageData.data.path) : imageData.data
+                console.log(imageData.data)
                 context[`xi${imgIndex + 1}`] = imageData
             }
         }

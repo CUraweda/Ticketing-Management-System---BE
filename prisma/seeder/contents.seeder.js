@@ -67,7 +67,7 @@ const contents = [
                 data: `${process.env.BASE_URL}/assets/dashboard/section-4c.png`
             },
             xl1: {
-                data: "#/sejarah"
+                data: "/sejarah"
             }
         }
     },
@@ -95,7 +95,7 @@ const contents = [
                 sub: "Siraman Panjat Jimat"
             },
             xl1: {
-                data: "#/eventgratis"
+                data: "/booking/event"
             }
         }
     },
@@ -111,7 +111,7 @@ const contents = [
                 data: "Mari mengenal budaya kasepuhan Cirebon. Bersama kita lestarikan dan apresiasikan beragam budaya dan tradisi Indonesia dengan mengunjungi Keraton Kasepuhan Cirebon."
             },
             xl1: {
-                data: "#/areakeraton"
+                data: "/wisata/keraton"
             }
         }
     },
@@ -125,14 +125,16 @@ const contents = [
             },
             xs2: {
                 data: "Bagaimana cara saya memesan tiket melalui website?",
-                sub: "Anda bisa pergi ke halaman tiket dan mulai memilih pilihan tiket yang anda inginkan"
-
+                sub: "Anda bisa pergi ke halaman tiket dan mulai memilih pilihan tiket yang Anda inginkan."
             },
             xs3: {
-                data: "Bagaimana saya ?",
-                sub: "Anda tidak bisa memesan lonte melalui website kami"
-
-            }
+                data: "Apa jam operasional Keraton Kasepuhan Cirebon?",
+                sub: "Keraton Kasepuhan Cirebon buka setiap hari dari pukul 08:00 hingga 17:00."
+            },
+            xs4: {
+                data: "Apakah tersedia tur pemandu di Keraton Kasepuhan Cirebon?",
+                sub: "Ya, tersedia tur pemandu yang dapat Anda pesan untuk mendapatkan pengalaman yang lebih mendalam tentang sejarah dan budaya Keraton."
+            },
         }
     }
 ]

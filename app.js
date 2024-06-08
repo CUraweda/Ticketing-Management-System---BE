@@ -54,6 +54,14 @@ io.on("connection", async (socket) => {
     console.log("Dashboard called");
     io.emit("dashboard");
   });
+  socket.on("event", () => {
+    console.log('New Event Entry')
+    io.emit('event')
+    })
+    socket.on("tiket", () => {
+    console.log('New Tiket Entry')
+    io.emit('tiket')
+  })
   socket.on("disconnect", () => {
     console.log("User disconnected");
   });

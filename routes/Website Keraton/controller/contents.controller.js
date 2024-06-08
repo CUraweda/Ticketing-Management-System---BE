@@ -48,14 +48,16 @@ router.get("/:id?", async (req, res) => {
 router.post("/:ident/:id?", upload.array("imageList[]"), async (req, res) => {
   let sendedData, listOfFiles = [], listOfDefaultImage = [], imageDatas = [], currentFileIndex = 0, currentDefaultImageIndex = 0
   try {
-    if (req.files) listOfFiles = req.files
-    listOfDefaultImage = req.body.imageList
-    for (let imageData of req.body.imageSub) {
-      let data = imageData.isAFile != "false" ? listOfFiles[currentFileIndex] : listOfDefaultImage[currentDefaultImageIndex]
-      imageData.isAFile != "false" ? currentFileIndex++ : currentDefaultImageIndex++
-      imageDatas.push({ data, ...imageData.subData })
+    if(req.body.imageList){
+      if (req.files) listOfFiles = req.files
+      listOfDefaultImage = req.body.imageList
+      for (let imageData of req.body.imageSub) {
+        let data = imageData.isAFile != "false" ? listOfFiles[currentFileIndex] : listOfDefaultImage[currentDefaultImageIndex]
+        imageData.isAFile != "false" ? currentFileIndex++ : currentDefaultImageIndex++
+        imageDatas.push({ data, ...imageData.subData })
+      }
+      req.body.imageList = imageDatas
     }
-    req.body.imageList = imageDatas
     if (req.body.pageId) req.body.pageId = +req.body.pageId;
     if (req.body.sectionOrder) req.body.sectionOrder = +req.body.sectionOrder;
     if (req.params.ident != "create") {

@@ -4,17 +4,17 @@ const { prisma } = require("../../routes/utils/prisma")
 const objekWisata = [
     {
         label: "Baluarti Keraton",
-        to: "wisata/keraton",
+        to: "/wisata/keraton",
         orderIdentifier: "keraton"
     },
     {
         label: "Museum Pusaka",
-        to: "wisata/museum",
+        to: "/wisata/museum",
         orderIdentifier: "museum"
     },
     {
         label: "Dalem Agung Pangkuwati",
-        to: "wisata/museum",
+        to: "/wisata/museum",
         orderIdentifier: "dalemAgung"
     },
 ]

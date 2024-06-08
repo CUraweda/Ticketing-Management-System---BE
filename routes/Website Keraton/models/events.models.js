@@ -14,11 +14,11 @@ const isExist = async (id) => {
 const getAll = async (query) => {
     let { iterat, free } = query
     try {
-        console.log(free)
         return await prisma.events.findMany({
             where: {
                 ...(iterat && { iterationId: { in: iterat } }),
-                ...(free != undefined && { isFree: free })
+                ...(free != undefined && { isFree: free }),
+                deleted: false
             },
             include: { iteration: true }
         })
@@ -30,7 +30,7 @@ const getAll = async (query) => {
 const getOne = async (id) => {
     try {
         return await prisma.events.findFirstOrThrow({
-            where: { id }
+            where: { id, deleted: false}
         })
     } catch (err) {
         throwError(err)
@@ -68,7 +68,7 @@ const update = async (id, data) => {
 
 const deleteData = async (id) => {
     try{
-        return await prisma.events.delete({ where: { id } })
+        return await prisma.events.update({ where: { id }, data: { deleted: true } })
     }catch(err){
         throwError(err)
     }
