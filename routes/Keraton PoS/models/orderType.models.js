@@ -5,14 +5,16 @@ const logsModel = require("./logs.models");
 
 const isExist = async (id) => {
   try {
-    return await prisma.orderType.findFirst({ where: { id: id } });
+    return await prisma.orderType.findFirst({
+      where: { id: id, disabled: false },
+    });
   } catch (err) {
     throwError(err);
   }
 };
 const getAll = async () => {
   try {
-    return await prisma.orderType.findMany();
+    return await prisma.orderType.findMany({ where: { disabled: false } });
   } catch (err) {
     throwError(err);
   }
@@ -63,13 +65,14 @@ const deleteOrderType = async (id) => {
   try {
     const orderType = await isExist(id);
     if (!orderType) throw Error("ID Order Type tidak ditemukan");
-    const orderSubTypes = await prisma.orderSubType.findMany({ where: { orderTypeId: id } });
-
+    const orderSubTypes = await prisma.orderSubType.findMany({
+      where: { orderTypeId: id },
+    });
     for (const subType of orderSubTypes) {
-      await orderSubTypeModels.deleteOrderSubType(subType.id);
+      if (!subType.disabled) await orderSubTypeModels.deleteOrderSubType(subType.id);
     }
     return await prisma.orderType
-      .delete({ where: { id } })
+      .update({ where: { id }, data: { disabled: true } })
       .then(
         await logsModel.logDelete(
           `Menghapus tipe pesanan ${orderType.name}`,

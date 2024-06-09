@@ -16,11 +16,20 @@ const isExist = async (id) => {
 
 const getAll = async (userId, args) => {
     const { s, d, stat } = args
+    console.log(args)
      try{
         return await prisma.transaction.findMany({ ...(userId && {
             where: { userId, 
+                ...(s && { detailTrans: {
+                    some: {
+                        OR: [
+                            { order: { name: { contains: s } } },
+                            { event: { name: { contains: s } } },
+                        ]
+                    }
+                } }),
                 ...(d && { plannedDate: d }),
-                ...(stat && { method: stat })
+                ...(stat && { status: stat })
              }
         }), include: { detailTrans: { include: { order: true, event: true } }, BarcodeUsage: true }, orderBy: { createdDate: 'desc' }})
     }catch(err){

@@ -1,18 +1,23 @@
 const { throwError } = require("../../utils/helper");
 const { prisma } = require("../../utils/prisma");
-const orderRelationModel = require("./orderRelation.models");
+const orderModel = require("./order.models");
 const logsModel = require("./logs.models");
 
 const isExist = async (id) => {
   try {
-    return await prisma.orderSubType.findFirst({ where: { id: id } });
+    return await prisma.orderSubType.findFirst({
+      where: { id: id, disabled: false },
+    });
   } catch (err) {
     throwError(err);
   }
 };
 const getAll = async () => {
   try {
-    return await prisma.orderSubType.findMany({ include: { orderType: true } });
+    return await prisma.orderSubType.findMany({
+      where: { disabled: false },
+      include: { orderType: true },
+    });
   } catch (err) {
     throwError(err);
   }
@@ -20,7 +25,7 @@ const getAll = async () => {
 const getRelated = async (id) => {
   try {
     return await prisma.orderSubType.findMany({
-      where: { orderTypeId: id },
+      where: { orderTypeId: id, disabled: false },
       include: { orderType: true },
     });
   } catch (err) {
@@ -74,13 +79,13 @@ const deleteOrderSubType = async (id) => {
     const orderSubType = await isExist(id);
     if (!orderSubType) throw Error("ID Order Sub Type tidak ditemukan");
     const orders = await prisma.order.findMany({
-      where: { orderSubTypeId: id },
+      where: { orderSubTypeId: id, disabled: false },
     });
     for (const order of orders) {
-      await orderRelationModel.deleteOrder(order.id);
+      if (!order.disabled) await orderModel.deleteOrder(order.id);
     }
     return await prisma.orderSubType
-      .delete({ where: { id } })
+      .update({ where: { id }, data: { disabled: true } })
       .then(
         await logsModel.logDelete(
           `Menghapus sub-tipe pesanan ${orderSubType.name}`,

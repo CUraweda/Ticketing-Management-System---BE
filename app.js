@@ -3,7 +3,6 @@ var cors = require("cors");
 var cookieParser = require("cookie-parser");
 var bodyParser = require("body-parser");
 var http = require("http");
-var logger = require("morgan");
 const path = require("path");
 
 const keratonWebsiteRouter = require("./routes/Website Keraton/controller/index");
@@ -13,6 +12,9 @@ const { success } = require("./routes/utils/response");
 
 var app = express();
 var port = normalizePort(process.env.PORT || "3000");
+
+app.set('views', path.join(__dirname, 'routes', 'Keraton PoS', 'views'));
+app.set('view engine', 'ejs');
 
 //? INITIALIZE DEVELOPMENT SERVER
 const server = http.createServer(app);
@@ -72,7 +74,6 @@ app.set('view engine', 'ejs')
 
 //? COMMON MIDDLEWARES
 app.use(express.json());
-app.use(logger("dev"));
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -103,17 +104,12 @@ server.listen(port, (err) => {
 
 function normalizePort(val) {
   var port = parseInt(val, 10);
-
   if (isNaN(port)) {
-    // named pipe
     return val;
   }
-
   if (port >= 0) {
-    // port number
     return port;
   }
-
   return false;
 }
 

@@ -22,6 +22,7 @@ const nameExist = async (name) => {
 const getAll = async () => {
     try {
         return await prisma.orderSubType.findMany({
+            // where: { },
             include: { orders: true } // Include the orders relation
         });
     } catch (err) {

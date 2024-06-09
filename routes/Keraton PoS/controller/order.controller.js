@@ -2,7 +2,6 @@ const { expressRouter } = require("../../utils/router");
 const { error, success } = require("../../utils/response");
 const { upload } = require("../../utils/helper");
 const orderModel = require("../models/order.models");
-const orderRelationModel = require("../models/orderRelation.models");
 
 expressRouter.get("/order-details/:id?", async (req, res) => {
   try {
@@ -37,7 +36,7 @@ expressRouter.post(
           await orderModel.update(req.params.id, req.body);
           return success(res, "Update pesanan berhasil!");
         case "delete":
-          await orderRelationModel.deleteOrder(req.params.id);
+          await orderModel.deleteOrder(req.params.id);
           return success(res, "Penghapusan pesanan berhasil!");
         default:
           throw new Error(`Aksi ${action} tidak ditemukan`);

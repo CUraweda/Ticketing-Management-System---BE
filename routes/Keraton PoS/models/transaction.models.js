@@ -1,6 +1,8 @@
 require("dotenv").config();
 const ejs = require("ejs");
+const nodemailer = require("nodemailer");
 const html_to_pdf = require("html-pdf-node");
+const puppeteer = require("puppeteer");
 const fs = require("fs");
 const path = require("path");
 const {
@@ -10,11 +12,22 @@ const {
   searchQr,
   createQr,
   splitDate,
+  formatCurrency,
 } = require("../../utils/helper");
 const { prisma } = require("../../utils/prisma");
 const logsModel = require("./logs.models");
 const detailTransModel = require("./detailTrans.models");
-const BASE_URL = 'https://api-prmn.curaweda.com:3031';
+const BASE_URL = process.env.BASE_URL;
+const EMAIL = process.env.EMAIL;
+const PASSWORD = process.env.PASSWORD;
+
+let lastSentTime = 0;
+const SEND_INTERVAL = 15000;
+
+const emailTicketPath = path.join(__dirname, "../views/email_ticket.ejs");
+const emailInvoicePath = path.join(__dirname, "../views/email_invoice.ejs");
+const assetsPath = path.join(__dirname, "../../../public/assets/email");
+const qrPath = path.join(__dirname, "../../../public/qrcodes/");
 
 const getInvoice = async (search) => {
   try {
@@ -76,21 +89,25 @@ const getInvoice = async (search) => {
 };
 const getOne = async (id) => {
   try {
-    return await prisma.transaction.findFirst({ where: { id: id } });
+    return await prisma.transaction.findFirst({
+      where: { id: id },
+    });
   } catch (err) {
     throwError(err);
   }
 };
 const getAll = async (id) => {
   try {
-    return await prisma.transaction.findMany({ where: { id: id } });
+    return await prisma.transaction.findMany({
+      where: { id: id },
+    });
   } catch (err) {
     throwError(err);
   }
 };
 const getTickets = async (id) => {
   try {
-    const data = await prisma.transaction.findUnique({
+    const transaction = await prisma.transaction.findUnique({
       where: { id: id },
       include: {
         user: true,
@@ -102,9 +119,11 @@ const getTickets = async (id) => {
         },
       },
     });
-    const finalData = {
-      ...data,
-      detailTrans: data.detailTrans.map((detail) => {
+    const qr = searchQr(transaction, "invoice");
+    const data = {
+      ...transaction,
+      qr,
+      detailTrans: transaction.detailTrans.map((detail) => {
         const qr = searchQr(detail, "ticket");
         return {
           ...detail,
@@ -112,7 +131,7 @@ const getTickets = async (id) => {
         };
       }),
     };
-    return finalData;
+    return data;
   } catch (err) {
     throwError(err);
   }
@@ -127,44 +146,6 @@ const getRevenue = async () => {
     );
     return total;
   } catch (err) {
-    throwError(err);
-  }
-};
-const updateTransData = async (
-  transaction = [],
-  order = [],
-  detailTrans = []
-) => {
-  try {
-    const formattedDiscount = parseInt(
-      transaction.discount.split("|")[1].trim().replace("%", "")
-    );
-    let orderPrice = order.price * detailTrans.amount;
-    const transTotal = parseFloat(
-      transaction.total -=
-      (orderPrice -
-        (orderPrice * formattedDiscount / 100))
-    )
-    console.log(transTotal)
-    console.log((orderPrice * formattedDiscount / 100))
-    const data = await prisma.transaction.update({
-      where: { id: transaction.id },
-      data: {
-        total: transTotal
-      },
-    });
-    await logsModel.logUpdate(
-      `Mengubah total transaksi ${transaction.id}`,
-      "Transaction",
-      "Success"
-    );
-    return data;
-  } catch (err) {
-    await logsModel.logUpdate(
-      `Mengubah total transaksi ${transaction.id}`,
-      "Transaction",
-      "Failed"
-    );
     throwError(err);
   }
 };
@@ -203,18 +184,16 @@ const create = async (data) => {
   try {
     const order = data.order;
     delete data.order;
-    console.log(data)
-    const transaction = await prisma.transaction.create({ data })
 
-    console.log('RIGHT HERE 2')
-    // await logsModel.logCreate(
-    //   `Membuat transaksi ${transaction.id} untuk pelanggan ${data.customer.name}`,
-    //   "Transaction",
-    //   "Success"
-    // );
-    console.log('RIGHT HERE 3')
+    const transaction = await prisma.transaction.create({
+      data: data,
+    });
     createQr(transaction, "invoice");
-    console.log('RIGHT HERE 4')
+    await logsModel.logCreate(
+      `Membuat transaksi ${transaction.id} untuk pelanggan ${data.customer.name}`,
+      "Transaction",
+      "Success"
+    );
     await detailTransModel.create(order, transaction, data.customer);
     return transaction.id;
   } catch (err) {
@@ -325,7 +304,174 @@ const printTransaction = async (data) => {
     throwError(err);
   }
 };
+const sendEmailToUser = async (data) => {
+  const currentTime = Date.now();
+  if (currentTime - lastSentTime < SEND_INTERVAL) {
+    return res
+      .status(429)
+      .json({ msg: "Tunggu beberapa detik sebelum mengirim lagi" });
+  }
+  if (!data.customer.email) {
+    return throwError("Email tidak ditemukan!");
+  }
+  const config = {
+    service: "gmail",
+    auth: {
+      user: EMAIL,
+      pass: PASSWORD,
+    },
+    tls: {
+      rejectUnauthorized: false,
+    },
+  };
+  const transporter = nodemailer.createTransport(config);
 
+  try {
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      timeout: 60000,
+    });
+
+    // Path
+    const decorBg = fs.readFileSync(`${assetsPath}/bg-decor.png`, {
+      encoding: "base64",
+    });
+    const ticketBg = fs.readFileSync(`${assetsPath}/bg-keraton.png`, {
+      encoding: "base64",
+    });
+    const logoKKC = fs.readFileSync(`${assetsPath}/logo.svg`, {
+      encoding: "base64",
+    });
+
+    const [reserveDate, reserveTime] = splitDate(data.plannedDate);
+    const [createdDate, createdTime] = splitDate(data.createdDate);
+
+    const pdfBuffers = await Promise.all(
+      data.detailTrans.map(async (tickets, index) => {
+        const qrArray = Object.values(tickets.qr);
+
+        const ticketQR = await Promise.all(
+          qrArray.map(async (qr) => {
+            const formattedQrPath = qr.replace("./public/qrcodes/", "");
+            const qrPathFull = path.join(qrPath, formattedQrPath);
+            const qrBase64 = fs.readFileSync(qrPathFull, {
+              encoding: "base64",
+            });
+            return `data:image/png;base64,${qrBase64}`;
+          })
+        );
+
+        const htmlTicket = await ejs.renderFile(emailTicketPath, {
+          title: `Tiket ${data.customer.name} ${createdDate}_${index + 1}`,
+          logoKKC: `data:image/svg+xml;base64,${logoKKC}`,
+          ticketBg: `data:image/png;base64,${ticketBg}`,
+          decorBg: `data:image/png;base64,${decorBg}`,
+          tickets: [tickets],
+          ticketQR,
+        });
+
+        const options = {
+          width: "870px",
+          height: "320px",
+          margin: {
+            top: "1px",
+            left: "1px",
+          },
+          args: ["--no-sandbox", "--disable-setuid-sandbox"],
+          printBackground: true,
+        };
+
+        // Mengelompokkan generatePdf() ke dalam promise baru
+        const pdfBuffer = await new Promise((resolve, reject) => {
+          html_to_pdf
+            .generatePdf({ content: htmlTicket }, options)
+            .then((result) => resolve(result))
+            .catch((err) => reject(err));
+        });
+
+        return {
+          buffer: pdfBuffer,
+          ticketName: tickets.order.name || `Tiket_${index + 1}`,
+        };
+      })
+    );
+
+    const InvoiceQRPath = data.qr[0].replace("./public/qrcodes/", "");
+    const InvoiceQRPathFull = path.join(qrPath, InvoiceQRPath);
+    const invoiceQR = fs.readFileSync(InvoiceQRPathFull, {
+      encoding: "base64",
+    });
+    // Render HTML untuk invoice dan ambil screenshot
+    data.additionalFee = formatCurrency(data.additionalFee);
+    data.total = formatCurrency(data.total);
+    const discountAmount = parseInt(
+      data.discount.split("|")[1].trim().replace("%", "")
+    );
+
+    const invoiceTickets = data.detailTrans.map((item) => {
+      const price = formatCurrency(item.order.price);
+      const amount = formatCurrency(item.amount);
+      const orderDiscount = formatCurrency(
+        (item.order.price * item.amount * discountAmount) / 100
+      );
+      const discount = `Rp. ${orderDiscount},00 (${discountAmount}%)`;
+      const totalPrice = formatCurrency(item.amount * item.order.price);
+
+      return {
+        ...item,
+        price,
+        amount,
+        discountAmount,
+        discount,
+        totalPrice,
+      };
+    });
+    const htmlInvoice = await ejs.renderFile(emailInvoicePath, {
+      title: `Invoice ${data.customer.name} ${createdDate}`,
+      logoKKC: `data:image/svg+xml;base64,${logoKKC}`,
+      invoice: data,
+      cashier: data.user,
+      customer: data.customer,
+      invoiceQR: `data:image/png;base64,${invoiceQR}`,
+      reserveDate,
+      reserveTime,
+      tickets: invoiceTickets,
+    });
+    const page = await browser.newPage();
+    await page.setContent(htmlInvoice, {
+      waitUntil: "networkidle0",
+      timeout: 60000,
+    });
+    const invoiceImageBuffer = await page.screenshot({ type: "jpeg" });
+
+    await browser.close();
+    const attachments = pdfBuffers.map(({ buffer, ticketName }, index) => ({
+      filename: `${ticketName}.pdf`,
+      content: buffer,
+      contentType: "application/pdf",
+    }));
+    attachments.push({
+      filename: "invoice.jpg",
+      content: invoiceImageBuffer,
+      contentType: "image/jpeg",
+      cid: "invoiceImage",
+    });
+
+    const message = {
+      from: EMAIL,
+      to: data.customer.email,
+      subject: `Bukti Pembelian KKC ${data.customer.name} ${createdDate}`,
+      html: `<p>Dear ${data.customer.name},</p><p>Thank you for your reservation.</p><img src="cid:invoiceImage" />`,
+      attachments: attachments,
+    };
+
+    await transporter.sendMail(message);
+    lastSentTime = currentTime;
+  } catch (err) {
+    throwError(err);
+  }
+};
 module.exports = {
   getInvoice,
   getAll,
@@ -334,7 +480,7 @@ module.exports = {
   getRevenue,
   getYear,
   getMonth,
-  updateTransData,
   create,
   printTransaction,
+  sendEmailToUser,
 };
