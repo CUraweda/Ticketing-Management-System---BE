@@ -133,7 +133,10 @@
       }
 
       .w-34 {
-        width: 75%;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 0 1rem;
       }
 
       .text-xl {
@@ -235,27 +238,6 @@
         color: #2d3748;
       }
 
-      /* Wadah dropdown */
-      .dropdown {
-        position: relative;
-        width: 100%;
-        display: inline-block;
-      }
-
-      /* Konten dropdown (yang akan muncul saat tombol diklik) */
-      .dropdown-content {
-        display: none;
-        position: relative;
-        width: 100%;
-        /* box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2); */
-        z-index: 1;
-      }
-
-      /* Gaya untuk gambar di dalam dropdown */
-      .dropdown-content .dropdown-img {
-        width: 100%;
-      }
-
       #arrow {
         margin-left: 10px;
         transition: transform 0.3s;
@@ -273,46 +255,40 @@
         </div>
       </header>
       <main style="width: 100%">
-        <div class="dropdown">
-          <button class="dropbtn" onclick="toggleDropdown()">
-            Show QR<span id="arrow">&#9650;</span>
-          </button>
-          <div class="dropdown-content" id="dropdown-content">
-            <img src="cid:1" alt="Embedded Image" height="300px" />
-            <!-- <img src="/public/assets/email/logo.svg" height="300px" width="100%"> -->
-          </div>
-        </div>
         <div class="flex gap-2">
           <section class="w-34">
-            <h2 class="text-xl font-semibold text-gray-800">Bill To:</h2>
-            <table class="block-table">
-              <tbody>
-                <tr>
-                  <td class="text-gray-600">Name:</td>
-                  <td>
-                    <span class="font-semibold"> <%= name %> </span>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="text-gray-600">Email:</td>
-                  <td>
-                    <span class="font-semibold"> <%= email %> </span>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="text-gray-600">Invoice:</td>
-                  <td>
-                    <span class="font-semibold"> <%= nomor_invoice %> </span>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="text-gray-600">Date:</td>
-                  <td>
-                    <span class="font-semibold"> <%= date %> </span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <img src="cid:1" alt="Embedded Image" height="300px" />
+            <div>
+              <h2 class="text-xl font-semibold text-gray-800">Bill To:</h2>
+              <table class="block-table">
+                <tbody>
+                  <tr>
+                    <td class="text-gray-600">Name:</td>
+                    <td>
+                      <span class="font-semibold"> <%= name %> </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="text-gray-600">Email:</td>
+                    <td>
+                      <span class="font-semibold"> <%= email %> </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="text-gray-600">Invoice:</td>
+                    <td>
+                      <span class="font-semibold"> <%= nomor_invoice %> </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="text-gray-600">Date:</td>
+                    <td>
+                      <span class="font-semibold"> <%= date %> </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </section>
         </div>
         <section>
@@ -353,31 +329,4 @@
       </footer>
     </div>
   </body>
-  <script>
-    function toggleDropdown() {
-      var dropdownContent = document.getElementById("dropdown-content");
-      var arrow = document.getElementById("arrow");
-      if (dropdownContent.style.display === "flex") {
-        dropdownContent.style.display = "none";
-        arrow.innerHTML = "&#9650;"; // Panah ke atas
-      } else {
-        dropdownContent.style.display = "flex";
-        arrow.innerHTML = "&#9660;"; // Panah ke bawah
-      }
-    }
-
-    // Tutup dropdown jika pengguna mengklik di luar dropdown
-    window.onclick = function (event) {
-      if (!event.target.matches(".dropbtn")) {
-        var dropdowns = document.getElementsByClassName("dropdown-content");
-        for (var i = 0; i < dropdowns.length; i++) {
-          var openDropdown = dropdowns[i];
-          if (openDropdown.style.display === "flex") {
-            openDropdown.style.display = "none";
-            arrow.innerHTML = "&#9650;"; // Panah ke atas
-          }
-        }
-      }
-    };
-  </script>
 </html>
