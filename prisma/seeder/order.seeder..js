@@ -68,7 +68,7 @@ const orders = [
   {
     name: "Paket Wisata Silaturahmi II",
     image: "https://picsum.photos/200/300",
-    desc: "Menikmati Keraton dengan guide + snack khas cirebon + silatuhrahmi dan foto bersama dengan Sultan + kesenian.",
+    desc: "Menikmati Keraton dengan guide + snack khas cirebon + silatuhra_hmi dan foto bersama dengan Sultan + kesenian.",
     price: 135000,
     categoryId: 3,
     units: "paket",
@@ -83,7 +83,7 @@ const orders = [
     price: 200000,
     categoryId: 3,
     units: "paket",
-    orderSubTypeId: 3,
+    orderSubTypeId: 2,
     wisataRelation: "keraton",
     wisataDesc: "Area Keraton - Guide - Makan - Foto bersama Sultan - Kesenian"
   },
@@ -94,7 +94,7 @@ const orders = [
     price: 115000,
     categoryId: 3,
     units: "paket",
-    orderSubTypeId: 2,
+    orderSubTypeId: 3,
     wisataRelation: "keraton",
     wisataDesc: "Area Keraton - Guide - Snack - Kesenian"
   },
@@ -105,7 +105,7 @@ const orders = [
     price: 175000,
     categoryId: 3,
     units: "paket",
-    orderSubTypeId: 2,
+    orderSubTypeId: 3,
     wisataRelation: "keraton",
     wisataDesc: "Area Keraton - Guide - Makan - Kesenian"
   },

@@ -14,7 +14,7 @@ const objekWisata = [
     },
     {
         label: "Dalem Agung Pangkuwati",
-        to: "/wisata/museum",
+        to: "/wisata/dalemagung",
         orderIdentifier: "dalemAgung"
     },
 ]

@@ -1,6 +1,7 @@
 -- CreateTable
 CREATE TABLE `Guide` (
     `id` VARCHAR(191) NOT NULL,
+    `disabled` BOOLEAN NOT NULL DEFAULT false,
     `name` VARCHAR(191) NOT NULL,
     `email` VARCHAR(191) NOT NULL,
     `gender` ENUM('MALE', 'FEMALE') NOT NULL,
@@ -40,6 +41,7 @@ CREATE TABLE `Token` (
 -- CreateTable
 CREATE TABLE `Order` (
     `id` VARCHAR(191) NOT NULL,
+    `disabled` BOOLEAN NOT NULL DEFAULT false,
     `image` VARCHAR(191) NULL,
     `name` VARCHAR(191) NOT NULL,
     `desc` VARCHAR(191) NULL,
@@ -59,6 +61,7 @@ CREATE TABLE `Order` (
 -- CreateTable
 CREATE TABLE `Category` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `disabled` BOOLEAN NOT NULL DEFAULT false,
     `name` VARCHAR(191) NOT NULL,
     `color` VARCHAR(191) NOT NULL,
 
@@ -69,6 +72,7 @@ CREATE TABLE `Category` (
 -- CreateTable
 CREATE TABLE `OrderType` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `disabled` BOOLEAN NOT NULL DEFAULT false,
     `name` VARCHAR(191) NOT NULL,
 
     UNIQUE INDEX `OrderType_name_key`(`name`),
@@ -78,6 +82,7 @@ CREATE TABLE `OrderType` (
 -- CreateTable
 CREATE TABLE `OrderSubType` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `disabled` BOOLEAN NOT NULL DEFAULT false,
     `name` VARCHAR(191) NOT NULL,
     `minimumUnits` INTEGER NULL,
     `orderTypeId` INTEGER NOT NULL,

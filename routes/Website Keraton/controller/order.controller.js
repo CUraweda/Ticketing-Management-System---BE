@@ -4,8 +4,10 @@ var express = require('express')
 var router = express.Router()
 const orderModel = require('../models/order.models')
 const orderSubTypeModel = require('../models/orderSubType.models')
+const orderTypeModel = require('../models/orderType.models')
 const objekWisataModel = require('../models/objekWisata.models')
 const eventIterationModel = require('../models/eventIteration.models')
+const categoryModel = require('../../Keraton PoS/models/category.models')
 const multer = require("multer");
 const crypto = require('crypto');
 const path = require('path');
@@ -49,9 +51,11 @@ router.get('/booking', async (req, res) => {
 router.get('/helper', async (req, res) => {
     try {
         const subTypes = await orderSubTypeModel.getAll()
+        const types = await orderTypeModel.getAll()
+        const category = await categoryModel.getAll()
         const iteration = await eventIterationModel.getAll()
         const objekWisata = await objekWisataModel.getAll()
-        return success(res, 'Success', { subTypes, iteration, objekWisata })
+        return success(res, 'Success', { subTypes, iteration, types, category, objekWisata })
     } catch (err) {
         return error(res, err.message)
     }

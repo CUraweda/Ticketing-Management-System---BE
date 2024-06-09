@@ -36,6 +36,7 @@ enum Action {
 
 model Guide {
   id          String        @id @default(uuid())
+  disabled    Boolean       @default(false)
   name        String
   email       String        @unique
   gender      Gender
@@ -70,6 +71,7 @@ model Token {
 
 model Order {
   id             String        @id @default(uuid())
+  disabled       Boolean       @default(false)
   image          String?
   name           String
   desc           String?
@@ -88,20 +90,23 @@ model Order {
 }
 
 model Category {
-  id    Int     @id @default(autoincrement())
-  name  String  @unique
-  color String
-  order Order[]
+  id       Int     @id @default(autoincrement())
+  disabled Boolean @default(false)
+  name     String  @unique
+  color    String
+  order    Order[]
 }
 
 model OrderType {
   id           Int            @id @default(autoincrement())
+  disabled     Boolean        @default(false)
   name         String         @unique
   orderSubType OrderSubType[]
 }
 
 model OrderSubType {
   id           Int       @id @default(autoincrement())
+  disabled     Boolean   @default(false)
   name         String    @unique
   minimumUnits Int?
   orderType    OrderType @relation(fields: [orderTypeId], references: [id])
