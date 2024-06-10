@@ -11,6 +11,7 @@ router.post('/use', async (req, res) => {
         const { uniqueId } = decryptedData
         if(!uniqueId) throw Error('Invalid QR Data, cannot be proccessed')
         const barcode = await barcodeModel.isExist(uniqueId)
+        if(barcode.transaction.status === "MENUNGGU_PEMBAYARAN") throw Error('Pembayaran Transaksi masih belum selesai')
         const updatedQR = await barcodeModel.use(barcode.id)
         return success(res, 'QR Successfully used', updatedQR)
     }catch(err){

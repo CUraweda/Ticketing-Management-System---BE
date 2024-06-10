@@ -19,11 +19,16 @@ const getAll = async () => {
     throwError(err);
   }
 };
+const emailExist = async (email) => {
+  try{
+    return await prisma.guide.findFirst({ where: { email } })
+  }catch(err){
+    throwError(err)
+  }
+}
 const create = async (data) => {
   try {
-    return await prisma.guide
-      .create({ data: data })
-      .then(
+    return await prisma.guide.create({ data: data }).then(
         await logsModel.logCreate(
           `Membuat guide ${data.name}`,
           "Guide",
@@ -57,6 +62,21 @@ const update = async (id, data) => {
     throwError(err);
   }
 };
+
+const createUpdate = async (ident, data = { id, email }) => {
+  try{
+    const guideExist = await emailExist(data.email)
+    console.log(guideExist)
+    if (guideExist && guideExist.disabled){ data.disabled = false
+    }else throw Error('Email already used by another Guide')
+    return await prisma.guide.upsert({
+      where: { email: data.email },
+      create: data, update: data
+    })
+  }catch(err){
+    throwError(err)
+  }
+}
 const deleteGuide = async (id) => {
   try {
     const guide = await getOne(id);
@@ -80,4 +100,4 @@ const deleteGuide = async (id) => {
   }
 };
 
-module.exports = { getOne, getAll, create, update, deleteGuide };
+module.exports = { getOne, getAll, create, update, deleteGuide, createUpdate };

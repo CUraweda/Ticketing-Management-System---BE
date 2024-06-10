@@ -235,7 +235,7 @@ function generateRandomString(length) {
 
 function convertFilesToURL(filePath) {
   const urlPath = filePath.replace(/\\/g, "/").replace(/^public\//, "");
-  return `https://api-prmn.curaweda.com:3031/${urlPath}`;
+  return `${process.env.BASE_URL}/${urlPath}`;
 }
 
 function splitDate(dateTime) {

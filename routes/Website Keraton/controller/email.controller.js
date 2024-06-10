@@ -13,10 +13,22 @@ const orderModel = require("../models/order.models");
 const eventModel = require("../models/events.models");
 
 function transformUrl(url) {
-  const relevantPart = url.replace("https://api-prmn.curaweda.com:3031", "");
+  const relevantPart = url.replace(`${process.env.BASE_URL}`, "");
   const transformedUrl = `public${relevantPart}`;
   return transformedUrl;
 }
+
+router.get('/render-sub', async (req, res) => {
+  try{
+    res.render(path.resolve("routes/Website Keraton/emails/templates/subscription"), {
+      title: "TITLE HERE",
+      desc: "Description Here",
+      link: process.env.BASE_URL
+    })
+  }catch(err){
+    return error(res, err.message)
+  }
+})
 
 router.get("/render", async (req, res) => {
   try {

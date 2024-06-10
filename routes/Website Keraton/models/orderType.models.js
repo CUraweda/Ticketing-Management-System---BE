@@ -11,8 +11,7 @@ const isExist = async (id) => {
 
 const nameExist = async (name) => {
     try {
-        const nameExist = await prisma.orderType.findFirst({ where: { name } })
-        return (nameExist != null)
+        return await prisma.orderType.findFirst({ where: { name } })
     } catch (err) {
         throwError(err)
     }
@@ -21,6 +20,7 @@ const nameExist = async (name) => {
 const getAll = async () => {
     try {
         return await prisma.orderType.findMany({
+            where: { disabled: false },
             include: { orderSubType: true }
         })
     } catch (err) {
@@ -38,12 +38,11 @@ const getOne = async (id) => {
     }
 }
 
-const createUpdate = async (ident, data = { name , id}) => {
+const createUpdate = async (ident, data = { name, id }) => {
     try {
-        if(ident != 'edit'){
-            const alreadyExist = await nameExist(data.name)
-            if (alreadyExist) throw Error('Type name already exist')
-        }
+        const alreadyExist = await nameExist(data.name)
+        if (ident != 'create') if (alreadyExist) throw Error('Type name already exist')
+        if (alreadyExist && alreadyExist.disabled) data.disabled = false
         return await prisma.orderType.upsert({
             where: { name: data.name },
             create: data, update: data
@@ -53,4 +52,12 @@ const createUpdate = async (ident, data = { name , id}) => {
     }
 }
 
-module.exports = { isExist, getOne, getAll, createUpdate }
+const deleteSoft = async (id) => {
+    try{
+        return await prisma.orderType.update({ where: { id }, data: { disabled: true } })
+    }catch(err){
+        throwError(err)
+    }
+}
+
+module.exports = { isExist, getOne, getAll, createUpdate, deleteSoft }
