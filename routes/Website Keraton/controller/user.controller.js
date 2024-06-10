@@ -4,7 +4,6 @@ var router = express.Router();
 const userModel = require('../models/user.models')
 const { auth } = require("../middlewares/auth");
 const { throwError } = require("../../utils/helper");
-const { route } = require("./contents.controller");
 
 router.get("/", auth(['SUPER_ADMIN', 'ADMIN']), async (req, res) => {
     try {
@@ -18,9 +17,13 @@ router.get("/", auth(['SUPER_ADMIN', 'ADMIN']), async (req, res) => {
 router.post("/:id?", auth(['SUPER_ADMIN']), async (req, res) => {
     let updatedUser
     try {
+        const emailExist = await userModel.emailExist(req.body.email)
+        if (emailExist && !(req.params.id)) { req.params.id = emailExist.id
+        } else throw Error('Email already exist')
         if (req.params.id) {
             const userExist = await userModel.isExist(req.params.id)
             if (!userExist) throw Error('User didnt exist')
+            if (userExist.deleted) req.body.deleted = false
             updatedUser = await userModel.update(userExist.id, req.body)
         } else updatedUser = await userModel.create(req.body)
         return success(res, 'Update Success', updatedUser)

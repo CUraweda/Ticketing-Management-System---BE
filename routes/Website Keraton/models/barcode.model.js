@@ -6,7 +6,7 @@ const path = require("path");
 
 
 function convertFilesToURL(filePath) {
-    const baseURL = 'https://api-prmn.curaweda.com:3031';
+    const baseURL = `${process.env.BASE_URL}`;
     return baseURL + filePath.replace("public", "").split(path.sep).join("/");
   }
   
@@ -28,7 +28,7 @@ const create = async (data = { uniqueId, possibleUses, expiredAt }) => {
 
 const isExist = async  (id) => {
     try{
-        return await prisma.barcodeUsage.findFirstOrThrow({where: { id } })
+        return await prisma.barcodeUsage.findFirstOrThrow({where: { id }, include: { transaction: true } })
     }catch(err){
         throwError(err)
     }

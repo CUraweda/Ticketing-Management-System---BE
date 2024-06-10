@@ -11,30 +11,36 @@ expressRouter.get("/category-details", async (req, res) => {
     return error(res, err.message);
   }
 });
-expressRouter.post(
-  "/category-action/:action/:id?",
-  upload.none(),
-  async (req, res) => {
-    try {
-      req.params.id = parseInt(req.params.id)
-      req.body = Object.assign({}, req.body);
-      switch (req.params.action) {
-        case "create":
-          const data = await categoryModel.create(req.body);
-          return success(res, "Penambahan kategori berhasil", data);
-        case "update":
-          await categoryModel.update(req.params.id, req.body);
-          return success(res, "Update kategori berhasil!");
-        case "delete":
-          await categoryModel.deleteCategory(req.params.id);
-          return success(res, "Penghapusan kategori berhasil!");
-        default:
-          throw new Error(`Aksi ${action} tidak ditemukan`);
-      }
-    } catch (err) {
-      return error(res, err.message);
+expressRouter.post("/category-action/:action/:id?", upload.none(), async (req, res) => {
+  try {
+    req.params.id = parseInt(req.params.id)
+    req.body = Object.assign({}, req.body);
+    const nameExist = await categoryModel.findUniqueName(req.body)
+    if(req.params.action != "delete"){
+      if (nameExist.disabled && !req.params.id) {
+        req.params.id = nameExist.id
+        req.params.action = "update"
+        req.body.disabled = false
+      }else throw Error('Name already exist')
     }
+    
+    switch (req.params.action) {
+      case "create":
+        const data = await categoryModel.create(req.body);
+        return success(res, "Penambahan kategori berhasil", data);
+      case "update":
+        await categoryModel.update(req.params.id, req.body);
+        return success(res, "Update kategori berhasil!");
+      case "delete":
+        await categoryModel.deleteCategory(req.params.id);
+        return success(res, "Penghapusan kategori berhasil!");
+      default:
+        throw new Error(`Aksi ${action} tidak ditemukan`);
+    }
+  } catch (err) {
+    return error(res, err.message);
   }
+}
 );
 
 module.exports = expressRouter;

@@ -80,8 +80,6 @@ const signUp = async (data) => {
 };
 const update = async (id, data) => {
   try {
-    const user = await isExist({ id })
-    if (!user) throw Error('User didnt exist')
     return await prisma.user.update({ where: { id }, data })
   } catch (err) {
     throwError(err)
@@ -118,4 +116,4 @@ const deleteSoftUser = async (id) => {
   }
 }
 
-module.exports = { getUser, isExist, logIn, signUp, update, logOUt, getAll, deleteSoftUser, create };
+module.exports = { getUser, isExist, logIn, signUp, update, logOUt, getAll, deleteSoftUser, create, emailExist };

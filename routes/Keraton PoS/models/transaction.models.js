@@ -307,9 +307,7 @@ const printTransaction = async (data) => {
 const sendEmailToUser = async (data) => {
   const currentTime = Date.now();
   if (currentTime - lastSentTime < SEND_INTERVAL) {
-    return res
-      .status(429)
-      .json({ msg: "Tunggu beberapa detik sebelum mengirim lagi" });
+    return res.status(429).json({ msg: "Tunggu beberapa detik sebelum mengirim lagi" });
   }
   if (!data.customer.email) {
     return throwError("Email tidak ditemukan!");

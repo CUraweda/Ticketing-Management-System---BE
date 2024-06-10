@@ -25,4 +25,12 @@ const create = async (data) => {
     }
 }
 
-module.exports = { getAll, create, emailExist }
+const deleteHard = async (id) => {
+    try{
+        return await prisma.subscriber.delete({ where: { id } })
+    }catch(err){
+        throwError(err)
+    }
+}
+
+module.exports = { getAll, create, emailExist, deleteHard}

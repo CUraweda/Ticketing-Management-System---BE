@@ -23,4 +23,13 @@ router.post('/', async (req, res) => {
     }
 })
 
+router.delete('/:id', async (req, res) => {
+    try{
+        const deletedEmail = await subscribeModel.deleteHard(+req.params.id)
+        return success(res, 'Deleted Successfully', deletedEmail)
+    }catch(err){
+        return error(res, err.message)
+    }
+})
+
 module.exports = router

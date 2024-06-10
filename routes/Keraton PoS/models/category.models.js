@@ -12,6 +12,15 @@ const isExist = async (id) => {
     throwError(err);
   }
 };
+
+const existInDB = async (id) => {
+  try{
+    return await prisma.category.findFirst({ where: { id } })
+  }catch(err){
+    throwError(err)
+  }
+}
+ 
 const getAll = async () => {
   try {
     return await prisma.category.findMany({ where: { disabled: false } });
@@ -41,18 +50,16 @@ const create = async (data) => {
 };
 const update = async (id, data) => {
   try {
-    const category = await isExist(id);
+    const category = await existInDB(id);
     if (!category) throw Error("ID Category tidak ditemukan");
 
-    return await prisma.category
-      .update({ where: { id: id }, data: data })
-      .then(
-        await logsModel.logUpdate(
-          `Mengubah kategori ${category.name} menjadi ${data.name}`,
-          "Category",
-          "Success"
-        )
-      );
+    return await prisma.category.update({ where: { id: id }, data: data }).then(
+      await logsModel.logUpdate(
+        `Mengubah kategori ${category.name} menjadi ${data.name}`,
+        "Category",
+        "Success"
+      )
+    );
   } catch (err) {
     await logsModel.logUpdate(
       `Mengubah kategori ${id} menjadi ${data.name}`,
@@ -84,11 +91,20 @@ const deleteCategory = async (id) => {
     throwError(err);
   }
 };
+const findUniqueName = async (uniqueData) => {
+  const { name } = uniqueData
+  try {
+    return await prisma.category.findFirst({ where: { name } })
+  } catch (err) {
+    throwError(err)
+  }
+}
 
 module.exports = {
   isExist,
   getAll,
   create,
   update,
+  findUniqueName,
   deleteCategory,
 };

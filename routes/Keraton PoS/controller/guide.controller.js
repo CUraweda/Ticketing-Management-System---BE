@@ -20,19 +20,15 @@ expressRouter.post(
   async (req, res) => {
     const action = req.params.action;
     try {
-      req.body.image = req.file
-        ? req.file.originalname
-        : req.body.imgName
-        ? req.body.imgName
-        : null;
+      req.body.image = req.file ? req.file.originalname : req.body.imgName ? req.body.imgName : null;
       delete req.body.imgName;
       let data;
       switch (action) {
         case "create":
-          data = await guideModel.create(req.body);
+          data = await guideModel.createUpdate('create',req.body);
           break;
         case "update":
-          data = await guideModel.update(req.params.id, req.body);
+          data = await guideModel.createUpdate('update', { id: req.params.id, ...req.body });
           break;
         case "delete":
           data = await guideModel.deleteGuide(req.params.id);
