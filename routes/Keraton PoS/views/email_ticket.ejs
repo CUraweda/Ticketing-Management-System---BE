@@ -18,11 +18,12 @@
         padding: 0;
         margin: 0;
       }
+      h5,
       h3 {
         font-family: "Times New Roman", Times, serif;
       }
-      h3 {
-        font-size: 25px;
+      h5 {
+        font-size: 20px;
         color: #dfb032;
       }
       .ticket-padding {
@@ -58,7 +59,7 @@
 
       img.bg-tiket {
         width: 100%;
-        height: 100%;
+        height: 85%;
         object-fit: cover;
         position: absolute;
         top: 0;
@@ -81,11 +82,11 @@
 
       .ticket-content {
         position: relative;
-        width: 80%;
+        width: 75%;
         z-index: 1;
         display: flex;
         flex-direction: column;
-        height: 73%;
+        height: 55%;
         gap: 1rem;
         padding: 20px;
         color: #000000;
@@ -108,13 +109,13 @@
       }
 
       .ticket-logo img {
-        width: 90px;
-        height: 90px;
+        width: 50px;
+        height: 50px;
       }
 
       .ticket-qr img {
-        width: 100px;
-        height: 100px;
+        width: 70px;
+        height: 70px;
         object-fit: contain;
       }
       .triangle-divider {
@@ -138,18 +139,18 @@
 
       .line-divider {
         border: 1px dashed #000;
-        height: 79%;
+        height: 67.5%;
         width: 1px;
         margin-top: 0rem;
       }
 
       .ticket-name_container {
-        width: 10rem;
+        width: 7.5rem;
         display: flex;
-        margin-right: 17rem;
+        margin-right: 24rem;
         flex-direction: column;
         justify-content: center;
-        height: 80%;
+        height: 67.9%;
         align-items: center;
         border-left: 1px solid #ccc;
         background-color: #eed184;
@@ -163,7 +164,7 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        width: 15rem;
+        width: 12rem;
         height: 50%;
         border: 1px solid #000;
         border-radius: 0.3rem;
@@ -184,7 +185,7 @@
         letter-spacing: 0.9px;
       }
 
-      .ticket-name_container h3 {
+      .ticket-name_container h5 {
         font-size: 2rem;
         color: #6b4226;
         text-transform: uppercase;
@@ -198,7 +199,7 @@
       img.Decor1 {
         position: absolute;
         height: 10rem;
-        width: 10rem;
+        width: 7rem;
         object-fit: cover;
         mix-blend-mode: multiply;
         opacity: 70%;
@@ -242,7 +243,7 @@
               <div class="ticket-logo">
                 <img src="<%= logoKKC %>" alt="Keraton Kasepuhan Cirebon" />
               </div>
-              <h3 class="ticket_title">KERATON KASEPUHAN CIREBON</h3>
+              <h5 class="ticket_title">KERATON KASEPUHAN CIREBON</h5>
               <div class="ticket-qr">
                 <img src="<%= ticketQR[index] %>" alt="QR Code" />
               </div>
