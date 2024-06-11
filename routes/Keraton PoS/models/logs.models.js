@@ -55,7 +55,7 @@ const getAll = async (search, action) => {
 };
 const logCreate = async (activity, changedAt, status) => {
   const userId = await checkUserId();
-  if(!userId) throw Error("Local User isn't found")
+  if (!userId) return
   try {
     return await prisma.logs.create({
       data: {
@@ -71,8 +71,10 @@ const logCreate = async (activity, changedAt, status) => {
   }
 };
 const logUpdate = async (activity, changedAt, status) => {
-    const userId = await checkUserId();
+  const userId = await checkUserId();
+  if (!userId) return
   try {
+    if (!userId) return
     return await prisma.logs.create({
       data: {
         userId,
@@ -87,7 +89,8 @@ const logUpdate = async (activity, changedAt, status) => {
   }
 };
 const logDelete = async (activity, changedAt, status) => {
-    const userId = await checkUserId();
+  const userId = await checkUserId();
+  if (!userId) return
   try {
     return await prisma.logs.create({
       data: {

@@ -63,7 +63,7 @@ CREATE TABLE `Category` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `disabled` BOOLEAN NOT NULL DEFAULT false,
     `name` VARCHAR(191) NOT NULL,
-    `color` VARCHAR(191) NOT NULL,
+    `color` VARCHAR(191) NULL,
 
     UNIQUE INDEX `Category_name_key`(`name`),
     PRIMARY KEY (`id`)

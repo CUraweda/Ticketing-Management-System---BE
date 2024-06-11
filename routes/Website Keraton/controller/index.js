@@ -15,8 +15,14 @@ const controlObjekWisata = require('./objekWisata.controller')
 const controlEmail = require('../controller/email.controller')
 const controlQR = require('../controller/barcode.controller')
 const controlUser =  require('../controller/user.controller')
+const controlSubType = require('../controller/orderSubType.controller')
+const controlType = require('../controller/orderType.controller')
+const controlCategory = require('../controller/category.controller')
 
 router.use("/content", controlContent);
+router.use("/type", controlType)
+router.use("/category", controlCategory)
+router.use("/subtype", controlSubType)
 router.use("/page", controlPage);
 router.use("/auth", controlAuth);
 router.use("/event", controlEvent);
