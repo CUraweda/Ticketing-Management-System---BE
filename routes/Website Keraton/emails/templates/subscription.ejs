@@ -1,32 +1,14 @@
-<div
-  style="
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  "
->
-  <div
-    style="
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-    "
-  >
-    <img src="cid:0" alt="Logo" style="width: 5rem; height: 5rem" />
+<div class="div-1">
+  <div class="div-2">
+    <img src="cid:0" alt="Logo" class="img-keraton" />
     <h1>Keraton Kasepuhan Cirebon</h1>
   </div>
   <h1>Ini Subscription</h1>
   <h3><%= title %></h3>
-  <img src="cid:1" alt="Gambar Event" />
+  <img src="cid:1" alt="Gambar Event" class="image-event" />
   <p><%= desc %></p>
   <a href="<%= link %>">
-    <button
-      style="background-color: #daa520; padding: 0.5rem; border-radius: 2rem"
-    >
-      Link Fuckin Here
-    </button>
+    <button class="style-button">Link Fuckin Here</button>
   </a>
 </div>
 
@@ -35,5 +17,35 @@
 
   * {
     font-family: Raleway;
+  }
+
+  .div-1 {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .div-2 {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .img-keraton {
+    width: 4rem;
+    height: 4rem;
+  }
+
+  .image-event {
+    width: 8rem;
+    height: 5rem;
+  }
+
+  .style-button {
+    background-color: #daa520;
+    padding: 0.5rem;
+    border-radius: 2rem;
   }
 </style>
