@@ -4,30 +4,33 @@ const { success, error } = require("../../utils/response");
 const subscribeModel = require('../models/subscribe.models')
 
 router.get('/', async (req, res) => {
-    try{
+    try {
         const data = await subscribeModel.getAll()
         return success(res, 'Success', data)
-    }catch(err){
+    } catch (err) {
         return error(res, err.message)
     }
 })
 
-router.post('/', async (req, res) => {
-    try{
-        const emailAlreadyExist = await subscribeModel.emailExist(req.body.email)
-        if(emailAlreadyExist) throw Error('Email already subscribed')
-        const data = await subscribeModel.create({ email: req.body.email })
+router.post('/:id?', async (req, res) => {
+    const { id } = req.params
+    try {
+        if (!id) {
+            const emailAlreadyExist = await subscribeModel.emailExist(req.body.email)
+            if (emailAlreadyExist) throw Error('Email already subscribed')
+        }
+        const data = id ? await subscribeModel.update(+id, req.body) :  await subscribeModel.create({ email: req.body.email })
         return success(res, 'Success', data)
-    }catch(err){
+    } catch (err) {
         return error(res, err.message)
     }
 })
 
 router.delete('/:id', async (req, res) => {
-    try{
+    try {
         const deletedEmail = await subscribeModel.deleteHard(+req.params.id)
         return success(res, 'Deleted Successfully', deletedEmail)
-    }catch(err){
+    } catch (err) {
         return error(res, err.message)
     }
 })
