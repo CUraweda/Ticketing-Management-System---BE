@@ -9,7 +9,7 @@ const getAll = async () => {
     }
 }
 
-const emailExist = async () => {
+const emailExist = async (email) => {
     try{
         return await prisma.subscriber.findFirst({ where: { email } })
     }catch(err){
@@ -25,6 +25,14 @@ const create = async (data) => {
     }
 }
 
+const update = async (id, data) => {
+    try{
+        return await prisma.subscriber.update({ where: { id }, data })
+    }catch(err){
+        throwError(err)
+    }
+}
+
 const deleteHard = async (id) => {
     try{
         return await prisma.subscriber.delete({ where: { id } })
@@ -33,4 +41,4 @@ const deleteHard = async (id) => {
     }
 }
 
-module.exports = { getAll, create, emailExist, deleteHard}
+module.exports = { getAll, create, emailExist, deleteHard, update}
