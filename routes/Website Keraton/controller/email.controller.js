@@ -30,6 +30,24 @@ router.get('/render-sub', async (req, res) => {
   }
 })
 
+router.get('/render-ticket', async (req, res) => {
+  try{
+    res.render(path.resolve('routes/Keraton PoS/views/email_ticket'), {
+      title: "Title Here",
+      ticketBg: "/public/assets/email/bg-keraton.png",
+      logoKKC: "/public/assets/email/logo.png",
+      decorBg: "/public/assets/email/bg-decor.png",
+      ticketQR: ["/public/assets/email/testqr.jpg"],
+      tickets: [{
+        amount: 1,
+        order: { name: "Ticket Name Here" }
+      }]
+    })
+  }catch(err){
+    return error(res, err.message)
+  }
+})
+
 router.get("/render", async (req, res) => {
   try {
     res.render(
