@@ -1,11 +1,39 @@
-<div>
-    <div>
-        <img src="cid:0" alt="Logo">
-        <h1>Keraton Kasepuhan Cirebon</h1>
-    </div>
-    <h1>Ini Subscription</h1>
-    <h1><%= title %></h1>
-    <img src="cid:1" alt="Gambar Event">
-    <p><%= desc %></p>
-    <a href="<%= link %>">Link Fuckin Here</a>
+<div
+  style="
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  "
+>
+  <div
+    style="
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    "
+  >
+    <img src="cid:0" alt="Logo" />
+    <h1>Keraton Kasepuhan Cirebon</h1>
+  </div>
+  <h1>Ini Subscription</h1>
+  <h1><%= title %></h1>
+  <img src="cid:1" alt="Gambar Event" />
+  <p><%= desc %></p>
+  <a href="<%= link %>">
+    <button
+      style="background-color: #daa520; padding: 0.5rem; border-radius: 2rem"
+    >
+      Link Fuckin Here
+    </button>
+  </a>
 </div>
+
+<style>
+  @import url("https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap");
+
+  * {
+    font-family: Raleway;
+  }
+</style>
