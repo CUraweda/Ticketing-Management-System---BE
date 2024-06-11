@@ -11,7 +11,6 @@ const categoryModel = require('../../Keraton PoS/models/category.models')
 const multer = require("multer");
 const crypto = require('crypto');
 const path = require('path');
-const { waitForDebugger } = require("inspector");
 const { convertFilesToURL } = require("../../utils/helper");
 
 //Start Multer

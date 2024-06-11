@@ -1,3 +1,4 @@
+const { name } = require("ejs")
 const { throwError } = require("../../utils/helper")
 const { prisma } = require("../../utils/prisma")
 const eventIterationModel = require('../models/eventIteration.models')
@@ -12,12 +13,13 @@ const isExist = async (id) => {
 }
 
 const getAll = async (query) => {
-    let { iterat, free } = query
+    let { iterat, free, search } = query
     try {
         return await prisma.events.findMany({
             where: {
                 ...(iterat && { iterationId: { in: iterat } }),
                 ...(free != undefined && { isFree: free }),
+                ...(search && { name: { contains: search } }),
                 deleted: false
             },
             include: { iteration: true }

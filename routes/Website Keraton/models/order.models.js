@@ -10,8 +10,8 @@ const isExist = async (id) => {
     }
 }
 
-const getAll = async (query = { type, subType }) => {
-    let { type, subType } = query
+const getAll = async (query = { type, subType, search }) => {
+    let { type, subType, search } = query
     try {
         return await prisma.order.findMany({
             where: {
@@ -19,6 +19,8 @@ const getAll = async (query = { type, subType }) => {
                     ...(subType != undefined && { id: +subType }),
                     ...(type != undefined && { typeId: +type }),
                 },
+                ...(search && {name: { contains: search }}),
+                // ...(search && { name: { contains: search } }),
                 deleted: false
             },
             include: { orderSubType: true, category: true }

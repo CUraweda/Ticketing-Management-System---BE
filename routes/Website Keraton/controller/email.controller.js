@@ -232,7 +232,8 @@ router.post(
         },
         attachment: [
           "public/assets/email/logo.png",
-          transformUrl(dataReference.image),
+          "public/assets/email/bg-keraton.png"
+          // transformUrl(dataReference.image),
         ],
       };
       setImmediate(async () => {

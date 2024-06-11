@@ -34,11 +34,11 @@ const upload = multer({
 //End Multer
 
 router.get("/:id?", async (req, res) => {
-  const { id } = req.params;
+  const { id } = req.params, { search } = req.query;
   try {
-    const data = id
-      ? await eventModel.getOne(+id)
-      : await eventModel.getAll({});
+    const data = id ? await eventModel.getOne(+id) : await eventModel.getAll({
+      ...(search && { search })
+    });
     return success(res, "Success", data);
   } catch (err) {
     return error(res, err.message);
