@@ -1,9 +1,8 @@
 var express = require('express');
+var router = express.Router();
 const { error, success } = require('../../utils/response');
 const cartModel = require('../models/carts.model');
 const { auth } = require('../middlewares/auth');
-const { route } = require('./contents.controller');
-var router = express.Router();
 
 router.post('/break', auth([]), async (req, res) => {
     try {

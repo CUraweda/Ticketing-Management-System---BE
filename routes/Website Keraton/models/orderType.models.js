@@ -44,7 +44,7 @@ const createUpdate = async (ident, data = { name, id }) => {
         if (ident != 'create') if (alreadyExist) throw Error('Type name already exist')
         if (alreadyExist && alreadyExist.disabled) data.disabled = false
         return await prisma.orderType.upsert({
-            where: { name: data.name },
+            where: { ...(data.id ? { id: data.id } : { name: data.name }) },
             create: data, update: data
         })
     } catch (err) {
@@ -53,9 +53,9 @@ const createUpdate = async (ident, data = { name, id }) => {
 }
 
 const deleteSoft = async (id) => {
-    try{
+    try {
         return await prisma.orderType.update({ where: { id }, data: { disabled: true } })
-    }catch(err){
+    } catch (err) {
         throwError(err)
     }
 }

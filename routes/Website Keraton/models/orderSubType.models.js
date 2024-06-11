@@ -49,7 +49,7 @@ const createUpdate = async (ident, data = { name, typeId }) => {
         if (ident !== 'create') if (alreadyExist) throw new Error('Sub Type Name already exists');
         if (alreadyExist && alreadyExist.disabled) data.disabled = false
         return await prisma.orderSubType.upsert({
-            where: { name: data.name },
+            where:{ ...(data.id ? { id: data.id } : { name: data.name }) },
             create: data, update: data
         });
     } catch (err) {

@@ -93,7 +93,7 @@ model Category {
   id       Int     @id @default(autoincrement())
   disabled Boolean @default(false)
   name     String  @unique
-  color    String
+  color    String?
   order    Order[]
 }
 

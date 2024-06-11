@@ -14,13 +14,13 @@ const isExist = async (id) => {
 };
 
 const existInDB = async (id) => {
-  try{
+  try {
     return await prisma.category.findFirst({ where: { id } })
-  }catch(err){
+  } catch (err) {
     throwError(err)
   }
 }
- 
+
 const getAll = async () => {
   try {
     return await prisma.category.findMany({ where: { disabled: false } });
@@ -61,13 +61,13 @@ const update = async (id, data) => {
       )
     );
   } catch (err) {
-    await logsModel.logUpdate(
-      `Mengubah kategori ${id} menjadi ${data.name}`,
-      "Category",
-      "Failed"
-    );
-    throwError(err);
-  }
+  await logsModel.logUpdate(
+    `Mengubah kategori ${id} menjadi ${data.name}`,
+    "Category",
+    "Failed"
+  );
+  throwError(err);
+}
 };
 const deleteCategory = async (id) => {
   try {
