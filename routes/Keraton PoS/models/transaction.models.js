@@ -32,30 +32,20 @@ const qrPath = path.join(__dirname, "../../../public/qrcodes/");
 const getInvoice = async (search) => {
   try {
     const data = await prisma.transaction.findMany({
-      where: search
-        ? {
-          OR: [
-            {
-              user: {
-                name: {
-                  contains: search,
-                },
-              },
-            },
-            {
-              detailTrans: {
-                some: {
-                  order: {
-                    name: {
-                      contains: search,
-                    },
-                  },
-                },
-              },
-            },
-          ],
+      where: {
+        ...(search && {
+          user: {
+            name: { contains: search }
+          }
+        }),
+        detailTrans: {
+          some: {
+            // eventId: null,
+            // NOT: { orderId: undefined },
+            ...(search && { name: { contains: search } })
+          }
         }
-        : {},
+      },
       include: {
         user: true,
         detailTrans: {

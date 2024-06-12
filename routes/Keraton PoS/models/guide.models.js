@@ -66,11 +66,10 @@ const update = async (id, data) => {
 const createUpdate = async (ident, data = { id, email }) => {
   try{
     const guideExist = await emailExist(data.email)
-    console.log(guideExist)
-    if (guideExist && guideExist.disabled){ data.disabled = false
-    }else throw Error('Email already used by another Guide')
+    if(ident != "create") if(guideExist) throw Error('Email already used by another Guide')
+    if (guideExist && guideExist.disabled) data.disabled = false
     return await prisma.guide.upsert({
-      where: { email: data.email },
+      where: { ...(data.id ? { id: data.id } : { email: data.email}) },
       create: data, update: data
     })
   }catch(err){

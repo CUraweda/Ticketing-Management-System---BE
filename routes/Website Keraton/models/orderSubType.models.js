@@ -44,8 +44,8 @@ const createUpdate = async (ident, data = { name, typeId }) => {
     try {
         const alreadyExist = await nameExist(data.name);
         const typeExist = await orderTypeModel.isExist(data.typeId);
-        if (!typeExist) throw new Error('Type doesn\'t exist');
-
+        if (!typeExist) throw new Error('Type doesn\'t exist')
+        if (data.minimumUnits) data.minimumUnits = +data.minimumUnits
         if (ident !== 'create') if (alreadyExist) throw new Error('Sub Type Name already exists');
         if (alreadyExist && alreadyExist.disabled) data.disabled = false
         return await prisma.orderSubType.upsert({

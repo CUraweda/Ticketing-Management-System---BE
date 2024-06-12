@@ -43,6 +43,7 @@ const createUpdate = async (ident, data = { name, id }) => {
         const alreadyExist = await nameExist(data.name)
         if (ident != 'create') if (alreadyExist) throw Error('Type name already exist')
         if (alreadyExist && alreadyExist.disabled) data.disabled = false
+        console.log(data)
         return await prisma.orderType.upsert({
             where: { ...(data.id ? { id: data.id } : { name: data.name }) },
             create: data, update: data

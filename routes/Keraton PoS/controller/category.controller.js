@@ -1,6 +1,6 @@
 const { expressRouter } = require("../../utils/router");
 const { error, success } = require("../../utils/response");
-const { upload } = require("../../utils/helper");
+const { upload, throwError } = require("../../utils/helper");
 const categoryModel = require("../models/category.models");
 
 expressRouter.get("/category-details", async (req, res) => {
@@ -16,14 +16,15 @@ expressRouter.post("/category-action/:action/:id?", upload.none(), async (req, r
     req.params.id = parseInt(req.params.id)
     req.body = Object.assign({}, req.body);
     const nameExist = await categoryModel.findUniqueName(req.body)
-    if(req.params.action != "delete"){
-      if (nameExist.disabled && !req.params.id) {
-        req.params.id = nameExist.id
+    if (req.params.action != "delete") {
+      if (nameExist) {
+        if (!nameExist.disabled) throw Error('Name already exist')
+        // if(req.params.id && !nameExist.disabled) throw Error('')
+        if (!req.params.id) req.params.id = nameExist.id
         req.params.action = "update"
         req.body.disabled = false
-      }else throw Error('Name already exist')
+      }
     }
-    
     switch (req.params.action) {
       case "create":
         const data = await categoryModel.create(req.body);
@@ -38,6 +39,7 @@ expressRouter.post("/category-action/:action/:id?", upload.none(), async (req, r
         throw new Error(`Aksi ${action} tidak ditemukan`);
     }
   } catch (err) {
+    console.log(err)
     return error(res, err.message);
   }
 }
