@@ -48,7 +48,7 @@ router.get("/:id?", async (req, res) => {
 router.post("/:ident/:id?", upload.array("imageList[]"), async (req, res) => {
   let sendedData, listOfFiles = [], listOfDefaultImage = [], imageDatas = [], currentFileIndex = 0, currentDefaultImageIndex = 0
   try {
-    if(req.body.imageList){
+    if(req.body.imageList || req.files){
       if (req.files) listOfFiles = req.files
       listOfDefaultImage = req.body.imageList
       for (let imageData of req.body.imageSub) {

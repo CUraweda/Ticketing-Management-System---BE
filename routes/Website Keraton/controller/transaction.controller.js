@@ -32,6 +32,7 @@ router.get('/pay/:transactionId', async (req, res) => {
 router.get('/', auth(), async (req, res) => {
     try {
         const data = await transactionModel.getAll(req.user.id, req.query)
+        console.log(data)
         return success(res, 'Success', data)
     } catch (err) {
         return error(res, err.message)

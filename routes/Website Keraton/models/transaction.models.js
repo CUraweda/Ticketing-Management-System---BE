@@ -1,6 +1,4 @@
 const { throwError } = require("../../utils/helper")
-const orderModel = require('../models/order.models')
-const eventModel = require('../models/events.models')
 const cartModel = require('../models/carts.model')
 const { prisma } = require("../../utils/prisma")
 const globalParamModel = require('../models/params.models')
@@ -16,8 +14,9 @@ const isExist = async (id) => {
 
 const getAll = async (userId, args) => {
     const { s, d, stat } = args
-    console.log(args)
-     try{
+    let rawDate
+    if(d) rawDate = d.split('T')[0]
+    try{
         return await prisma.transaction.findMany({ ...(userId && {
             where: { userId, 
                 ...(s && { detailTrans: {
@@ -28,7 +27,10 @@ const getAll = async (userId, args) => {
                         ]
                     }
                 } }),
-                ...(d && { plannedDate: d }),
+                ...(d && { plannedDate: {
+                    lte: `${rawDate}T23:59:59.999Z`,
+                    gte: `${rawDate}T00:00:00.000Z`
+                } }),
                 ...(stat && { status: stat })
              }
         }), include: { detailTrans: { include: { order: true, event: true } }, BarcodeUsage: true }, orderBy: { createdDate: 'desc' }})
