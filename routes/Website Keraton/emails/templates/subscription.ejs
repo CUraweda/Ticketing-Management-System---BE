@@ -1,51 +1,74 @@
-<div class="div-1">
-  <div class="div-2">
-    <img src="cid:0" alt="Logo" class="img-keraton" />
-    <h1>Keraton Kasepuhan Cirebon</h1>
-  </div>
-  <h1>Ini Subscription</h1>
-  <h3><%= title %></h3>
-  <img src="cid:1" alt="Gambar Event" class="image-event" />
-  <p><%= desc %></p>
-  <a href="<%= link %>">
-    <button class="style-button">Link Fuckin Here</button>
-  </a>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
 
-<style>
-  @import url("https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap");
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap");
 
-  * {
-    font-family: Raleway;
-  }
+      body {
+        font-family: "Raleway", sans-serif;
+        margin: 0;
+        padding: 0;
+      }
 
-  .div-1 {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
+      .container {
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+        text-align: center;
+      }
 
-  .div-2 {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
+      .img-keraton {
+        width: 4rem;
+        height: 4rem;
+      }
 
-  .img-keraton {
-    width: 4rem;
-    height: 4rem;
-  }
+      .image-event {
+        width: 8rem;
+        height: 5rem;
+      }
 
-  .image-event {
-    width: 8rem;
-    height: 5rem;
-  }
-
-  .style-button {
-    background-color: #daa520;
-    padding: 0.5rem;
-    border-radius: 2rem;
-  }
-</style>
+      .style-button {
+        background-color: #daa520;
+        padding: 0.5rem;
+        border-radius: 2rem;
+        text-decoration: none;
+        color: white;
+        display: inline-block;
+      }
+    </style>
+  </head>
+  <body>
+    <table
+      class="container"
+      role="presentation"
+      cellspacing="0"
+      cellpadding="0"
+      border="0"
+    >
+      <tr>
+        <td align="center">
+          <img src="cid:0" alt="Logo" class="img-keraton" />
+          <h1>Keraton Kasepuhan Cirebon</h1>
+        </td>
+      </tr>
+      <tr>
+        <td align="center">
+          <h1>Ini Subscription</h1>
+          <h3><%= title %></h3>
+        </td>
+      </tr>
+      <tr>
+        <td align="center">
+          <img src="cid:1" alt="Gambar Event" class="image-event" />
+          <p><%= desc %></p>
+          <a href="<%= link %>" class="style-button">Link Fuckin Here</a>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
