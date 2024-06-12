@@ -56,6 +56,7 @@ const getInvoice = async (search) => {
                 category: true,
               },
             },
+            event: true
           },
         },
       },

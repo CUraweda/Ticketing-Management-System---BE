@@ -47,8 +47,7 @@ expressRouter.post("/email-transaction", async (req, res) => {
 });
 expressRouter.post("/create-transaction", async (req, res) => {
   try {
-    const data = await transactionModel.cre
-    ate(req.body);
+    const data = await transactionModel.create(req.body);
     return success(res, "Penambahan pesanan berhasil", data);
   } catch (err) {
     return error(res, err.message);
