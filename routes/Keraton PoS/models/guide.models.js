@@ -20,21 +20,21 @@ const getAll = async () => {
   }
 };
 const emailExist = async (email) => {
-  try{
+  try {
     return await prisma.guide.findFirst({ where: { email } })
-  }catch(err){
+  } catch (err) {
     throwError(err)
   }
 }
 const create = async (data) => {
   try {
     return await prisma.guide.create({ data: data }).then(
-        await logsModel.logCreate(
-          `Membuat guide ${data.name}`,
-          "Guide",
-          "Success"
-        )
-      );
+      await logsModel.logCreate(
+        `Membuat guide ${data.name}`,
+        "Guide",
+        "Success"
+      )
+    );
   } catch (err) {
     await logsModel.logCreate(`Membuat guide ${data.name}`, "Guide", "Failed");
     throwError(err);
@@ -63,19 +63,27 @@ const update = async (id, data) => {
   }
 };
 
-const createUpdate = async (ident, data = { id, email }) => {
-  try{
-    const guideExist = await emailExist(data.email)
-    if(ident != "create") if(guideExist) throw Error('Email already used by another Guide')
-    if (guideExist && guideExist.disabled) data.disabled = false
-    return await prisma.guide.upsert({
-      where: { ...(data.id ? { id: data.id } : { email: data.email}) },
-      create: data, update: data
-    })
-  }catch(err){
-    throwError(err)
+const createUpdate = async (action, data) => {
+  try {
+    if (action === 'create') {
+      const guideExist = await emailExist(data.email);
+      if (guideExist) throw new Error('Email already used by another Guide');
+      return await prisma.guide.create({
+        data,
+      });
+    } else if (action === 'update') {
+      const guideExist = await emailExist(data.email);
+      if (guideExist && guideExist.disabled) data.disabled = false;
+      return await prisma.guide.upsert({
+        where: { id: data.id },
+        create: data,
+        update: data,
+      });
+    }
+  } catch (err) {
+    throwError(err);
   }
-}
+};
 const deleteGuide = async (id) => {
   try {
     const guide = await getOne(id);

@@ -281,11 +281,18 @@ const printTransaction = async (data) => {
       fs.writeFileSync(filePath, buffer);
 
       const pdfUrl = `${BASE_URL}/pdfs/${ticketName} ${data.customer.name} ${formattedDate}.pdf`;
+
       import("open")
         .then((openModule) => {
-          openModule.default(pdfUrl).catch((error) => {
-            console.error(`Failed to open ${pdfUrl} in browser:`, error);
-          });
+          openModule.default(pdfUrl)
+            // .then(() => {
+            // setTimeout(() => {
+
+            // }, 2000);
+            // })
+            .catch((error) => {
+              console.error(`Failed to open ${pdfUrl} in browser:`, error);
+            });
         })
         .catch((error) => {
           console.error(`Failed to import open module:`, error);
@@ -333,6 +340,14 @@ const sendEmailToUser = async (data) => {
       encoding: "base64",
     });
 
+    const logoBJB = fs.readFileSync(`${assetsPath}/bjb.png`, {
+      encoding: "base64",
+    });
+
+    const logoTelU = fs.readFileSync(`${assetsPath}/TelU.png`, {
+      encoding: "base64",
+    });
+
     const [reserveDate, reserveTime] = splitDate(data.plannedDate);
     const [createdDate, createdTime] = splitDate(data.createdDate);
 
@@ -356,6 +371,8 @@ const sendEmailToUser = async (data) => {
           logoKKC: `data:image/svg+xml;base64,${logoKKC}`,
           ticketBg: `data:image/png;base64,${ticketBg}`,
           decorBg: `data:image/png;base64,${decorBg}`,
+          logoBJB: `data:image/png;base64,${logoBJB}`,
+          logoTelU: `data:image/png;base64,${logoTelU}`,
           tickets: [tickets],
           ticketQR,
         });
@@ -419,6 +436,8 @@ const sendEmailToUser = async (data) => {
     const htmlInvoice = await ejs.renderFile(emailInvoicePath, {
       title: `Invoice ${data.customer.name} ${createdDate}`,
       logoKKC: `data:image/svg+xml;base64,${logoKKC}`,
+      logoTelU: `data:image/png;base64,${logoTelU}`,
+      logoBJB: `data:image/png;base64,${logoBJB}`,
       invoice: data,
       cashier: data.user,
       customer: data.customer,

@@ -1,204 +1,251 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title><%= title %></title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-      .fw-600 {
-        font-weight: 600;
-      }
-      h6 {
-        font-size: 20px;
-        line-height: 28px;
-      }
-      p {
-        font-size: 16px;
-        line-height: 24px;
-      }
-      h6,
-      p {
-        padding: 0;
-        margin: 0;
-      }
-      .flex {
-        display: flex;
-      }
-      .fd-col {
-        flex-direction: column;
-      }      
-      .w-full {
-        width: 100%;
-      }
-      .h-full {
-        height: 100%;
-      }
-      .to-ellipsis {
-        width: 100%;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }   
-      .pd-sd-2 {
-        padding-inline: 2rem;
-      }
-      .sm-top-1 {
-        margin-top: 1rem;
-      }
-      .sm-bottom-2 {
-        margin-bottom: 2rem;
-      }
-      .gap\[0\.25\] {
-        gap: 0.25rem;
-      }
-      .gap\[0\.5\] {
-        gap: 0.5rem;
-      }
-      .align-items-f-start {
-        align-items: flex-start;
-      }
-      .align-items-center {
-        align-items: center;
-      }
-      .align-items-f-end {
-        align-items: flex-end;
-      }
-      .justify-content-center {
-        justify-content: center;
-      }
-      .justify-content-sb {
-        justify-content: space-between;
-      }
-      .invoice-detail__container-content {
-        background-color: white;
-        border-radius: 10px;
-        width: 900px;
-        font-family: "Poppins";
-      }
 
-      .invoice-detail__content-header {
-        width: 100%;
-        background-color: #ffd477;
-        border-radius: 10px 10px 0 0;
-        padding: 20px;
-        margin: 0;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>
+    <%= title %>
+  </title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-      .invoice-detail__header-img > img {
-        height: 125px;
-      }
+    .fw-600 {
+      font-weight: 600;
+    }
 
-      .invoice-detail__header-data {
-        margin-left: 2rem;
-      }
-      .invoice-detail__header-data p {
-        margin-left: 1rem;
-      }
-      .invoice-detail__header-date {
-        margin-left: auto;
-      }
-      .invoice-detail__header-date img {
-        height: 100px;
-        width: 100px;
-      }
-      .data-row {
-        padding-bottom: 0.5rem;
-        border-bottom: 1px solid black;
-      }
-      .invoice-detail__button {
-        background-color: #ffe29a;
-        font-family: "Poppins";
-        font-size: 16px;
-        width: 120px;
-        height: 40px;
-        border-radius: 5px;
-        border: none;
-        padding: 10px 20px;
-        margin-bottom: 20px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-      }
-      .invoice-detail__button:hover {
-        background-color: #ffd477;
-      }
-    </style>
-  </head>
+    h6 {
+      font-size: 20px;
+      line-height: 28px;
+    }
 
-  <body>
-      <div
-        class="invoice-detail__container-content flex fd-col align-items-center"
-      >
-        <div class="invoice-detail__content-header flex align-items-center">
-          <div class="invoice-detail__header-img flex justify-content-center">
-            <img src=<%= logoKKC %> alt="Logo Keraton Kasepuhan Cirebon"/>
-          </div>
-          <div class="invoice-detail__header-data flex fd-col">
-            <h6>Kasir</h6>
-            <p><%= cashier.name %> (<%= cashier.email %>)</p>
-            <h6>Nama Pelanggan</h6>
-            <p><%= invoice.customer.name %> (<%= customer.name %>)</p>
-            <% if (!customer.number) { %> <% } else { %>
-            <p><%= customer.number %></p>
+    p {
+      font-size: 16px;
+      line-height: 24px;
+    }
+
+    h6,
+    p {
+      padding: 0;
+      margin: 0;
+    }
+
+    .flex {
+      display: flex;
+    }
+
+    .fd-col {
+      flex-direction: column;
+    }
+
+    .w-full {
+      width: 100%;
+    }
+
+    .h-full {
+      height: 100%;
+    }
+
+    .to-ellipsis {
+      width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .pd-sd-2 {
+      padding-inline: 2rem;
+    }
+
+    .sm-top-1 {
+      margin-top: 1rem;
+    }
+
+    .sm-bottom-2 {
+      margin-bottom: 2rem;
+    }
+
+    .gap\[0\.25\] {
+      gap: 0.25rem;
+    }
+
+    .gap\[0\.5\] {
+      gap: 0.5rem;
+    }
+
+    .align-items-f-start {
+      align-items: flex-start;
+    }
+
+    .align-items-center {
+      align-items: center;
+    }
+
+    .align-items-f-end {
+      align-items: flex-end;
+    }
+
+    .justify-content-center {
+      justify-content: center;
+    }
+
+    .justify-content-sb {
+      justify-content: space-between;
+    }
+
+    .invoice-detail__container-content {
+      background-color: white;
+      border-radius: 10px;
+      width: 900px;
+      font-family: "Poppins";
+    }
+
+    .invoice-detail__content-header {
+      width: 100%;
+      background-color: #ffd477;
+      border-radius: 10px 10px 0 0;
+      padding: 20px;
+      margin: 0;
+    }
+
+    .invoice-detail__header-img>img {
+      height: 125px;
+    }
+
+    .invoice-detail__header-data {
+      margin-left: 2rem;
+    }
+
+    .invoice-detail__header-data p {
+      margin-left: 1rem;
+    }
+
+    .invoice-detail__header-date {
+      margin-left: auto;
+    }
+
+    .invoice-detail__header-date img {
+      height: 100px;
+      width: 100px;
+    }
+
+    .data-row {
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid black;
+    }
+
+    .invoice-detail__button {
+      background-color: #ffe29a;
+      font-family: "Poppins";
+      font-size: 16px;
+      width: 120px;
+      height: 40px;
+      border-radius: 5px;
+      border: none;
+      padding: 10px 20px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .invoice-detail__button:hover {
+      background-color: #ffd477;
+    }
+
+    .footer-image {
+      width: fit-content;
+      height: 45px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="invoice-detail__container-content flex fd-col align-items-center">
+    <div class="invoice-detail__content-header flex align-items-center">
+      <div class="invoice-detail__header-img flex justify-content-center">
+        <img src=<%=logoKKC %> alt="Logo Keraton Kasepuhan Cirebon"/>
+      </div>
+      <div class="invoice-detail__header-data flex fd-col">
+        <h6>Kasir</h6>
+        <p>
+          <%= cashier.name %> (<%= cashier.email %>)
+        </p>
+        <h6>Nama Pelanggan</h6>
+        <p>
+          <%= invoice.customer.name %> (<%= customer.name %>)
+        </p>
+        <% if (!customer.number) { %>
+          <% } else { %>
+            <p>
+              <%= customer.number %>
+            </p>
             <% } %>
-          </div>
-          <div class="invoice-detail__header-date flex fd-col align-items-center">
-            <p class="fw-600">Jadwal Reservasi</p>
-            <p><%= reserveDate %> | <%= reserveTime %></p>
-            <img src="<%= invoiceQR ? invoiceQR : null %>" alt="QR Code" />
-          </div>
-        </div>
-        <div class="invoice-detail__content-data w-full sm-top-1 pd-sd-2">
-          <div
-            class="invoice-detail__data-pesanan flex fd-col gap[0.5] sm-bottom-1"
-          >
-            <h6 class="fw-600">Reservasi</h6>
-            <% tickets.forEach((ticket, i) => { %>
-            <div class="flex align-items-center justify-content-sb">
-              <div class="flex fd-col">
-                <p class="to-overflow">
-                  <%= ticket.order && ticket.order.name %>
+      </div>
+      <div class="invoice-detail__header-date flex fd-col align-items-center">
+        <p class="fw-600">Jadwal Reservasi</p>
+        <p>
+          <%= reserveDate %> | <%= reserveTime %>
+        </p>
+        <img src="<%= invoiceQR ? invoiceQR : null %>" alt="QR Code" />
+      </div>
+    </div>
+    <div class="invoice-detail__content-data w-full sm-top-1 pd-sd-2">
+      <div class="invoice-detail__data-pesanan flex fd-col gap[0.5] sm-bottom-1">
+        <h6 class="fw-600">Reservasi</h6>
+        <% tickets.forEach((ticket, i)=> { %>
+          <div class="flex align-items-center justify-content-sb">
+            <div class="flex fd-col">
+              <p class="to-overflow">
+                <%= ticket.order && ticket.order.name %>
+              </p>
+              <p>Rp. <%= ticket.price %>,00 x <%= ticket.amount %> Tiket</p>
+              <% if (ticket.guide) { %>
+                <p>Guide : <%= ticket.guide && ticket.guide.name %>
                 </p>
-                <p>Rp. <%= ticket.price %>,00 x <%=
-                  ticket.amount %> Tiket</p>
-                <% if (ticket.guide) { %>
-                <p>Guide : <%= ticket.guide && ticket.guide.name %></p>
                 <%}%>
-              </div>
-              <div class="pesanan-harga flex fd-col align-items-f-end">
-                <p>Rp. <%= ticket.totalPrice %>,00</p>
-                <% if (ticket.discountAmount <= 0) { %> <% } else { %>
-                <p>- <%= ticket.discount %></p>
-                <% } %>
-              </div>
             </div>
-            <% }) %>
+            <div class="pesanan-harga flex fd-col align-items-f-end">
+              <p>Rp. <%= ticket.totalPrice %>,00</p>
+              <% if (ticket.discountAmount <=0) { %>
+                <% } else { %>
+                  <p>- <%= ticket.discount %>
+                  </p>
+                  <% } %>
+            </div>
           </div>
+          <% }) %>
+      </div>
 
-          <div
-            class="invoice-detail__data-layanan flex fd-col gap[0.25] sm-top-1"
-          >
-            <div class="data-row flex justify-content-sb">
-              <h6 class="fw-600">Biaya Tambahan</h6>
-              <p>Rp. <%= invoice.additionalFee %>,00</p>
-            </div>
-            <div class="flex justify-content-sb">
-              <div class="flex fd-col align-items-center">
-                <h6 class="fw-600">Pembayaran</h6>
-                <p><%= invoice.method %></p>
-              </div>
-              <div class="flex fd-col align-items-center">
-                <h6 class="fw-600">Total</h6>
-                <p>Rp. <%= invoice.total %>,00</p>
-              </div>
-            </div>
+      <div class="invoice-detail__data-layanan flex fd-col gap[0.25] sm-top-1">
+        <div class="data-row flex justify-content-sb">
+          <h6 class="fw-600">Biaya Tambahan</h6>
+          <p>Rp. <%= invoice.additionalFee %>,00</p>
+        </div>
+        <div class="flex justify-content-sb">
+          <div class="flex fd-col align-items-center">
+            <h6 class="fw-600">Pembayaran</h6>
+            <p>
+              <%= invoice.method %>
+            </p>
+          </div>
+          <div class="flex fd-col align-items-center">
+            <h6 class="fw-600">Total</h6>
+            <p>Rp. <%= invoice.total %>,00</p>
           </div>
         </div>
       </div>
-  </body>
+    </div>
+    <div style="margin: 5px 0 15px 0">Support By</div>
+    <div class="flex" style="gap: 20px;">
+      <img src=<%=logoBJB %> alt="Logo Keraton Kasepuhan Cirebon" class="footer-image"/>
+      <img src=<%=logoTelU %> alt="Logo Keraton Kasepuhan Cirebon" class="footer-image"/>
+    </div>
+  </div>
+</body>
+
 </html>

@@ -54,6 +54,8 @@ router.get('/render-invoice', async (req, res) => {
       title: "Title Here",
       ticketBg: "/public/assets/email/bg-keraton.png",
       logoKKC: "/public/assets/email/logo.png",
+      logoBJB: "/public/assets/email/bjb.png",
+      logoTelU: "/public/assets/email/TelU.png",
       decorBg: "/public/assets/email/bg-decor.png",
       reserveDate: '2024-01-04',
       reserveTime: "09:00",
@@ -277,7 +279,9 @@ router.post(
         },
         attachment: [
           "public/assets/email/logo.png",
-          "public/assets/email/bg-keraton.png"
+          "public/assets/email/bg-keraton.png",
+          "public/assets/email/logobjb.png",
+          "public/assets/email/logoTelU.png"
           // transformUrl(dataReference.image),
         ],
       };

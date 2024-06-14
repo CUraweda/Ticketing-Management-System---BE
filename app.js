@@ -59,8 +59,8 @@ io.on("connection", async (socket) => {
   socket.on("event", () => {
     console.log('New Event Entry')
     io.emit('event')
-    })
-    socket.on("tiket", () => {
+  })
+  socket.on("tiket", () => {
     console.log('New Tiket Entry')
     io.emit('tiket')
   })
@@ -70,6 +70,7 @@ io.on("connection", async (socket) => {
 });
 
 //? SETTING
+app.set('views', path.join(__dirname, 'routes', 'Keraton PoS', 'views'));
 app.set('view engine', 'ejs')
 
 //? COMMON MIDDLEWARES
@@ -89,6 +90,7 @@ app.get("/ping", async (req, res) => {
   }
 });
 
+
 //? ROUTES
 app.use("/keraton", keratonWebsiteRouter);
 app.use("/keraton-pos", keratonPosRouter);
@@ -97,6 +99,9 @@ app.use("/qrcodes", express.static(path.join(__dirname, "public", "qrcodes")));
 app.use("/pdfs", express.static(path.join(__dirname, "public", "pdfs")));
 app.use("/public/assets/email/", express.static(path.join(__dirname, 'public/assets/email')));
 
+app.get("/test", (req, res) => {
+  res.render("email_invoices")
+})
 //? RUN DEVELOPMENT SERVER
 server.listen(port, (err) => {
   console.log(`🚀 Server ready at: http://localhost:${port}`);

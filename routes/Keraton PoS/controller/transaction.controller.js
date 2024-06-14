@@ -71,6 +71,13 @@ expressRouter.get("/email_invoice/:id", async (req, res) => {
   const logoKKC = fs.readFileSync(`${assetsPath}/logo.svg`, {
     encoding: "base64",
   });
+  const logoBJB = fs.readFileSync(`${assetsPath}/bjb.png`, {
+    encoding: "base64",
+  });
+  const logoTelU = fs.readFileSync(`${assetsPath}/TelU.png`, {
+    encoding: "base64",
+  });
+
   const InvoiceQRPath = data.qr[0].replace("./public/qrcodes/", "");
   const InvoiceQRPathFull = path.join(qrPath, InvoiceQRPath);
   const invoiceQR = fs.readFileSync(InvoiceQRPathFull, {
@@ -104,6 +111,8 @@ expressRouter.get("/email_invoice/:id", async (req, res) => {
   res.render("email_invoice", {
     title: "Invoice",
     logoKKC: `data:image/svg+xml;base64,${logoKKC}`,
+    logoTelU: `data:image/png;base64,${logoTelU}`,
+    logoBJB: `data:image/png;base64,${logoBJB}`,
     invoice: data,
     cashier: data.user,
     customer: data.customer,
