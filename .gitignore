@@ -5,7 +5,7 @@ public/assets/events/*
 public/qrcodes/*
 public/uploads/*
 public/pdfs/*
-# prisma/migrations/*
+prisma/migrations/*
 logs
 *.log
 

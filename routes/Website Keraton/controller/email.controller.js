@@ -19,19 +19,19 @@ function transformUrl(url) {
 }
 
 router.get('/render-sub', async (req, res) => {
-  try{
+  try {
     res.render(path.resolve("routes/Website Keraton/emails/templates/subscription"), {
       title: "TITLE HERE",
       desc: "Description Here",
       link: process.env.BASE_URL
     })
-  }catch(err){
+  } catch (err) {
     return error(res, err.message)
   }
 })
 
 router.get('/render-ticket', async (req, res) => {
-  try{
+  try {
     res.render(path.resolve('routes/Keraton PoS/views/email_ticket'), {
       title: "Title Here",
       ticketBg: "/public/assets/email/bg-keraton.png",
@@ -43,7 +43,52 @@ router.get('/render-ticket', async (req, res) => {
         order: { name: "Ticket Name Here" }
       }]
     })
-  }catch(err){
+  } catch (err) {
+    return error(res, err.message)
+  }
+})
+
+router.get('/render-invoice', async (req, res) => {
+  try {
+    res.render(path.resolve('routes/Keraton PoS/views/email_invoice'), {
+      title: "Title Here",
+      ticketBg: "/public/assets/email/bg-keraton.png",
+      logoKKC: "/public/assets/email/logo.png",
+      decorBg: "/public/assets/email/bg-decor.png",
+      reserveDate: '2024-01-04',
+      reserveTime: "09:00",
+      invoiceQR: "/public/assets/email/bg-decor.png",
+      cashier: {
+        name: "Cashier Name",
+        email: "Cashier Email@gmail.com"
+      },
+      customer: {
+        name: "Customer Name",
+        number: "00982398398283"
+      },
+      invoice: {
+        customer: {
+          name: "Customer Name"
+        },
+        additionalFee: 9000,
+        method: "BJB",
+        total: 900000
+      },
+      tickets: [{
+        order: {
+          name: "Order Name"
+        },
+        guide: {
+          name: "Guide Name"
+        },
+        totalPrice: "908423908490",
+        discountAmount: 10,
+        discount: "10",
+        amount: "908",
+        price: "Price Here"
+      }]
+    })
+  } catch (err) {
     return error(res, err.message)
   }
 })
@@ -152,13 +197,13 @@ router.get("/invoice/:id", auth([]), async (req, res) => {
           quantity: detail.amount,
           price: detail.orderId
             ? parseFloat(detail.order.price).toLocaleString("id-ID", {
-                style: "currency",
-                currency: "IDR",
-              })
+              style: "currency",
+              currency: "IDR",
+            })
             : parseFloat(detail.event.price).toLocaleString("id-ID", {
-                style: "currency",
-                currency: "IDR",
-              }),
+              style: "currency",
+              currency: "IDR",
+            }),
           total:
             detail.amount *
             (detail.orderId ? detail.order.price : detail.event.price),
