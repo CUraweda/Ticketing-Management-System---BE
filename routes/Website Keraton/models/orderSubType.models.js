@@ -22,7 +22,9 @@ const getAll = async () => {
     try {
         return await prisma.orderSubType.findMany({
             where: { disabled: false },
-            include: { orders: true }
+            include: { orders: {
+                where: { deleted: false }
+            } }
         });
     } catch (err) {
         throwError(err);

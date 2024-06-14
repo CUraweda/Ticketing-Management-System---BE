@@ -58,5 +58,12 @@ const updateCarts = async (data) => {
     throwError(err);
   }
 };
+const forgotPassword = async (email) => {
+  try{
+
+  }catch(err){
+    throwError(err)
+  }
+}
 
 module.exports = { getUser, isExist, logIn, updateCarts };
