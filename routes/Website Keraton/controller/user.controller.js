@@ -17,8 +17,10 @@ router.get("/", auth(['SUPER_ADMIN', 'ADMIN']), async (req, res) => {
 router.post("/:id?", auth(['SUPER_ADMIN']), async (req, res) => {
     let updatedUser
     try {
-        const emailExist = await userModel.emailExist(req.body.email)
-        if(emailExist) throw Error('Email already used')
+        if(req.body.email){
+            const emailExist = await userModel.emailExist(req.body.email)
+            if(emailExist) throw Error('Email already used')
+        }
         if (req.params.id) {
             const userExist = await userModel.isExist(req.params.id)
             if (!userExist) throw Error('User didnt exist')

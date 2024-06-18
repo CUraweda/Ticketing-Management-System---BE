@@ -28,16 +28,17 @@ const createUpdate = async (ident, id, data) => {
     try {
         if (ident != "create") await isExist(id).then(exist => { if (!exist) throw Error('Content ID didnt Exist') })
         if (textList) {
+            console.log(textList)
             for (let textIndex = 0; textIndex < textList.length; textIndex++) context[`xs${textIndex + 1}`] = textList[textIndex]
         }
         if (linkList) {
+            console.log(linkList)
             for (let linkIndex = 0; linkIndex < linkList.length; linkIndex++) context[`xl${linkIndex + 1}`] = linkList[linkIndex]
         }
         if (imageList) {
             for (let imgIndex = 0; imgIndex < imageList.length; imgIndex++) {
                 let imageData = imageList[imgIndex]
                 imageData.data = imageData.data?.path ? convertFilesToURL(imageData.data.path) : imageData.data
-                console.log(imageData.data)
                 context[`xi${imgIndex + 1}`] = imageData
             }
         }

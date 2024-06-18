@@ -14,9 +14,9 @@ router.post('/break', auth([]), async (req, res) => {
 })
 
 router.get('/', auth([]), async (req, res) => {
-    const { carts } = req.user
+    const { cartsKeraton } = req.user
     try {
-        return success(res, 'Success', carts)
+        return success(res, 'Success', cartsKeraton)
     } catch (err) {
         return error(res, err.message)
     }

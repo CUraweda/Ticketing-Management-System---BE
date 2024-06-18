@@ -195,20 +195,16 @@ router.get("/invoice/:id", auth([]), async (req, res) => {
         method: transactionExist.method,
         qr_exist: false,
         invoices: transactionExist.detailTrans.map((detail) => ({
-          item_desc: detail.order.desc,
+          item_desc: detail.order ? detail.order.desc : detail.event.desc,
           quantity: detail.amount,
-          price: detail.orderId
-            ? parseFloat(detail.order.price).toLocaleString("id-ID", {
+          price: detail.orderId ? parseFloat(detail.order.price).toLocaleString("id-ID", {
               style: "currency",
               currency: "IDR",
-            })
-            : parseFloat(detail.event.price).toLocaleString("id-ID", {
+            }) : parseFloat(detail.event.price).toLocaleString("id-ID", {
               style: "currency",
               currency: "IDR",
             }),
-          total:
-            detail.amount *
-            (detail.orderId ? detail.order.price : detail.event.price),
+          total: detail.amount * (detail.orderId ? detail.order.price : detail.event.price),
         })),
         subtotal: parseFloat(transactionExist.total).toLocaleString("id-ID", {
           style: "currency",
@@ -279,13 +275,13 @@ router.post(
         },
         attachment: [
           "public/assets/email/logo.png",
-          "public/assets/email/bg-keraton.png",
-          "public/assets/email/logobjb.png",
-          "public/assets/email/logoTelU.png"
-          // transformUrl(dataReference.image),
+          // "public/assets/email/bjb.png",
+          // "public/assets/email/TelU.png"
+          dataReference.image.contains(process.env.BASE_URL) ? transformUrl(dataReference.image) : "public/assets/email/bg-keraton.png",
         ],
       };
       setImmediate(async () => {
+        console.log('Generating Email...')
         const emailClass = new Email(
           process.env.EMAIL_FROM,
           emailData.to,

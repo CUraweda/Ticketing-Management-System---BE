@@ -7,7 +7,7 @@ const orderModel = require('./order.models')
 const action = async (actionParam, id, carts) => {
     try {
         const user = await prisma.user.findFirst(id)
-        let rawUserCarts = user.carts
+        let rawUserCarts = user.cartsKeraton
         switch (actionParam) {
             case "add":
                 for (let cart of carts) rawUserCarts[cart.id] = cart
@@ -18,7 +18,7 @@ const action = async (actionParam, id, carts) => {
             default:
                 break
         }
-        return await userModel.update(user.id, { carts: rawUserCarts })
+        return await userModel.update(user.id, { cartsKeraton: rawUserCarts })
     } catch (err) {
         throwError(err)
     }
@@ -26,9 +26,9 @@ const action = async (actionParam, id, carts) => {
 
 const updateCart = async (id, carts) => {
     try {
-        return await prisma.user.update({ where: { id }, data: { carts } })
+        return await prisma.user.update({ where: { id }, data: { cartsKeraton: carts } })
     } catch (err) {
-        throwError(err)
+    throwError(err)
     }
 }
 
@@ -36,8 +36,8 @@ const validate = async (carts) => {
     let dataToMatch = {}, checkedCart = []
     try {
         if (carts.length < 1) throw Error('No Item in carts')
-        const tiketDatas =  await prisma.order.findMany()
-        const eventDatas = await prisma.events.findMany()
+        const tiketDatas =  await prisma.order.findMany({ where: { deleted: false} })
+        const eventDatas = await prisma.events.findMany({ where: { deleted: false } })
         for(let tiket of tiketDatas) dataToMatch["T|" + tiket.id] = {
             image: tiket.image,
             price: tiket.price
