@@ -24,18 +24,18 @@
       margin: 0;
     }
 
-    h5,
+    h6,
     h3 {
       font-family: "Times New Roman", Times, serif;
     }
 
-    h5 {
-      font-size: 22px;
+    h6 {
+      font-size: 14px;
       color: #dfb032;
     }
 
     .ticket-padding {
-      padding: 3rem;
+      padding: 1rem;
       height: 100%;
       width: 100%;
       /* position: absolute;
@@ -46,8 +46,8 @@
 
     .ticket {
       display: flex;
-      width: 970px;
-      height: 320px;
+      width: 470px;
+      height: 150px;
       border-radius: 0.5rem;
       overflow: hidden;
       position: relative;
@@ -98,14 +98,14 @@
       flex-direction: column;
       height: 55%;
       gap: 0.1rem;
-      padding: 20px;
+      padding: 13px;
       color: #000000;
       border-radius: 0.5rem;
       background-color: #f0f0f0eb;
     }
 
     .ticket-main_header p {
-      font-size: 1rem;
+      font-size: 14px;
       border-bottom: 1px solid #000;
       padding: 0;
       padding-bottom: 0.5rem;
@@ -119,13 +119,14 @@
     }
 
     .ticket-logo img {
-      width: 80px;
-      height: 80px;
+      width: 40px;
+      height: 40px;
     }
 
     .ticket-qr img {
-      width: 120px;
-      height: 120px;
+      margin-top: 5px;
+      width: 55px;
+      height: 55px;
       object-fit: contain;
     }
 
@@ -140,18 +141,17 @@
       z-index: 10;
     }
 
-    /* 
+
     .triangle-divider2 {
       position: absolute;
-      left: 205px;
+      left: 278px;
       width: 0;
       height: 0;
-      border-left: 10px solid transparent;
-      border-right: 10px solid transparent;
-      border-top: 10px solid #ffffff;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 8px solid #ffffff;
       z-index: 10;
-    } */
-
+    }
 
     .triangle-polygon1 {
       top: 0;
@@ -170,7 +170,7 @@
     }
 
     .ticket-name_container {
-      width: fit-content;
+      width: 100px;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -179,8 +179,8 @@
       border-left: 1px solid #ccc;
       background-color: #eed184;
       position: relative;
-      border-top-right-radius: 0.8rem;
-      border-bottom-right-radius: 0.8rem;
+      border-top-right-radius: 0.5rem;
+      border-bottom-right-radius: 0.5rem;
     }
 
     .ticket-name_content {
@@ -190,22 +190,22 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      width: 14rem;
-      height: 60%;
+      width: 8rem;
+      height: 45%;
+      padding-top: 10px;
       border: 1px solid #000;
       border-radius: 0.3rem;
-      gap: 1rem;
     }
 
     img.logo-name {
-      width: 40px;
-      height: 40px;
+      width: 25px;
+      height: 25px;
       top: 10px;
       left: 10px;
     }
 
     .ticket-name_container span {
-      font-size: xx-large;
+      font-size: large;
       color: #000000c7;
       letter-spacing: 0.9px;
     }
@@ -235,13 +235,15 @@
       bottom: 0;
       right: 0;
       border-bottom-right-radius: 0.8rem;
+      width: 5.5rem;
+
     }
 
     .Decor1:nth-child(2) {
       top: 0;
       left: 0;
       transform: rotate(180deg);
-      width: 13.9rem;
+      width: 5.5rem;
       border-bottom-right-radius: 1rem;
       border-bottom-left-radius: 2rem;
 
@@ -274,7 +276,7 @@
                 <div class="ticket-logo">
                   <img src="<%= logoKKC %>" alt="Keraton Kasepuhan Cirebon" />
                 </div>
-                <h5 class="ticket_title">KERATON KASEPUHAN CIREBON</h5>
+                <h6 class="ticket_title">KERATON KASEPUHAN CIREBON</h6>
                 <div class="ticket-qr">
                   <img src="<%= ticketQR[index] %>" alt="QR Code" />
                 </div>
@@ -291,11 +293,11 @@
           <img src="<%= decorBg %>" alt="" class="Decor1" />
           <img src="<%= decorBg %>" alt="" class="Decor1" />
           <div class="ticket-name_content">
-            <div style="display: flex; justify-content: space-around; width:70%;">
+            <div style="display: flex; justify-content: space-around; width:60%;">
               <img src="<%= logoKKC %>" alt="" class="logo-name" />
               <span>wisata</span>
             </div>
-            <h3 class="ticket-name_title" style="font-size: x-large; padding-left: 3px;">
+            <h3 class="ticket-name_title" style="font-size: small; padding-inline: 5px;">
               <%= ticket.order.name %>
             </h3>
 
