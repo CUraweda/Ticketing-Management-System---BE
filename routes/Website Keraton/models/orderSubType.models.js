@@ -1,3 +1,4 @@
+const { throwIfDetached } = require("puppeteer");
 const { throwError } = require("../../utils/helper");
 const { prisma } = require("../../utils/prisma");
 const orderTypeModel = require('./orderType.models');
@@ -22,9 +23,11 @@ const getAll = async () => {
     try {
         return await prisma.orderSubType.findMany({
             where: { disabled: false },
-            include: { orders: {
-                where: { deleted: false }
-            } }
+            include: {
+                orders: {
+                    where: { deleted: false }
+                }
+            }
         });
     } catch (err) {
         throwError(err);
@@ -44,14 +47,18 @@ const getOne = async (id) => {
 
 const createUpdate = async (ident, data = { name, typeId }) => {
     try {
+        // if(data.name){
+        console.log(data)
         const alreadyExist = await nameExist(data.name);
+        if (ident !== 'create') if (alreadyExist.id != data.id) throw new Error('Sub Type Name already exists');
+        if(ident != 'update' && alreadyExist) throw Error('Sub Type Name already exist')
+        if (alreadyExist && alreadyExist.disabled) data.disabled = false
+        // }
         const typeExist = await orderTypeModel.isExist(data.typeId);
         if (!typeExist) throw new Error('Type doesn\'t exist')
         if (data.minimumUnits) data.minimumUnits = +data.minimumUnits
-        if (ident !== 'create') if (alreadyExist) throw new Error('Sub Type Name already exists');
-        if (alreadyExist && alreadyExist.disabled) data.disabled = false
         return await prisma.orderSubType.upsert({
-            where:{ ...(data.id ? { id: data.id } : { name: data.name }) },
+            where: { ...(data.id ? { id: data.id } : { name: data.name }) },
             create: data, update: data
         });
     } catch (err) {
