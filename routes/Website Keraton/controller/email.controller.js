@@ -277,7 +277,7 @@ router.post(
           "public/assets/email/logo.png",
           // "public/assets/email/bjb.png",
           // "public/assets/email/TelU.png"
-          dataReference.image.contains(process.env.BASE_URL) ? transformUrl(dataReference.image) : "public/assets/email/bg-keraton.png",
+          dataReference.image.includes(process.env.BASE_URL) ? transformUrl(dataReference.image) : "public/assets/email/bg-keraton.png",
         ],
       };
       setImmediate(async () => {
