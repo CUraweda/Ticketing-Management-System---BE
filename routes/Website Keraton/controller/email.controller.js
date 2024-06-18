@@ -55,6 +55,7 @@ router.get('/render-invoice', async (req, res) => {
       ticketBg: "/public/assets/email/bg-keraton.png",
       logoKKC: "/public/assets/email/logo.png",
       logoBJB: "/public/assets/email/bjb.png",
+      logo: "/public/assets/email/curaweda.png",
       logoTelU: "/public/assets/email/TelU.png",
       decorBg: "/public/assets/email/bg-decor.png",
       reserveDate: '2024-01-04',

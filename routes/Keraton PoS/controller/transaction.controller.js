@@ -74,6 +74,9 @@ expressRouter.get("/email_invoice/:id", async (req, res) => {
   const logoBJB = fs.readFileSync(`${assetsPath}/bjb.png`, {
     encoding: "base64",
   });
+  const logoCuraweda = fs.readFileSync(`${assetsPath}/curaweda.png`, {
+    encoding: "base64",
+  });
   const logoTelU = fs.readFileSync(`${assetsPath}/TelU.png`, {
     encoding: "base64",
   });
@@ -113,6 +116,7 @@ expressRouter.get("/email_invoice/:id", async (req, res) => {
     logoKKC: `data:image/svg+xml;base64,${logoKKC}`,
     logoTelU: `data:image/png;base64,${logoTelU}`,
     logoBJB: `data:image/png;base64,${logoBJB}`,
+    logoCuraweda: `data:image/png;base64,${logoCuraweda}`,
     invoice: data,
     cashier: data.user,
     customer: data.customer,

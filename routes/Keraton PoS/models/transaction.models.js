@@ -46,10 +46,10 @@ const getInvoice = async (search) => {
             }
           }
           // OR: [
-            // {
-            // },
-            // {
-            // }
+          // {
+          // },
+          // {
+          // }
           // ]
         }),
       },
@@ -351,6 +351,10 @@ const sendEmailToUser = async (data) => {
       encoding: "base64",
     });
 
+    const logoCuraweda = fs.readFileSync(`${assetsPath}/curaweda.png`, {
+      encoding: "base64",
+    });
+
     const logoTelU = fs.readFileSync(`${assetsPath}/TelU.png`, {
       encoding: "base64",
     });
@@ -379,6 +383,7 @@ const sendEmailToUser = async (data) => {
           ticketBg: `data:image/png;base64,${ticketBg}`,
           decorBg: `data:image/png;base64,${decorBg}`,
           logoBJB: `data:image/png;base64,${logoBJB}`,
+          logoCuraweda: `data:image/png;base64,${logoCuraweda}`,
           logoTelU: `data:image/png;base64,${logoTelU}`,
           tickets: [tickets],
           ticketQR,
@@ -445,6 +450,7 @@ const sendEmailToUser = async (data) => {
       logoKKC: `data:image/svg+xml;base64,${logoKKC}`,
       logoTelU: `data:image/png;base64,${logoTelU}`,
       logoBJB: `data:image/png;base64,${logoBJB}`,
+      logoCuraweda: `data:image/png;base64,${logoCuraweda}`,
       invoice: data,
       cashier: data.user,
       customer: data.customer,
