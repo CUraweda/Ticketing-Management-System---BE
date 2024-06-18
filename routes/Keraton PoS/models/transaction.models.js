@@ -40,9 +40,10 @@ const getInvoice = async (search) => {
         }),
         detailTrans: {
           some: {
-            // eventId: null,
-            // NOT: { orderId: undefined },
-            ...(search && { name: { contains: search } })
+            OR: [
+              { ...(search && { order: { name: { contains: search } } }) },
+              { ...(search && { event: { name: { contains: search } } }) }
+            ]
           }
         }
       },

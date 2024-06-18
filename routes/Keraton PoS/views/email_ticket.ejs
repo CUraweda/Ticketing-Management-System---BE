@@ -1,280 +1,320 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title><%= title %></title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-      }
-      .bold {
-        font-weight: 600;
-      }
-      h6,
-      p {
-        padding: 0;
-        margin: 0;
-      }
-      h5,
-      h3 {
-        font-family: "Times New Roman", Times, serif;
-      }
-      h5 {
-        font-size: 20px;
-        color: #dfb032;
-      }
-      .ticket-padding {
-        padding: 1rem;
-        height: 100%;
-        width: 100%;
-        position: absolute;
-        z-index: 10;
-        top: 0;
-        left: 0;
-      }
 
-      .ticket {
-        display: flex;
-        width: 870px;
-        height: 320px;
-        border-radius: 0.5rem;
-        overflow: hidden;
-        position: relative;
-      }
-      .ticket_title {
-        width: 200px;
-      }
-      .ticket span {
-        font-family: "Times New Roman", Times, serif;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>
+    <%= title %>
+  </title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
 
-      .ticket-main_container {
-        position: relative;
-        width: 60%;
-        height: 80%;
-      }
+    .bold {
+      font-weight: 600;
+    }
 
-      img.bg-tiket {
-        width: 100%;
-        height: 85%;
-        object-fit: cover;
-        position: absolute;
-        top: 0;
-        left: 0;
-        background-color: #ffedbc;
-        opacity: 80%;
-        filter: sepia(0.5) hue-rotate(10deg) brightness(1.2) contrast(-36);
-        z-index: 1;
-      }
+    h6,
+    p {
+      padding: 0;
+      margin: 0;
+    }
 
-      .image-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: #eed284bd;
-        z-index: 5;
-      }
+    h5,
+    h3 {
+      font-family: "Times New Roman", Times, serif;
+    }
 
-      .ticket-content {
-        position: relative;
-        width: 75%;
-        z-index: 1;
-        display: flex;
-        flex-direction: column;
-        height: 55%;
-        gap: 0.1rem;
-        padding: 20px;
-        color: #000000;
-        border-radius: 0.5rem;
-        background-color: #f0f0f0eb;
-      }
+    h5 {
+      font-size: 22px;
+      color: #dfb032;
+    }
 
-      .ticket-main_header p {
-        font-size: 0.8rem;
-        border-bottom: 1px solid #000;
-        padding: 0;
-        padding-bottom: 0.5rem;
-        margin: 0;
-      }
+    .ticket-padding {
+      padding: 3rem;
+      height: 100%;
+      width: 100%;
+      /* position: absolute;
+      z-index: 10;
+      top: 0;
+      left: 0; */
+    }
 
-      .ticket-main_content {
-        display: flex;
-        align-items: center;
-        gap: 0.2rem;
-      }
+    .ticket {
+      display: flex;
+      width: 970px;
+      height: 320px;
+      border-radius: 0.5rem;
+      overflow: hidden;
+      position: relative;
+    }
 
-      .ticket-logo img {
-        width: 50px;
-        height: 50px;
-      }
+    .ticket_title {
+      width: 200px;
+    }
 
-      .ticket-qr img {
-        width: 70px;
-        height: 70px;
-        object-fit: contain;
-      }
-      .triangle-divider {
-        position: absolute;
-        left: 689px;
-        width: 0;
-        height: 0;
-        border-left: 5px solid transparent;
-        border-right: 5px solid transparent;
-        border-top: 10px solid #ffffff;
-        z-index: 10;
-      }
+    .ticket span {
+      font-family: "Times New Roman", Times, serif;
+    }
 
-      .triangle-polygon1 {
-        top: 0;
-      }
-      .triangle-polygon2 {
-        bottom: 0;
-        transform: rotate(180deg);
-      }
+    .ticket-main_container {
+      position: relative;
+      width: 60%;
+      height: 100%;
+    }
 
-      .line-divider {
-        border: 1px dashed #000;
-        height: 67.5%;
-        width: 1px;
-        margin-top: 0rem;
-      }
+    img.bg-tiket {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background-color: #ffedbc;
+      opacity: 80%;
+      filter: sepia(0.5) hue-rotate(10deg) brightness(1.2) contrast(-36);
+      z-index: 1;
+    }
 
-      .ticket-name_container {
-        width: 7.5rem;
-        display: flex;
-        margin-right: 24rem;
-        flex-direction: column;
-        justify-content: center;
-        height: 67.9%;
-        align-items: center;
-        border-left: 1px solid #ccc;
-        background-color: #eed184;
-        position: relative;
-      }
+    .image-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #eed284bd;
+      z-index: 5;
+    }
 
-      .ticket-name_content {
-        position: relative;
-        transform: rotate(270deg);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        width: 12rem;
-        height: 50%;
-        border: 1px solid #000;
-        border-radius: 0.3rem;
-        gap: 1rem;
-      }
+    .ticket-content {
+      position: relative;
+      width: 75%;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      height: 55%;
+      gap: 0.1rem;
+      padding: 20px;
+      color: #000000;
+      border-radius: 0.5rem;
+      background-color: #f0f0f0eb;
+    }
 
-      img.logo-name {
-        position: absolute;
-        width: 30px;
-        height: 30px;
-        top: 10px;
-        left: 10px;
-      }
+    .ticket-main_header p {
+      font-size: 1rem;
+      border-bottom: 1px solid #000;
+      padding: 0;
+      padding-bottom: 0.5rem;
+      margin: 0;
+    }
 
-      .ticket-name_container span {
-        font-size: 1.5rem;
-        color: #000000c7;
-        letter-spacing: 0.9px;
-      }
+    .ticket-main_content {
+      display: flex;
+      align-items: center;
+      gap: 0.2rem;
+    }
 
-      .ticket-name_container h5 {
-        font-size: 2rem;
-        color: #6b4226;
-        text-transform: uppercase;
-        margin: 0;
-        text-align: center;
-      }
-      .ticket-name_container h3.long-text {
-        font-size: 1.7rem;
-      }
+    .ticket-logo img {
+      width: 80px;
+      height: 80px;
+    }
 
-      img.Decor1 {
-        position: absolute;
-        height: 10rem;
-        width: 7rem;
-        object-fit: cover;
-        mix-blend-mode: multiply;
-        opacity: 70%;
-      }
+    .ticket-qr img {
+      width: 120px;
+      height: 120px;
+      object-fit: contain;
+    }
 
-      .Decor1:nth-child(1) {
-        bottom: 0;
-        right: 0;
-      }
+    .triangle-divider {
+      position: absolute;
+      left: 575px;
+      width: 0;
+      height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-top: 10px solid #ffffff;
+      z-index: 10;
+    }
 
-      .Decor1:nth-child(2) {
-        top: 0;
-        left: 0;
-        transform: rotate(180deg);
-        border-bottom-right-radius: 1rem;
-      }
+    /* 
+    .triangle-divider2 {
+      position: absolute;
+      left: 205px;
+      width: 0;
+      height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-top: 10px solid #ffffff;
+      z-index: 10;
+    } */
+
+
+    .triangle-polygon1 {
+      top: 0;
+    }
+
+    .triangle-polygon2 {
+      bottom: 0;
+      transform: rotate(180deg);
+    }
+
+    .line-divider {
+      border: 1px dashed #000;
+      height: 100%;
+      width: 1px;
+      margin-top: 0rem;
+    }
+
+    .ticket-name_container {
+      width: fit-content;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      height: 100%;
+      align-items: center;
+      border-left: 1px solid #ccc;
+      background-color: #eed184;
+      position: relative;
+      border-top-right-radius: 0.8rem;
+      border-bottom-right-radius: 0.8rem;
+    }
+
+    .ticket-name_content {
+      position: relative;
+      transform: rotate(270deg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 14rem;
+      height: 60%;
+      border: 1px solid #000;
+      border-radius: 0.3rem;
+      gap: 1rem;
+    }
+
+    img.logo-name {
+      width: 40px;
+      height: 40px;
+      top: 10px;
+      left: 10px;
+    }
+
+    .ticket-name_container span {
+      font-size: xx-large;
+      color: #000000c7;
+      letter-spacing: 0.9px;
+    }
+
+    .ticket-name_container h5 {
+      font-size: 2rem;
+      color: #6b4226;
+      text-transform: uppercase;
+      margin: 0;
+      text-align: center;
+    }
+
+    .ticket-name_container h3.long-text {
+      font-size: 1.7rem;
+    }
+
+    img.Decor1 {
+      position: absolute;
+      height: 100%;
+      width: 15rem;
+      object-fit: cover;
+      mix-blend-mode: multiply;
+      opacity: 70%;
+    }
+
+    .Decor1:nth-child(1) {
+      bottom: 0;
+      right: 0;
+      border-bottom-right-radius: 0.8rem;
+    }
+
+    .Decor1:nth-child(2) {
+      top: 0;
+      left: 0;
+      transform: rotate(180deg);
+      width: 13.9rem;
+      border-bottom-right-radius: 1rem;
+      border-bottom-left-radius: 2rem;
+
+    }
+
+    .only-pdf {
+      display: none;
+    }
+
+    @media print {
       .only-pdf {
-        display: none;
+        page-break-after: always;
+        display: block !important;
       }
-      @media print {
-        .only-pdf {
-          page-break-after: always;
-          display: block !important;
-        }
-      }
-    </style>
-  </head>
+    }
+  </style>
+</head>
 
-  <body>
-    <% tickets.forEach((ticket, i) => { i++ %> <% for (let index = 0; index <
-    ticket.amount; index++) { %>
-    <section class="ticket">
-      <div class="ticket-main_container">
-        <img src="<%= ticketBg %>" class="bg-tiket" alt="Background Keraton" />
-        <div class="ticket-padding">
-          <div class="ticket-content">
-            <div class="ticket-main_header">
-              <p>Tiket Masuk / Entry Pass</p>
-            </div>
-            <div class="ticket-main_content">
-              <div class="ticket-logo">
-                <img src="<%= logoKKC %>" alt="Keraton Kasepuhan Cirebon" />
+<body>
+  <% tickets.forEach((ticket, i)=> { i++ %> <% for (let index=0; index < ticket.amount; index++) { %>
+      <section class="ticket">
+        <div class="ticket-main_container">
+          <img src="<%= ticketBg %>" class="bg-tiket" alt="Background Keraton" />
+          <div class="ticket-padding">
+            <div class="ticket-content">
+              <div class="ticket-main_header">
+                <p>Tiket Masuk / Entry Pass</p>
               </div>
-              <h5 class="ticket_title">KERATON KASEPUHAN CIREBON</h5>
-              <div class="ticket-qr">
-                <img src="<%= ticketQR[index] %>" alt="QR Code" />
+              <div class="ticket-main_content">
+                <div class="ticket-logo">
+                  <img src="<%= logoKKC %>" alt="Keraton Kasepuhan Cirebon" />
+                </div>
+                <h5 class="ticket_title">KERATON KASEPUHAN CIREBON</h5>
+                <div class="ticket-qr">
+                  <img src="<%= ticketQR[index] %>" alt="QR Code" />
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="triangle-divider triangle-polygon1"></div>
-      <div class="triangle-divider triangle-polygon2"></div>
-      <div class="line-divider"></div>
-      <div class="ticket-name_container">
-        <img src="<%= decorBg %>" alt="" class="Decor1" />
-        <img src="<%= decorBg %>" alt="" class="Decor1" />
-        <div class="ticket-name_content">
-          <img src="<%= logoKKC %>" alt="" class="logo-name" />
-          <span>wisata</span>
-          <h3 class="ticket-name_title"><%= ticket.order.name %></h3>
+        <div class="triangle-divider triangle-polygon1"></div>
+        <div class="triangle-divider triangle-polygon2"></div>
+        <div class="triangle-divider2 triangle-polygon1"></div>
+        <div class="triangle-divider2 triangle-polygon2"></div>
+        <div class="line-divider"></div>
+        <div class="ticket-name_container">
+          <img src="<%= decorBg %>" alt="" class="Decor1" />
+          <img src="<%= decorBg %>" alt="" class="Decor1" />
+          <div class="ticket-name_content">
+            <div style="display: flex; justify-content: space-around; width:70%;">
+              <img src="<%= logoKKC %>" alt="" class="logo-name" />
+              <span>wisata</span>
+            </div>
+            <h3 class="ticket-name_title" style="font-size: x-large; padding-left: 3px;">
+              <%= ticket.order.name %>
+            </h3>
+
+          </div>
         </div>
-      </div>
-    </section>
-    <div class="only-pdf"></div>
-    <% } %> <% }) %>
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const names = document.querySelectorAll(".ticket-name_title");
-        names.forEach((name) => {
-          if (name.textContent.length > 20) {
-            name.classList.add("long-text");
-          }
-        });
-      });
-    </script>
-  </body>
+      </section>
+      <div class="only-pdf"></div>
+      <% } %>
+        <% }) %>
+          <script>
+            document.addEventListener("DOMContentLoaded", function () {
+              const names = document.querySelectorAll(".ticket-name_title");
+              names.forEach((name) => {
+                if (name.textContent.length > 20) {
+                  name.classList.add("long-text");
+                }
+              });
+            });
+          </script>
+</body>
+
 </html>
