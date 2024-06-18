@@ -50,8 +50,8 @@ const createUpdate = async (ident, data = { name, typeId }) => {
         // if(data.name){
         console.log(data)
         const alreadyExist = await nameExist(data.name);
-        if (ident !== 'create') if (alreadyExist.id != data.id) throw new Error('Sub Type Name already exists');
-        if(ident != 'update' && alreadyExist) throw Error('Sub Type Name already exist')
+        if (ident !== 'create') if (alreadyExist && alreadyExist.id != data.id) throw new Error('Sub Type Name already exists');
+        if (ident != 'update' && alreadyExist) throw Error('Sub Type Name already exist')
         if (alreadyExist && alreadyExist.disabled) data.disabled = false
         // }
         const typeExist = await orderTypeModel.isExist(data.typeId);
