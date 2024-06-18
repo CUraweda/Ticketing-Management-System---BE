@@ -198,12 +198,12 @@ router.get("/invoice/:id", auth([]), async (req, res) => {
           item_desc: detail.order ? detail.order.desc : detail.event.desc,
           quantity: detail.amount,
           price: detail.orderId ? parseFloat(detail.order.price).toLocaleString("id-ID", {
-              style: "currency",
-              currency: "IDR",
-            }) : parseFloat(detail.event.price).toLocaleString("id-ID", {
-              style: "currency",
-              currency: "IDR",
-            }),
+            style: "currency",
+            currency: "IDR",
+          }) : parseFloat(detail.event.price).toLocaleString("id-ID", {
+            style: "currency",
+            currency: "IDR",
+          }),
           total: detail.amount * (detail.orderId ? detail.order.price : detail.event.price),
         })),
         subtotal: parseFloat(transactionExist.total).toLocaleString("id-ID", {

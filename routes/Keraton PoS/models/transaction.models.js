@@ -34,18 +34,24 @@ const getInvoice = async (search) => {
     const data = await prisma.transaction.findMany({
       where: {
         ...(search && {
-          user: {
-            name: { contains: search }
+          // user: {
+          //   name: { contains: search }
+          // }
+          detailTrans: {
+            some: {
+              OR: [
+                { order: { name: { contains: search } } },
+                { event: { name: { contains: search } } }
+              ]
+            }
           }
+          // OR: [
+            // {
+            // },
+            // {
+            // }
+          // ]
         }),
-        detailTrans: {
-          some: {
-            OR: [
-              { ...(search && { order: { name: { contains: search } } }) },
-              { ...(search && { event: { name: { contains: search } } }) }
-            ]
-          }
-        }
       },
       include: {
         user: true,
