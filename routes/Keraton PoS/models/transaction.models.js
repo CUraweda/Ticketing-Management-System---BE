@@ -252,8 +252,10 @@ const printTransaction = async (data) => {
           width: "2480",
           height: "3508",
           margin: {
-            top: "1px",
-            left: "1px",
+            top: '1cm',
+            left: '1cm',
+            right: '1cm',
+            bottom: '1cm'
           },
           args: ["--no-sandbox", "--disable-setuid-sandbox"],
           printBackground: true,
