@@ -63,7 +63,7 @@
 
     .ticket-main_container {
       position: relative;
-      width: 60%;
+      width: 70%;
       height: 100%;
     }
 
@@ -144,7 +144,7 @@
 
     .triangle-divider2 {
       position: absolute;
-      left: 278px;
+      left: 326px;
       width: 0;
       height: 0;
       border-left: 5px solid transparent;
@@ -191,7 +191,7 @@
       align-items: center;
       justify-content: center;
       width: 8rem;
-      height: 45%;
+      height: 50%;
       padding-top: 10px;
       border: 1px solid #000;
       border-radius: 0.3rem;
@@ -262,8 +262,9 @@
   </style>
 </head>
 
-<body>
-  <% for(let i = 0; i < ticketAmount; i++) {%>
+<body style="display: flex; flex-wrap: wrap; width: 100%;">
+  <div class="tickets-container">
+    <% for(let i=0; i < ticketAmount; i++) {%>
       <section class="ticket">
         <div class="ticket-main_container">
           <img src="<%= ticketBg %>" class="bg-tiket" alt="Background Keraton" />
@@ -303,19 +304,20 @@
 
           </div>
         </div>
-      </section>
+  </div>
+  </section>
   <% } %>
-      <div class="only-pdf"></div>
-          <script>
-            document.addEventListener("DOMContentLoaded", function () {
-              const names = document.querySelectorAll(".ticket-name_title");
-              names.forEach((name) => {
-                if (name.textContent.length > 20) {
-                  name.classList.add("long-text");
-                }
-              });
-            });
-          </script>
+    <div class="only-pdf"></div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const names = document.querySelectorAll(".ticket-name_title");
+        names.forEach((name) => {
+          if (name.textContent.length > 20) {
+            name.classList.add("long-text");
+          }
+        });
+      });
+    </script>
 </body>
 
 </html>
