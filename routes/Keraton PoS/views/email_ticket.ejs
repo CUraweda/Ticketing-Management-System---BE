@@ -263,7 +263,7 @@
 </head>
 
 <body>
-  <% tickets.forEach((ticket, i)=> { i++ %> <% for (let index=0; index < ticket.amount; index++) { %>
+  <% for(let i = 0; i < ticketAmount; i++) {%>
       <section class="ticket">
         <div class="ticket-main_container">
           <img src="<%= ticketBg %>" class="bg-tiket" alt="Background Keraton" />
@@ -278,7 +278,7 @@
                 </div>
                 <h6 class="ticket_title">KERATON KASEPUHAN CIREBON</h6>
                 <div class="ticket-qr">
-                  <img src="<%= ticketQR[index] %>" alt="QR Code" />
+                  <img src="<%= ticketQR[i] %>" alt="QR Code" />
                 </div>
               </div>
             </div>
@@ -304,9 +304,8 @@
           </div>
         </div>
       </section>
+  <% } %>
       <div class="only-pdf"></div>
-      <% } %>
-        <% }) %>
           <script>
             document.addEventListener("DOMContentLoaded", function () {
               const names = document.querySelectorAll(".ticket-name_title");

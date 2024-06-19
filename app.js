@@ -9,6 +9,7 @@ const keratonWebsiteRouter = require("./routes/Website Keraton/controller/index"
 const keratonPosRouter = require("./routes/Keraton PoS/controller/index");
 const { error } = require("console");
 const { success } = require("./routes/utils/response");
+const morgan = require("morgan");
 
 var app = express();
 var port = normalizePort(process.env.PORT || "3000");

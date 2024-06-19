@@ -219,43 +219,38 @@ const printTransaction = async (data) => {
 
     const [createdDate, createdTime] = splitDate(data.createdDate);
 
-    const decorBg = fs.readFileSync(`${assetsPath}/bg-decor.png`, {
-      encoding: "base64",
-    });
-    const ticketBg = fs.readFileSync(`${assetsPath}/bg-keraton.png`, {
-      encoding: "base64",
-    });
-    const logoKKC = fs.readFileSync(`${assetsPath}/logo.svg`, {
-      encoding: "base64",
-    });
+    const decorBg = fs.readFileSync(`${assetsPath}/bg-decor.png`, { encoding: "base64" });
+    const ticketBg = fs.readFileSync(`${assetsPath}/bg-keraton.png`, { encoding: "base64" });
+    const logoKKC = fs.readFileSync(`${assetsPath}/logo.svg`, { encoding: "base64" });
 
+
+    console.log(data.detailTrans)
     const pdfBuffers = await Promise.all(
       data.detailTrans.map(async (tickets, index) => {
         const qrArray = Object.values(tickets.qr);
-
         const ticketQR = await Promise.all(
           qrArray.map(async (qr) => {
             const formattedQrPath = qr.replace("./public/qrcodes/", "");
             const qrPathFull = path.join(qrPath, formattedQrPath);
-            const qrBase64 = fs.readFileSync(qrPathFull, {
-              encoding: "base64",
-            });
+            const qrBase64 = fs.readFileSync(qrPathFull, { encoding: "base64" });
             return `data:image/png;base64,${qrBase64}`;
           })
         );
 
+        console.log(tickets)
         const htmlTicket = await ejs.renderFile(emailTicketPath, {
           title: `Tiket ${data.customer.name} ${createdDate}_${index + 1}`,
           logoKKC: `data:image/svg+xml;base64,${logoKKC}`,
           ticketBg: `data:image/png;base64,${ticketBg}`,
           decorBg: `data:image/png;base64,${decorBg}`,
-          tickets: [tickets],
+          ticket: tickets,
+          ticketAmount: tickets.amount,
           ticketQR,
         });
 
         const options = {
-          width: "870px",
-          height: "320px",
+          width: "2480",
+          height: "3508",
           margin: {
             top: "1px",
             left: "1px",
@@ -279,28 +274,25 @@ const printTransaction = async (data) => {
       })
     );
 
+
     pdfBuffers.forEach(({ buffer, ticketName }, index) => {
       const formattedDate = createdDate.replace(/[/\\?%*:|"<>]/g, "-");
-      const filePath = path.join(
-        pdfPath,
-        `${ticketName} ${data.customer.name} ${formattedDate}.pdf`
-      );
+      const filePath = path.join(pdfPath, `${ticketName} ${data.customer.name} ${formattedDate}.pdf`);
       fs.writeFileSync(filePath, buffer);
 
       const pdfUrl = `${BASE_URL}/pdfs/${ticketName} ${data.customer.name} ${formattedDate}.pdf`;
 
-      import("open")
-        .then((openModule) => {
-          openModule.default(pdfUrl)
-            // .then(() => {
-            // setTimeout(() => {
+      import("open").then((openModule) => {
+        openModule.default(pdfUrl)
+          // .then(() => {
+          // setTimeout(() => {
 
-            // }, 2000);
-            // })
-            .catch((error) => {
-              console.error(`Failed to open ${pdfUrl} in browser:`, error);
-            });
-        })
+          // }, 2000);
+          // })
+          .catch((error) => {
+            console.error(`Failed to open ${pdfUrl} in browser:`, error);
+          });
+      })
         .catch((error) => {
           console.error(`Failed to import open module:`, error);
         });
@@ -309,6 +301,7 @@ const printTransaction = async (data) => {
     throwError(err);
   }
 };
+
 const sendEmailToUser = async (data) => {
   const currentTime = Date.now();
   if (currentTime - lastSentTime < SEND_INTERVAL) {
