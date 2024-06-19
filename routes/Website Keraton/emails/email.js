@@ -4,7 +4,7 @@ const path = require('path');
 const { readFileSync } = require('fs');
 
 class Emails {
-    constructor(from, to, subject = '', text = '') {
+    constructor(from, to, subject = '', text = '', pathTemplate = 'routes/Website Keraton/emails/templates') {
         this.email = nodemailer.createTransport({
             service: 'gmail',
             auth: {
@@ -17,7 +17,7 @@ class Emails {
             send: true,
             transport: this.email,
             views: {
-                root: path.resolve('routes/Website Keraton/emails/templates'),
+                root: path.resolve(pathTemplate),
                 options: {
                     extension: 'ejs'
                 }
@@ -27,6 +27,7 @@ class Emails {
             from, to, subject, text
         }
     }
+
 
     setFrom(val) {
         this.mailOptions['from'] = val

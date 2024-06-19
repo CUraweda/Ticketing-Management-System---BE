@@ -5,6 +5,7 @@ const html_to_pdf = require("html-pdf-node");
 const puppeteer = require("puppeteer");
 const fs = require("fs");
 const path = require("path");
+const barcodeModel = require('../../Website Keraton/models/barcode.model')
 const {
   throwError,
   startDate,
@@ -66,6 +67,7 @@ const getInvoice = async (search) => {
             event: true
           },
         },
+        BarcodeUsage: true
       },
       orderBy: {
         createdDate: "desc",
@@ -115,6 +117,7 @@ const getTickets = async (id) => {
             order: { include: { category: true } },
           },
         },
+        BarcodeUsage: true
       },
     });
     const qr = searchQr(transaction, "invoice");
@@ -185,8 +188,20 @@ const create = async (data) => {
 
     const transaction = await prisma.transaction.create({
       data: data,
+      include: { detailTrans: true }
     });
+    let possibleUses = 0
+    transaction.detailTrans.forEach((detail) => {
+      possibleUses += detail.amount
+    })
+    const plannedDate = new Date(transaction.plannedDate);
+    const expiredAt = new Date(plannedDate);
+    expiredAt.setDate(expiredAt.getDate() + 1);
     createQr(transaction, "invoice");
+    await barcodeModel.create({
+      uniqueId: transaction.id,
+      possibleUses, expiredAt
+  })
     await logsModel.logCreate(
       `Membuat transaksi ${transaction.id} untuk pelanggan ${data.customer.name}`,
       "Transaction",
@@ -224,7 +239,6 @@ const printTransaction = async (data) => {
     const logoKKC = fs.readFileSync(`${assetsPath}/logo.svg`, { encoding: "base64" });
 
 
-    console.log(data.detailTrans)
     const pdfBuffers = await Promise.all(
       data.detailTrans.map(async (tickets, index) => {
         const qrArray = Object.values(tickets.qr);
@@ -303,26 +317,22 @@ const printTransaction = async (data) => {
 };
 
 const sendEmailToUser = async (data) => {
-  const currentTime = Date.now();
-  if (currentTime - lastSentTime < SEND_INTERVAL) {
-    return res.status(429).json({ msg: "Tunggu beberapa detik sebelum mengirim lagi" });
-  }
-  if (!data.customer.email) {
-    return throwError("Email tidak ditemukan!");
-  }
-  const config = {
-    service: "gmail",
-    auth: {
-      user: EMAIL,
-      pass: PASSWORD,
-    },
-    tls: {
-      rejectUnauthorized: false,
-    },
-  };
-  const transporter = nodemailer.createTransport(config);
-
   try {
+    const currentTime = Date.now();
+    if (currentTime - lastSentTime < SEND_INTERVAL) throw Error("Tunggu beberapa detik sebelum mengirim lagi")
+    if (!data.customer.email) throw Error ("Email tidak ditemukan!")
+    const config = {
+      service: "gmail",
+      auth: {
+        user: EMAIL,
+        pass: PASSWORD,
+      },
+      tls: {
+        rejectUnauthorized: false,
+      },
+    };
+    const transporter = nodemailer.createTransport(config);
+
     const browser = await puppeteer.launch({
       headless: true,
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
@@ -330,28 +340,12 @@ const sendEmailToUser = async (data) => {
     });
 
     // Path
-    const decorBg = fs.readFileSync(`${assetsPath}/bg-decor.png`, {
-      encoding: "base64",
-    });
-    const ticketBg = fs.readFileSync(`${assetsPath}/bg-keraton.png`, {
-      encoding: "base64",
-    });
-    const logoKKC = fs.readFileSync(`${assetsPath}/logo.svg`, {
-      encoding: "base64",
-    });
-
-    const logoBJB = fs.readFileSync(`${assetsPath}/bjb.png`, {
-      encoding: "base64",
-    });
-
-    const logoCuraweda = fs.readFileSync(`${assetsPath}/curaweda.png`, {
-      encoding: "base64",
-    });
-
-    const logoTelU = fs.readFileSync(`${assetsPath}/TelU.png`, {
-      encoding: "base64",
-    });
-
+    const decorBg = fs.readFileSync(`${assetsPath}/bg-decor.png`, { encoding: "base64", });
+    const ticketBg = fs.readFileSync(`${assetsPath}/bg-keraton.png`, { encoding: "base64", });
+    const logoKKC = fs.readFileSync(`${assetsPath}/logo.svg`, { encoding: "base64", });
+    const logoBJB = fs.readFileSync(`${assetsPath}/bjb.png`, { encoding: "base64", });
+    const logoCuraweda = fs.readFileSync(`${assetsPath}/curaweda.png`, { encoding: "base64", });
+    const logoTelU = fs.readFileSync(`${assetsPath}/TelU.png`, { encoding: "base64", });
     const [reserveDate, reserveTime] = splitDate(data.plannedDate);
     const [createdDate, createdTime] = splitDate(data.createdDate);
 
@@ -378,7 +372,8 @@ const sendEmailToUser = async (data) => {
           logoBJB: `data:image/png;base64,${logoBJB}`,
           logoCuraweda: `data:image/png;base64,${logoCuraweda}`,
           logoTelU: `data:image/png;base64,${logoTelU}`,
-          tickets: [tickets],
+          ticket: tickets,
+          ticketAmount: tickets.amount,
           ticketQR,
         });
 

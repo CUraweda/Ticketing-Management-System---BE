@@ -4,6 +4,8 @@ const { formatCurrency } = require("../../utils/helper");
 const fs = require("fs");
 const path = require("path");
 const transactionModel = require("../models/transaction.models");
+const { prisma } = require("../../utils/prisma");
+const Emails = require("../../Website Keraton/emails/email");
 
 expressRouter.get("/detail-invoice", async (req, res) => {
   try {
@@ -126,5 +128,99 @@ expressRouter.get("/email_invoice/:id", async (req, res) => {
     tickets: invoiceTickets,
   });
 });
+
+function transformUrl(url) {
+  const relevantPart = url.replace(`${process.env.BASE_URL}`, "");
+  const transformedUrl = `public${relevantPart}`;
+  return transformedUrl;
+}
+
+
+expressRouter.get('/generate-email-invoice/:id', async (req, res) => {
+  try{
+    const transactionExist = await prisma.transaction.findFirstOrThrow({
+      where: { id: req.params.id },
+      include: {
+        user: true,
+        detailTrans: { include: { order: true, event: true } },
+        BarcodeUsage: true,
+      },
+    });
+    if (!transactionExist) throw Error("Transaction Didnt Exist");
+    const emailData = {
+      to: transactionExist.customer.email,
+      subject: "Invoice Transaksi Pesananan - Keraton Kasepuhan Cirebon",
+      data: {
+        email: transactionExist.customer.email,
+        name: transactionExist.customer.name,
+        date: new Intl.DateTimeFormat("id-ID", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        }).format(new Date(transactionExist.plannedDate)),
+        nomor_invoice: transactionExist.id,
+        method: transactionExist.method,
+        qr_exist: false,
+        invoices: transactionExist.detailTrans.map((detail) => ({
+          item_desc: detail.order ? detail.order.desc : detail.event.desc,
+          quantity: detail.amount,
+          price: detail.orderId ? parseFloat(detail.order.price).toLocaleString("id-ID", {
+            style: "currency",
+            currency: "IDR",
+          }) : parseFloat(detail.event.price).toLocaleString("id-ID", {
+            style: "currency",
+            currency: "IDR",
+          }),
+          total: detail.amount * (detail.orderId ? detail.order.price : detail.event.price),
+        })),
+        subtotal: parseFloat(transactionExist.total).toLocaleString("id-ID", {
+          style: "currency",
+          currency: "IDR",
+        }),
+        tax: parseFloat(transactionExist.additionalFee).toLocaleString(
+          "id-ID",
+          {
+            style: "currency",
+            currency: "IDR",
+          }
+        ),
+        total: (
+          parseFloat(transactionExist.total) +
+          parseFloat(transactionExist.additionalFee)
+        ).toLocaleString("id-ID", {
+          style: "currency",
+          currency: "IDR",
+        }),
+      },
+      attachment: ["public/assets/email/logo.png"],
+    };
+    for (let barcode of transactionExist.BarcodeUsage) {
+      emailData.data.qr_exist = true;
+      emailData.attachment.push(transformUrl(barcode.qrPath));
+    }
+    console.log(emailData.attachment)
+    setImmediate(async () => {
+      try {
+        const emailClass = new Emails(
+          process.env.EMAIL_FROM,
+          emailData.to,
+          emailData.subject
+        );
+        await emailClass
+          .sendEmailTemplate("invoice", emailData.data, emailData.attachment)
+          .then(() => {
+            console.log("Email berhasil terkirim");
+            return success(res, 'Email Successfully sended')
+          });
+      } catch (err) {
+        return error(res, 'Terjadi kesalahan saat mengirimkan email')
+      }
+    }); 
+  }catch(err){
+    return error(res, err.message)
+  }
+})
 
 module.exports = expressRouter;
