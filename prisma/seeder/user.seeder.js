@@ -40,6 +40,12 @@ const users = [
         role: "SUPER_ADMIN",
         password: "curawedasuper"
     },
+    {
+        name: "curaweda",
+        email: "curaweda1@gmail.com",
+        role: "CURAWEDA",
+        password: "password"
+    },
 ]
 
 const userSeed = async () => {

@@ -150,6 +150,29 @@ const getRevenue = async () => {
     throwError(err);
   }
 };
+
+const getRevenueCurawedaKeraton = async () => {
+  try{
+    const transaction = await prisma.transaction.findMany({
+      where: { createdDate: { gte: startDate, lte: endDate } },
+    })
+    let revenueKeraton = { CIH: 0, CIA: 0 }, revenueCuraweda = 0
+    transaction.forEach((trans) => {
+      switch(trans.method){
+        case "CASH":
+          revenueKeraton.CIH += trans.total
+          break;
+          default:
+            revenueKeraton.CIA += trans.total
+          break;
+      }
+      revenueCuraweda += trans.additionalFee
+    })
+    return { revenueKeraton, revenueCuraweda }
+  }catch(err){
+    throwError(err)
+  }
+}
 const getDistinctDate = async () => {
   try {
     return await prisma.transaction.findMany({ distinct: ["createdDate"] });
@@ -488,6 +511,7 @@ module.exports = {
   getAll,
   getOne,
   getTickets,
+  getRevenueCurawedaKeraton,
   getRevenue,
   getYear,
   getMonth,

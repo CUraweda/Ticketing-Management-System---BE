@@ -23,6 +23,14 @@ expressRouter.get("/income-revenue", async (req, res) => {
     return error(res, err.message);
   }
 });
+expressRouter.get('/income-revenue-curaweda', async (req, res) => {
+  try{
+    const data = await transactionModel.getRevenueCurawedaKeraton()
+    return success(res, "Data income berhasil di fetch", data)
+  }catch(err){
+    return error(res, err.message)
+  }
+})
 expressRouter.get("/generate-tickets/:id", async (req, res) => {
   try {
     const data = await transactionModel.getTickets(req.params.id);
