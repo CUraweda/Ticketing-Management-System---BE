@@ -32,6 +32,15 @@ expressRouter.get('/income-revenue-curaweda', async (req, res) => {
     return error(res, err.message)
   }
 })
+expressRouter.get('/income-revenue-tabel', async (req, res) => {
+  try{
+    const data = await transactionModel.getRevenueCurawedaTabel(req.query)
+    return success(res, 'Data income berhasil di fetch', data)
+  }catch(err){
+    return error(res, err.message)
+  }
+})
+
 expressRouter.get("/generate-tickets/:id", async (req, res) => {
   try {
     const data = await transactionModel.getTickets(req.params.id);

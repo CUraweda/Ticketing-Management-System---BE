@@ -153,25 +153,42 @@ const getRevenue = async () => {
   }
 };
 
-const getRevenueCurawedaKeraton = async () => {
+const getRevenueCurawedaKeraton = async (args) => {
+  let todayRevenue = { revenueKeraton: { COH: 0, CIA: 0 }, revenueCuraweda: 0, total: 0 }
   try {
     const transaction = await prisma.transaction.findMany({
-      where: { createdDate: { gte: startDate, lte: endDate } },
+      where: { plannedDate: { gte: startDate, lte: endDate } },
+      select: { plannedDate: true, keratonIncome: true, curawedaIncome: true, total: true }
     })
-    let revenueKeraton = { CIH: 0, CIA: 0 }, revenueCuraweda = 0
-    transaction.forEach((trans) => {
-      switch (trans.method) {
-        case "CASH":
-          revenueKeraton.CIH += +trans.total
-          break;
-        default:
-          revenueKeraton.CIA += +trans.total
-          break;
-      }
-      revenueCuraweda += trans.additionalFee
+    transaction.forEach(trans => {
+      todayRevenue.revenueKeraton.COH += trans.keratonIncome.COH
+      todayRevenue.revenueKeraton.CIA += trans.keratonIncome.CIA
+      todayRevenue.revenueCuraweda += trans.curawedaIncome.total
+      todayRevenue.total += trans.total
     })
-    return { revenueKeraton, revenueCuraweda }
+    return todayRevenue
   } catch (err) {
+    throwError(err)
+  }
+}
+
+const getRevenueCurawedaTabel = async (args) => {
+  try{
+    const { from, to } = args
+    try{
+       return await prisma.transaction.findMany({
+        where: {
+          plannedDate: {
+            gte: from ? `${from}T00:00:00.000Z` : startDate,
+            lte: to ? `${to}T23:59:59.999Z`: endDate
+          }
+        },
+        select: { plannedDate: true, keratonIncome: true, curawedaIncome: true, total: true }
+      })
+    }catch(err){
+      throwError(err)
+    }
+  }catch(err){
     throwError(err)
   }
 }
@@ -245,6 +262,7 @@ const create = async (data) => {
       switch (param.paidBy) {
         case "user":
           total += totalRawTax
+          revenueCuraweda.total += totalRawTax
           break;
         case "keraton":
           revenueKeraton[paramRevenueMethod] = revenueKeraton[paramRevenueMethod] - totalRawTax
@@ -561,6 +579,7 @@ module.exports = {
   getAll,
   getOne,
   getTickets,
+  getRevenueCurawedaTabel,
   getRevenueCurawedaKeraton,
   getRevenue,
   getYear,
