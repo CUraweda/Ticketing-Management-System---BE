@@ -26,6 +26,7 @@ expressRouter.get("/income-revenue", async (req, res) => {
 expressRouter.get('/income-revenue-curaweda', async (req, res) => {
   try{
     const data = await transactionModel.getRevenueCurawedaKeraton()
+    console.log(data)
     return success(res, "Data income berhasil di fetch", data)
   }catch(err){
     return error(res, err.message)

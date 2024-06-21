@@ -4,7 +4,9 @@ const nodemailer = require("nodemailer");
 const html_to_pdf = require("html-pdf-node");
 const puppeteer = require("puppeteer");
 const fs = require("fs");
+const globalParamModel = require('../../Website Keraton/models/params.models')
 const path = require("path");
+const transactionModelWeb = require('../../Website Keraton/models/transaction.models')
 const barcodeModel = require('../../Website Keraton/models/barcode.model')
 const {
   throwError,
@@ -152,24 +154,24 @@ const getRevenue = async () => {
 };
 
 const getRevenueCurawedaKeraton = async () => {
-  try{
+  try {
     const transaction = await prisma.transaction.findMany({
       where: { createdDate: { gte: startDate, lte: endDate } },
     })
     let revenueKeraton = { CIH: 0, CIA: 0 }, revenueCuraweda = 0
     transaction.forEach((trans) => {
-      switch(trans.method){
+      switch (trans.method) {
         case "CASH":
-          revenueKeraton.CIH += trans.total
+          revenueKeraton.CIH += +trans.total
           break;
-          default:
-            revenueKeraton.CIA += trans.total
+        default:
+          revenueKeraton.CIA += +trans.total
           break;
       }
       revenueCuraweda += trans.additionalFee
     })
     return { revenueKeraton, revenueCuraweda }
-  }catch(err){
+  } catch (err) {
     throwError(err)
   }
 }
@@ -205,32 +207,81 @@ const getMonth = async () => {
   }
 };
 const create = async (data) => {
+  let total = 0, revenueKeraton = { COH: 0, CIA: 0 }, revenueCuraweda = { total: 0 }, paramRevenueMethod, paramTax, possibleUses = 0
+  const taxParam = await globalParamModel.getOne({ identifier: 'KeratonAppTax' })
   try {
-    const order = data.order;
-    delete data.order;
+    let orders = data.order.map(cart => {
+      const totalCart = cart.amount * cart.price
+      total += totalCart
+      possibleUses += cart.amount
+      return {
+        amount: cart.amount,
+        orderId: cart.id,
+        ...(cart.guideId != '' && { guideId: cart.guideId })
+      }
+    })
+    delete data.order
 
+    // DISCOUNT & CASHBACK
+    if (data.cashback > 0) total -= total * (data.cashback / 100)
+    if (data.discount > 0) total -= total * (data.discount / 100)
+
+    // PAYMENT METHOD
+    switch (data.method) {
+      case "CASH":
+        paramRevenueMethod = 'COH'
+        paramTax = 'cash'
+        break;
+      default:
+        paramRevenueMethod = 'CIA'
+        paramTax = 'nonCash'
+        break;
+    }
+
+    // TAXES
+    taxParam.data[paramTax].forEach((param) => {
+      const totalRawTax = param.multiply ? total * param.tax : param.tax
+      revenueKeraton[paramRevenueMethod] = total
+      switch (param.paidBy) {
+        case "user":
+          total += totalRawTax
+          break;
+        case "keraton":
+          revenueKeraton[paramRevenueMethod] = revenueKeraton[paramRevenueMethod] - totalRawTax
+          revenueCuraweda.total += totalRawTax
+          break;
+      }
+    })
+
+    data.total = total
+    data.keratonIncome = revenueKeraton
+    data.curawedaIncome = revenueCuraweda
+    data.discount = `${data.discount} | ${data.discount}%`
+    data.cashback = `${data.cashback} | ${data.cashback}%`
     const transaction = await prisma.transaction.create({
       data: data,
       include: { detailTrans: true }
     });
-    let possibleUses = 0
-    transaction.detailTrans.forEach((detail) => {
-      possibleUses += detail.amount
-    })
     const plannedDate = new Date(transaction.plannedDate);
     const expiredAt = new Date(plannedDate);
     expiredAt.setDate(expiredAt.getDate() + 1);
-    createQr(transaction, "invoice");
     await barcodeModel.create({
       uniqueId: transaction.id,
       possibleUses, expiredAt
-  })
+    })
     await logsModel.logCreate(
       `Membuat transaksi ${transaction.id} untuk pelanggan ${data.customer.name}`,
       "Transaction",
       "Success"
     );
-    await detailTransModel.create(order, transaction, data.customer);
+
+    const orderDatas = orders.map((data) => {
+      return {
+        ...data,
+        transactionId: transaction.id
+      }
+    })
+    await transactionModelWeb.createManyDetail(orderDatas)
     return transaction.id;
   } catch (err) {
     console.log(err)
@@ -274,7 +325,6 @@ const printTransaction = async (data) => {
           })
         );
 
-        console.log(tickets)
         const htmlTicket = await ejs.renderFile(emailTicketPath, {
           title: `Tiket ${data.customer.name} ${createdDate}_${index + 1}`,
           logoKKC: `data:image/svg+xml;base64,${logoKKC}`,
@@ -345,7 +395,7 @@ const sendEmailToUser = async (data) => {
   try {
     const currentTime = Date.now();
     if (currentTime - lastSentTime < SEND_INTERVAL) throw Error("Tunggu beberapa detik sebelum mengirim lagi")
-    if (!data.customer.email) throw Error ("Email tidak ditemukan!")
+    if (!data.customer.email) throw Error("Email tidak ditemukan!")
     const config = {
       service: "gmail",
       auth: {

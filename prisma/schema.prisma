@@ -117,22 +117,24 @@ model OrderSubType {
 }
 
 model Transaction {
-  id            String         @id @default(uuid())
-  customer      Json?
-  additionalFee Int
-  total         Decimal        @db.Decimal(18, 2)
-  method        String
-  status        Status         @default(MENUNGGU_PEMBAYARAN)
-  plannedDate   DateTime
-  createdDate   DateTime       @default(now())
-  discount      String?
-  cashback      String?
-  user          User?          @relation(fields: [userId], references: [id])
-  userId        String?
-  nationality   Nationality?   @relation(fields: [nationalityId], references: [id])
-  nationalityId String?
-  detailTrans   DetailTrans[]
-  BarcodeUsage  BarcodeUsage[]
+  id             String         @id @default(uuid())
+  customer       Json?
+  total          Decimal        @db.Decimal(18, 2)
+  keratonIncome  Json
+  curawedaIncome Json
+  method         String
+  status         Status         @default(MENUNGGU_PEMBAYARAN)
+  plannedDate    DateTime
+  createdDate    DateTime       @default(now())
+  discount       String?
+  cashback       String?
+  user           User?          @relation(fields: [userId], references: [id])
+  userId         String?
+  cityName String?
+  nationality    Nationality?   @relation(fields: [nationalityId], references: [id])
+  nationalityId  String?
+  detailTrans    DetailTrans[]
+  BarcodeUsage   BarcodeUsage[]
 }
 
 model DetailTrans {

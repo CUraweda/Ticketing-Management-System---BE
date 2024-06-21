@@ -64,6 +64,7 @@ const getUnavailableGuide = async (date) => {
     throwError;
   }
 };
+
 const create = async (order, transaction, customer) => {
   try {
     for (const o of order) {
@@ -86,7 +87,7 @@ const create = async (order, transaction, customer) => {
             connect: {
               id: o.id,
             },
-          },
+          }
         },
       });
       createQr(data, "ticket");

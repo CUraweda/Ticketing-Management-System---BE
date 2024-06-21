@@ -4,14 +4,22 @@ const params = [
     {
         identifier: "KeratonAppTax",
         data: {
-            biayaLayanan: {
-                label: "Biaya Layanan",
-                price: 2500
-            },
-            biayaJasaAplikasi: {
-                label: "Biaya Jasa Aplikasi",
-                price: 1000
-            }
+            cash: [
+                {
+                    label: "Biaya Curaweda",
+                    tax: 1500,
+                    multiply: false,
+                    paidBy: "keraton"
+                }
+            ],
+            nonCash: [
+                {
+                    label: "Biaya Layanan",
+                    tax:  0.015,
+                    multiply: true,
+                    paidBy: "user"
+                }
+            ]
         }
     }
 ]
