@@ -160,11 +160,12 @@ const getRevenueCurawedaKeraton = async (args) => {
       where: { plannedDate: { gte: startDate, lte: endDate } },
       select: { plannedDate: true, keratonIncome: true, curawedaIncome: true, total: true }
     })
+    console.log(transaction)
     transaction.forEach(trans => {
       todayRevenue.revenueKeraton.COH += trans.keratonIncome.COH
       todayRevenue.revenueKeraton.CIA += trans.keratonIncome.CIA
-      todayRevenue.revenueCuraweda.COH += trans.curawedaIncome.total.COH
-      todayRevenue.revenueCuraweda.CIA += trans.curawedaIncome.total.CIA
+      todayRevenue.revenueCuraweda.COH += trans.curawedaIncome.COH
+      todayRevenue.revenueCuraweda.CIA += trans.curawedaIncome.CIA
       todayRevenue.total += +trans.total
     })
     return todayRevenue
@@ -264,7 +265,6 @@ const create = async (data) => {
       revenueKeraton[paramRevenueMethod] = total
       switch (param.paidBy) {
         case "user":
-          total += totalRawTax
           revenueCuraweda[paramRevenueMethod] += totalRawTax
           break;
         case "keraton":
@@ -275,12 +275,16 @@ const create = async (data) => {
       }
     })
 
+    console.log(revenueCuraweda, revenueKeraton, total)
+
     data.total = total
     data.additionalFee = totalTax
     data.keratonIncome = revenueKeraton
     data.curawedaIncome = revenueCuraweda
     data.discount = `${data.discount} | ${data.discount}%`
     data.cashback = `${data.cashback} | ${data.cashback}%`
+
+    console.log(data)
     const transaction = await prisma.transaction.create({
       data: data,
       include: { detailTrans: true }
