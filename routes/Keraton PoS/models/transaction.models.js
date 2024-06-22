@@ -242,7 +242,7 @@ const create = async (data) => {
     // DISCOUNT & CASHBACK
     if (data.cashback > 0) total -= total * (data.cashback / 100)
     if (data.discount > 0) total -= total * (data.discount / 100)
-
+P
     // PAYMENT METHOD
     switch (data.method) {
       case "CASH":
