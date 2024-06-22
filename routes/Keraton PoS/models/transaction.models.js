@@ -225,7 +225,7 @@ const getMonth = async () => {
 };
 const create = async (data) => {
   let total = 0, revenueKeraton = { COH: 0, CIA: 0 }, revenueCuraweda = { total: 0 }, paramRevenueMethod, paramTax, possibleUses = 0
-  const taxParam = await globalParamModel.getOne({ identifier: 'KeratonAppTax' })
+  const taxParam = await globalParamModel.getOne({ identifier: process.env.TAX_PARAMS_IDENTIFIER })
   try {
     let orders = data.order.map(cart => {
       const totalCart = cart.amount * cart.price
@@ -276,7 +276,7 @@ P
     data.curawedaIncome = revenueCuraweda
     data.discount = `${data.discount} | ${data.discount}%`
     data.cashback = `${data.cashback} | ${data.cashback}%`
-    const transaction = await prisma.transaction.create({
+  const transaction = await prisma.transaction.create({
       data: data,
       include: { detailTrans: true }
     });
