@@ -107,7 +107,7 @@ const createNew = async (data) => {
     }
 }
 
-const createManyDetail = async (datas = [{ amount, transactionId, orderId, eventId, guideId }]) => {
+const createManyDetail = async (datas = [{ amount, transactionId, orderId, eventId, guideId, nationalityId, cityName }]) => {
     try {
         return await prisma.detailTrans.createMany({ data: datas })
     } catch (err) {

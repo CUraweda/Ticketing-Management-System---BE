@@ -173,22 +173,22 @@ const getRevenueCurawedaKeraton = async (args) => {
 }
 
 const getRevenueCurawedaTabel = async (args) => {
-  try{
+  try {
     const { from, to } = args
-    try{
-       return await prisma.transaction.findMany({
+    try {
+      return await prisma.transaction.findMany({
         where: {
           plannedDate: {
             gte: from ? `${from}T00:00:00.000Z` : startDate,
-            lte: to ? `${to}T23:59:59.999Z`: endDate
+            lte: to ? `${to}T23:59:59.999Z` : endDate
           }
         },
         select: { plannedDate: true, keratonIncome: true, curawedaIncome: true, total: true }
       })
-    }catch(err){
+    } catch (err) {
       throwError(err)
     }
-  }catch(err){
+  } catch (err) {
     throwError(err)
   }
 }
