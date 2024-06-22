@@ -15,6 +15,26 @@ expressRouter.get("/detail-invoice", async (req, res) => {
     return error(res, err.message);
   }
 });
+expressRouter.get('/get-all-detail', async (req, res) => {
+  try {
+    const now = new Date();
+    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    const firstDayISO = firstDay.toISOString().split('T')[0];
+    const lastDayISO = lastDay.toISOString().split('T')[0];
+
+    const data = await transactionModel.getAllDetail({
+      transaction: { plannedDate: { gte: `${firstDayISO}T00:00:00.000Z`, lte: `${lastDayISO}T23:59:59.999Z` } },
+      OR: [
+        { nationalityId: { not: null } },
+        { cityName: { not: null } }
+      ]
+    })
+    return success(res, 'Berhasil di Fetch', data)
+  } catch (err) {
+    return error(res, err.message)
+  }
+})
 expressRouter.get("/income-revenue", async (req, res) => {
   try {
     const data = await transactionModel.getRevenue();
@@ -24,19 +44,19 @@ expressRouter.get("/income-revenue", async (req, res) => {
   }
 });
 expressRouter.get('/income-revenue-curaweda', async (req, res) => {
-  try{
+  try {
     const data = await transactionModel.getRevenueCurawedaKeraton()
     console.log(data)
     return success(res, "Data income berhasil di fetch", data)
-  }catch(err){
+  } catch (err) {
     return error(res, err.message)
   }
 })
 expressRouter.get('/income-revenue-tabel', async (req, res) => {
-  try{
+  try {
     const data = await transactionModel.getRevenueCurawedaTabel(req.query)
     return success(res, 'Data income berhasil di fetch', data)
-  }catch(err){
+  } catch (err) {
     return error(res, err.message)
   }
 })
@@ -155,7 +175,7 @@ function transformUrl(url) {
 
 
 expressRouter.get('/generate-email-invoice/:id', async (req, res) => {
-  try{
+  try {
     const transactionExist = await prisma.transaction.findFirstOrThrow({
       where: { id: req.params.id },
       include: {
@@ -235,8 +255,8 @@ expressRouter.get('/generate-email-invoice/:id', async (req, res) => {
       } catch (err) {
         return error(res, 'Terjadi kesalahan saat mengirimkan email')
       }
-    }); 
-  }catch(err){
+    });
+  } catch (err) {
     return error(res, err.message)
   }
 })

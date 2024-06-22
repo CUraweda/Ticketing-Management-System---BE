@@ -65,11 +65,14 @@ const getOne = async (id) => {
 }
 
 const createNew = async (data) => {
-    let { user, carts, args } = data, payloads = [], tiketUses = 0, revenueKeraton = { COH: 0, CIA: 0 }, revenueCuraweda = { COH: 0, CIA: 0 }, paramRevenueMethod, paramTax
+    let { user, carts, args } = data, payloads = [], tiketUses = 0, revenueKeraton = { COH: 0, CIA: 0 }, revenueCuraweda = { COH: 0, CIA: 0 }, paramRevenueMethod, paramTax, countryReference = {}
     try {
         if (carts.length < 1) throw Error('No Item to Checkout')
         if (user) args.userId = user.id
         args.total = cartModel.countTotal(carts)
+        await prisma.nationality.findMany().then((datas) => {
+            datas.forEach((data) => countryReference[data.code] = data.id)
+        })
         const taxParam = await globalParamModel.getOne({ identifier: process.env.TAX_PARAMS_IDENTIFIER })
         for (let cart of carts) {
             if (cart.quantity < 1) continue
@@ -89,8 +92,11 @@ const createNew = async (data) => {
                 default:
                     break;
             }
+            console.log(cart)
             payloads.push({
                 amount: cart.quantity,
+                ...(cart.nationalityId && { nationalityId: countryReference[cart.nationalityId] }),
+                ...(cart.cityName && { cityName: cart.cityName }),
                 ...cart.typeData
             })
         }
@@ -140,7 +146,7 @@ const createNew = async (data) => {
             possibleUses: tiketUses,
             expiredAt
         })
-
+        console.log(payloads)
         payloads = payloads.map((data) => ({
             ...data,
             transactionId: createdTransacation.id
@@ -154,6 +160,7 @@ const createNew = async (data) => {
 
 const createManyDetail = async (datas = [{ amount, transactionId, orderId, eventId, guideId, nationalityId, cityName }]) => {
     try {
+        console.log(datas)
         return await prisma.detailTrans.createMany({ data: datas })
     } catch (err) {
         throwError(err)

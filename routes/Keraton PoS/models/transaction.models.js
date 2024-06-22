@@ -89,6 +89,14 @@ const getInvoice = async (search) => {
     throwError(err);
   }
 };
+
+const getAllDetail = async (args) => {
+  try {
+    return await prisma.detailTrans.findMany({ where: { ...args }, include: { nationality: true } })
+  } catch (err) {
+    throwError(err)
+  }
+}
 const getOne = async (id) => {
   try {
     return await prisma.transaction.findFirst({
@@ -122,18 +130,7 @@ const getTickets = async (id) => {
         BarcodeUsage: true
       },
     });
-    const qr = searchQr(transaction, "invoice");
-    const data = {
-      ...transaction,
-      qr,
-      detailTrans: transaction.detailTrans.map((detail) => {
-        const qr = searchQr(detail, "ticket");
-        return {
-          ...detail,
-          qr,
-        };
-      }),
-    };
+    const data = { ...transaction };
     return data;
   } catch (err) {
     throwError(err);
@@ -233,9 +230,12 @@ const create = async (data) => {
       const totalCart = cart.amount * cart.price
       total += totalCart
       possibleUses += cart.amount
+      console.log(cart)
       return {
         amount: cart.amount,
         orderId: cart.id,
+        ...(cart.cityName && { cityName: cart.cityName }),
+        ...(cart.nationalityId && { nationalityId: cart.nationalityId }),
         ...(cart.guideId != '' && { guideId: cart.guideId })
       }
     })
@@ -275,7 +275,6 @@ const create = async (data) => {
       }
     })
 
-    console.log(revenueCuraweda, revenueKeraton, total)
 
     data.total = total
     data.additionalFee = totalTax
@@ -284,7 +283,6 @@ const create = async (data) => {
     data.discount = `${data.discount} | ${data.discount}%`
     data.cashback = `${data.cashback} | ${data.cashback}%`
 
-    console.log(data)
     const transaction = await prisma.transaction.create({
       data: data,
       include: { detailTrans: true }
@@ -308,6 +306,7 @@ const create = async (data) => {
         transactionId: transaction.id
       }
     })
+
     await transactionModelWeb.createManyDetail(orderDatas)
     return transaction.id;
   } catch (err) {
@@ -585,6 +584,7 @@ const sendEmailToUser = async (data) => {
 };
 module.exports = {
   getInvoice,
+  getAllDetail,
   getAll,
   getOne,
   getTickets,
