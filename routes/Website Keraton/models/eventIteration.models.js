@@ -3,7 +3,6 @@ const { prisma } = require("../../utils/prisma")
 
 const isExist = async (id) => {
     try{
-        console.log(id)
         return await prisma.events.findFirst({ where: { id: +id }})
     }catch(err){
         throwError(err)

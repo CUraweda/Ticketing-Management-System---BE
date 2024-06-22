@@ -48,7 +48,6 @@ const getOne = async (id) => {
 const createUpdate = async (ident, data = { name, typeId }) => {
     try {
         // if(data.name){
-        console.log(data)
         const alreadyExist = await nameExist(data.name);
         if (ident !== 'create') if (alreadyExist && alreadyExist.id != data.id) throw new Error('Sub Type Name already exists');
         if (ident != 'update' && alreadyExist) throw Error('Sub Type Name already exist')

@@ -92,7 +92,6 @@ const createNew = async (data) => {
                 default:
                     break;
             }
-            console.log(cart)
             payloads.push({
                 amount: cart.quantity,
                 ...(cart.nationalityId && { nationalityId: countryReference[cart.nationalityId] }),
@@ -146,7 +145,6 @@ const createNew = async (data) => {
             possibleUses: tiketUses,
             expiredAt
         })
-        console.log(payloads)
         payloads = payloads.map((data) => ({
             ...data,
             transactionId: createdTransacation.id
@@ -160,7 +158,6 @@ const createNew = async (data) => {
 
 const createManyDetail = async (datas = [{ amount, transactionId, orderId, eventId, guideId, nationalityId, cityName }]) => {
     try {
-        console.log(datas)
         return await prisma.detailTrans.createMany({ data: datas })
     } catch (err) {
         throwError(err)

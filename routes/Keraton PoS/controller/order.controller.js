@@ -26,7 +26,6 @@ expressRouter.post(
       req.body.orderSubTypeId = parseInt(req.body.orderSubTypeId);
       req.body.price = parseFloat(req.body.price);
 
-      console.log(req.body)
       switch (req.params.action) {
         case "create":
           const data = await orderModel.create(req.body);

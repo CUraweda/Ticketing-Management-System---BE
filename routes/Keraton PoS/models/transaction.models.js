@@ -157,7 +157,6 @@ const getRevenueCurawedaKeraton = async (args) => {
       where: { plannedDate: { gte: startDate, lte: endDate } },
       select: { plannedDate: true, keratonIncome: true, curawedaIncome: true, total: true }
     })
-    console.log(transaction)
     transaction.forEach(trans => {
       todayRevenue.revenueKeraton.COH += trans.keratonIncome.COH
       todayRevenue.revenueKeraton.CIA += trans.keratonIncome.CIA
@@ -230,7 +229,6 @@ const create = async (data) => {
       const totalCart = cart.amount * cart.price
       total += totalCart
       possibleUses += cart.amount
-      console.log(cart)
       return {
         amount: cart.amount,
         orderId: cart.id,

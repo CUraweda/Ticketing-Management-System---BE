@@ -3,6 +3,7 @@ const { error, success } = require("../../utils/response");
 const { formatCurrency } = require("../../utils/helper");
 const fs = require("fs");
 const path = require("path");
+const keratonParamModel = require('../../Website Keraton/models/params.models')
 const transactionModel = require("../models/transaction.models");
 const { prisma } = require("../../utils/prisma");
 const Emails = require("../../Website Keraton/emails/email");
@@ -46,7 +47,6 @@ expressRouter.get("/income-revenue", async (req, res) => {
 expressRouter.get('/income-revenue-curaweda', async (req, res) => {
   try {
     const data = await transactionModel.getRevenueCurawedaKeraton()
-    console.log(data)
     return success(res, "Data income berhasil di fetch", data)
   } catch (err) {
     return error(res, err.message)
@@ -93,6 +93,14 @@ expressRouter.post("/create-transaction", async (req, res) => {
     return error(res, err.message);
   }
 });
+expressRouter.get('/list-tax', async (req, res) => {
+  try {
+    const data = await keratonParamModel.getOne({ identifier: process.env.TAX_PARAMS_IDENTIFIER })
+    return success(res, 'Tax diperlihatkan', data)
+  }catch(err){
+    return error(res, err.message)
+  }
+})
 expressRouter.get("/target-revenue/:date", async (req, res) => {
   try {
     const data =
