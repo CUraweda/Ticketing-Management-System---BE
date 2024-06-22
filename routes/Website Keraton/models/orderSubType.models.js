@@ -22,10 +22,10 @@ const nameExist = async (name) => {
 const getAll = async () => {
     try {
         return await prisma.orderSubType.findMany({
-            where: { disabled: false },
+            where: { disabled: false},
             include: {
                 orders: {
-                    where: { deleted: false }
+                    where: {deleted: false, disabled: false }
                 }
             }
         });

@@ -2,6 +2,8 @@ require("dotenv").config();
 const fs = require("fs");
 const multer = require("multer");
 const qr = require("qr-image");
+const crypto = require('crypto');
+const path = require('path')
 
 // Multer Initialization
 const allowedMimeTypes = [
@@ -13,17 +15,15 @@ const allowedMimeTypes = [
   "image/svg",
 ];
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const uploadDir = "./public/uploads";
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir);
-    }
-    cb(null, uploadDir);
+  destination: (_req, _file, cb) => {
+    cb(null, 'public/uploads')
   },
-  filename: function (req, file, cb) {
-    cb(null, file.originalname);
-  },
-});
+  filename: (_req, file, cb) => {
+    crypto.pseudoRandomBytes(16, (_err, raw) => {
+      cb(null, raw.toString('hex') + path.extname(file.originalname))
+    })
+  }
+})
 const upload = multer({
   storage,
   fileFilter(req, file, cb) {
@@ -88,7 +88,7 @@ const searchQr = (data, type) => {
   }
   return qrCodes;
 };
-const decodeQr = (data) => {};
+const decodeQr = (data) => { };
 // QR End
 
 // Detail Trans Initialization
@@ -258,18 +258,18 @@ function splitDate(dateTime) {
 }
 
 const shaHash256 = async (input) => {
-    // Convert the input string to an ArrayBuffer
-    const encoder = new TextEncoder();
-    const data = encoder.encode(input);
+  // Convert the input string to an ArrayBuffer
+  const encoder = new TextEncoder();
+  const data = encoder.encode(input);
 
-    // Use the SubtleCrypto API to hash the data
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  // Use the SubtleCrypto API to hash the data
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
 
-    // Convert the ArrayBuffer to a hexadecimal string
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  // Convert the ArrayBuffer to a hexadecimal string
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
-    return hashHex;
+  return hashHex;
 
 }
 

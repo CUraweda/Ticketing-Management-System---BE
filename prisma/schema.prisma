@@ -127,6 +127,7 @@ model Transaction {
   id             String         @id @default(uuid())
   customer       Json?
   total          Decimal        @db.Decimal(18, 2)
+  additionalFee  Float
   keratonIncome  Json
   curawedaIncome Json
   method         String

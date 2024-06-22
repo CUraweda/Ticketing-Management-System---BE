@@ -10,7 +10,7 @@ const eventIterationModel = require('../models/eventIteration.models')
 const categoryModel = require('../../Keraton PoS/models/category.models')
 const multer = require("multer");
 const crypto = require('crypto');
-const path = require('path');
+const path = require('path')
 const { convertFilesToURL } = require("../../utils/helper");
 
 //Start Multer

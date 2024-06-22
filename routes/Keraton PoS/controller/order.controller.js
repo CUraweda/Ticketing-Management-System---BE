@@ -1,6 +1,6 @@
 const { expressRouter } = require("../../utils/router");
 const { error, success } = require("../../utils/response");
-const { upload } = require("../../utils/helper");
+const { upload, convertFilesToURL } = require("../../utils/helper");
 const orderModel = require("../models/order.models");
 
 expressRouter.get("/order-details/:id?", async (req, res) => {
@@ -19,15 +19,14 @@ expressRouter.post(
   upload.single("image"),
   async (req, res) => {
     try {
-      req.body.image = req.file
-        ? req.file.originalname
-        : req.body.imgName
-        ? req.body.imgName
-        : null;
+      if(req.file) req.body.image = convertFilesToURL(req.file.path)
+      if(req.body.image === "null") delete req.body.image
       delete req.body.imgName;
       req.body.categoryId = parseInt(req.body.categoryId);
       req.body.orderSubTypeId = parseInt(req.body.orderSubTypeId);
       req.body.price = parseFloat(req.body.price);
+
+      console.log(req.body)
       switch (req.params.action) {
         case "create":
           const data = await orderModel.create(req.body);
@@ -36,6 +35,7 @@ expressRouter.post(
           await orderModel.update(req.params.id, req.body);
           return success(res, "Update pesanan berhasil!");
         case "delete":
+          console.log(req.params.id)
           await orderModel.deleteOrder(req.params.id);
           return success(res, "Penghapusan pesanan berhasil!");
         default:

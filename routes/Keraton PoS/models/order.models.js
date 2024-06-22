@@ -175,7 +175,7 @@ const deleteOrder = async (id) => {
     const order = await isExist(id);
     if (!order) throw Error("Order ID tidak ditemukan");
     await prisma.order
-      .update({ where: { id }, data: { disabled: true } })
+      .update({ where: { id }, data: { disabled: true, deleted: true} })
       .then(
         await logsModel.logDelete(
           `Menghapus pesanan ${order.name} (${order.category.name}) dengan ID ${order.id}.`,

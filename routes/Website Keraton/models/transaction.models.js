@@ -65,7 +65,7 @@ const getOne = async (id) => {
 }
 
 const createNew = async (data) => {
-    let { user, carts, args } = data, payloads = [], tiketUses = 0, revenueKeraton = { COH: 0, CIA: 0 }, revenueCuraweda = { total: 0 }, paramRevenueMethod, paramTax
+    let { user, carts, args } = data, payloads = [], tiketUses = 0, revenueKeraton = { COH: 0, CIA: 0 }, revenueCuraweda = { COH: 0, CIA: 0 }, paramRevenueMethod, paramTax
     try {
         if (carts.length < 1) throw Error('No Item to Checkout')
         if (user) args.userId = user.id
@@ -80,8 +80,8 @@ const createNew = async (data) => {
                     }
                     tiketUses += cart.minimumUnit ? cart.minimumUnit * cart.quantity : cart.quantity
                     break;
-                    case "E":
-                        cart.typeData = {
+                case "E":
+                    cart.typeData = {
                         eventId: cart.id,
                     }
                     tiketUses += cart.quantity
@@ -107,22 +107,27 @@ const createNew = async (data) => {
                 break;
         }
 
+        let totalTax = 0
+
         // TAXES
         taxParam.data[paramTax].forEach((param) => {
             const totalRawTax = param.multiply ? args.total * param.tax : param.tax
+            totalTax += totalRawTax
             revenueKeraton[paramRevenueMethod] = args.total
             switch (param.paidBy) {
                 case "user":
                     args.total += totalRawTax
-                    revenueCuraweda.total += totalRawTax
+                    revenueCuraweda[paramRevenueMethod] += totalRawTax
                     break;
                 case "keraton":
+                    args.total += totalRawTax
                     revenueKeraton[paramRevenueMethod] = revenueKeraton[paramRevenueMethod] - totalRawTax
-                    revenueCuraweda.total += totalRawTax
+                    revenueCuraweda[paramRevenueMethod] += totalRawTax
                     break;
-                }
+            }
         })
-        
+
+        args.additionalFee = totalTax
         args.keratonIncome = revenueKeraton
         args.curawedaIncome = revenueCuraweda
         const createdTransacation = await prisma.transaction.create({ data: { ...args } })

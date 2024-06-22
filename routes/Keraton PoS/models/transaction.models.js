@@ -154,7 +154,7 @@ const getRevenue = async () => {
 };
 
 const getRevenueCurawedaKeraton = async (args) => {
-  let todayRevenue = { revenueKeraton: { COH: 0, CIA: 0 }, revenueCuraweda: 0, total: 0 }
+  let todayRevenue = { revenueKeraton: { COH: 0, CIA: 0 }, revenueCuraweda: { COH: 0, CIA: 0 }, total: 0 }
   try {
     const transaction = await prisma.transaction.findMany({
       where: { plannedDate: { gte: startDate, lte: endDate } },
@@ -163,8 +163,9 @@ const getRevenueCurawedaKeraton = async (args) => {
     transaction.forEach(trans => {
       todayRevenue.revenueKeraton.COH += trans.keratonIncome.COH
       todayRevenue.revenueKeraton.CIA += trans.keratonIncome.CIA
-      todayRevenue.revenueCuraweda += trans.curawedaIncome.total
-      todayRevenue.total += trans.total
+      todayRevenue.revenueCuraweda.COH += trans.curawedaIncome.total.COH
+      todayRevenue.revenueCuraweda.CIA += trans.curawedaIncome.total.CIA
+      todayRevenue.total += +trans.total
     })
     return todayRevenue
   } catch (err) {
@@ -224,7 +225,7 @@ const getMonth = async () => {
   }
 };
 const create = async (data) => {
-  let total = 0, revenueKeraton = { COH: 0, CIA: 0 }, revenueCuraweda = { total: 0 }, paramRevenueMethod, paramTax, possibleUses = 0
+  let total = 0, revenueKeraton = { COH: 0, CIA: 0 }, revenueCuraweda = { COH: 0, CIA: 0 }, paramRevenueMethod, paramTax, possibleUses = 0
   const taxParam = await globalParamModel.getOne({ identifier: process.env.TAX_PARAMS_IDENTIFIER })
   try {
     let orders = data.order.map(cart => {
@@ -242,7 +243,7 @@ const create = async (data) => {
     // DISCOUNT & CASHBACK
     if (data.cashback > 0) total -= total * (data.cashback / 100)
     if (data.discount > 0) total -= total * (data.discount / 100)
-    
+
     // PAYMENT METHOD
     switch (data.method) {
       case "CASH":
@@ -255,23 +256,27 @@ const create = async (data) => {
         break;
     }
 
+    let totalTax = 0
     // TAXES
     taxParam.data[paramTax].forEach((param) => {
       const totalRawTax = param.multiply ? total * param.tax : param.tax
+      totalTax += totalRawTax
       revenueKeraton[paramRevenueMethod] = total
       switch (param.paidBy) {
         case "user":
           total += totalRawTax
-          revenueCuraweda.total += totalRawTax
+          revenueCuraweda[paramRevenueMethod] += totalRawTax
           break;
         case "keraton":
+          total += totalRawTax
           revenueKeraton[paramRevenueMethod] = revenueKeraton[paramRevenueMethod] - totalRawTax
-          revenueCuraweda.total += totalRawTax
+          revenueCuraweda[paramRevenueMethod] += totalRawTax
           break;
       }
     })
 
     data.total = total
+    data.additionalFee = totalTax
     data.keratonIncome = revenueKeraton
     data.curawedaIncome = revenueCuraweda
     data.discount = `${data.discount} | ${data.discount}%`
