@@ -3,6 +3,8 @@ const { error, success } = require("../../utils/response");
 var router = express.Router();
 const keratonTransactionModel = require('../models/keratonTransaction.models')
 
+
+// curaweda-income/transfer (Buat button)
 router.post('/transfer', async (req, res) => {
     try{
         const data = await keratonTransactionModel.createTransafer(req.body)
@@ -12,6 +14,7 @@ router.post('/transfer', async (req, res) => {
     }
 })
 
+// curaweda-income/ (Buat Tabel)
 router.get('/', async  (req, res) => {
     try{
         const data = await keratonTransactionModel.get(req.query)
