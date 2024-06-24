@@ -34,7 +34,6 @@ expressRouter.post(
           await orderModel.update(req.params.id, req.body);
           return success(res, "Update pesanan berhasil!");
         case "delete":
-          console.log(req.params.id)
           await orderModel.deleteOrder(req.params.id);
           return success(res, "Penghapusan pesanan berhasil!");
         default:

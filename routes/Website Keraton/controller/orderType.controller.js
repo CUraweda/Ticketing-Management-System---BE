@@ -5,7 +5,6 @@ const orderTypeModel = require('../models/orderType.models')
 
 router.post('/:id?', async (req, res) => {
     try{
-        console.log(req.body)
         const data = req.params.id ? await orderTypeModel.createUpdate('update', { id: +req.params.id, ...req.body }) : await orderTypeModel.createUpdate('create', req.body)
         return success(res, 'Success', data)
     }catch(err){

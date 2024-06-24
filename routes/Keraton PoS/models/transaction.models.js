@@ -32,6 +32,12 @@ const emailInvoicePath = path.join(__dirname, "../views/email_invoice.ejs");
 const assetsPath = path.join(__dirname, "../../../public/assets/email");
 const qrPath = path.join(__dirname, "../../../public/qrcodes/");
 
+function transformUrl(url) {
+  const relevantPart = url.replace(`${process.env.BASE_URL}`, "");
+  const transformedUrl = `public${relevantPart}`;
+  return transformedUrl;
+}
+
 const getInvoice = async (search) => {
   try {
     const data = await prisma.transaction.findMany({
@@ -117,7 +123,7 @@ const getAll = async (id) => {
 };
 const getTickets = async (id) => {
   try {
-    const transaction = await prisma.transaction.findUnique({
+    let transaction = await prisma.transaction.findUnique({
       where: { id: id },
       include: {
         user: true,
@@ -130,6 +136,9 @@ const getTickets = async (id) => {
         BarcodeUsage: true
       },
     });
+    const qrPath = transformUrl(transaction.BarcodeUsage[0].qrPath)
+    const transactionImage = fs.readFileSync(qrPath, { encoding: "base64" });
+    transaction.qrImage = `data:image/png;base64,${transactionImage}`
     const data = { ...transaction };
     return data;
   } catch (err) {

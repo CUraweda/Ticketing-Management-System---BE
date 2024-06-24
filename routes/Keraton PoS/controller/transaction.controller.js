@@ -246,7 +246,6 @@ expressRouter.get('/generate-email-invoice/:id', async (req, res) => {
       emailData.data.qr_exist = true;
       emailData.attachment.push(transformUrl(barcode.qrPath));
     }
-    console.log(emailData.attachment)
     setImmediate(async () => {
       try {
         const emailClass = new Emails(
