@@ -100,28 +100,28 @@ endDate.setHours(30, 59, 59, 999);
 
 function generateYearlyCategory() {
   const months = {
-    1: "JAN",
-    2: "FEB",
-    3: "MAR",
-    4: "APR",
-    5: "MAY",
-    6: "JUN",
-    7: "JUL",
-    8: "AUG",
-    9: "SEP",
-    10: "OCT",
-    11: "NOV",
-    12: "DEC",
+    1: "Jan",
+    2: "Feb",
+    3: "Mar",
+    4: "Apr",
+    5: "May",
+    6: "Jun",
+    7: "Jul",
+    8: "Aug",
+    9: "Sep",
+    10: "Oct",
+    11: "Nov",
+    12: "Dec",
   };
 
-  const yearlyCategory = [""];
+  const yearlyCategory = [];
   for (let month = 1; month <= 12; month++) {
     yearlyCategory.push(months[month]);
   }
   return yearlyCategory;
 }
 function generateMonthlyCategory(daysInMonth) {
-  const monthlyCategory = [""];
+  const monthlyCategory = [];
   for (let day = 1; day <= daysInMonth; day++) {
     monthlyCategory.push(day);
   }
@@ -161,7 +161,7 @@ function groupYearData(data, categories, colors) {
     return {
       name: category,
       color: colors[index],
-      data: [0, ...Array.from({ length: 12 }, () => 0)],
+      data: [...Array.from({ length: 12 }, () => 0)],
     };
   });
 
@@ -170,10 +170,10 @@ function groupYearData(data, categories, colors) {
       .map((cat) => cat)
       .indexOf(order.category.name);
     order.detailTrans.forEach((detail) => {
-      const month = detail.transaction.createdDate.getMonth() + 1;
+      const month = detail.transaction.plannedDate.getMonth() + 1;
       const amount = detail.amount;
       if (categoryIndex !== -1) {
-        yearlyData[categoryIndex].data[month] += parseInt(amount);
+        yearlyData[categoryIndex].data[month - 1] += parseInt(amount);
       }
     });
   });
@@ -190,9 +190,10 @@ function groupMonthData(data, categories, colors, daysInMonth) {
     return {
       name: category,
       color: colors[index],
-      data: [0, ...Array.from({ length: daysInMonth }, () => 0)], // Menambahkan data kosong di index 0
+      data: [...Array.from({ length: daysInMonth }, () => 0)], // Menambahkan data kosong di index 0
     };
   });
+  console.log(monthlyData)
 
   // Mengisi data langsung dengan amount
   data.forEach((order) => {
@@ -200,13 +201,17 @@ function groupMonthData(data, categories, colors, daysInMonth) {
       .map((cat) => cat)
       .indexOf(order.category.name);
     order.detailTrans.forEach((detail) => {
-      const day = detail.transaction.createdDate.getDate();
+      const day = detail.transaction.plannedDate.getDate();
       const amount = detail.amount;
+      console.log(monthlyData[categoryIndex].data.length)
+      console.log(day,  monthlyData[categoryIndex].data[day])
       if (categoryIndex !== -1) {
-        monthlyData[categoryIndex].data[day] += amount;
+        monthlyData[categoryIndex].data[day - 1] += amount;
       }
     });
   });
+
+  console.log(monthlyData)
 
   const monthlyCategory = generateMonthlyCategory(daysInMonth);
 

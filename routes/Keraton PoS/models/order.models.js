@@ -51,21 +51,24 @@ const getAll = async () => {
 const getRecentData = async (start, end) => {
   try {
     return await prisma.order.findMany({
-      where: { disabled: false },
+      where: { 
+        detailTrans: {
+          some: {
+            transaction: {
+              plannedDate: {
+                gte: start,
+                lte: end,
+              },
+          }
+          }
+        },
+        disabled: false, deleted: false, category: { disabled: false }},
       include: {
         category: true,
         detailTrans: {
           include: {
             transaction: true,
-          },
-          where: {
-            transaction: {
-              createdDate: {
-                gte: start,
-                lte: end,
-              },
-            },
-          },
+          }
         },
       },
     });
@@ -117,12 +120,13 @@ const update = async (id, data) => {
 };
 const recentPurchase = async () => {
   try {
-    const order = await getRecentData(startDate, endDate);
-    const categories = await prisma.category.findMany({
-      where: { disabled: false },
-      select: { name: true },
-    });
-    return groupedPurchase(order, categories);
+    const order = await prisma.detailTrans.findMany({
+      where: { transaction: { plannedDate: {
+        gte: startDate,
+        lte: endDate
+      } }, order: { deleted: false, disabled: false, category: { disabled: false } } }
+    })
+    return order
   } catch (err) {
     throwError(err);
   }

@@ -26,7 +26,7 @@ const getOne = async (id) => {
 
 const getAllContent = async (id) => {
     try {
-        
+
         await isExist(id).then(exist => { if (!exist) throw Error('Content ID didnt Exist') })
         const subPages = await prisma.pages.findMany({ where: { id }, include: { contents: true } })
         return subPages
@@ -58,5 +58,5 @@ module.exports = {
     getOne,
     update,
     create,
-    getAllContent
+    getAllContent
 }

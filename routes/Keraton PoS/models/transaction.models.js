@@ -121,6 +121,7 @@ const getAll = async (id) => {
     throwError(err);
   }
 };
+
 const getTickets = async (id) => {
   try {
     let transaction = await prisma.transaction.findUnique({

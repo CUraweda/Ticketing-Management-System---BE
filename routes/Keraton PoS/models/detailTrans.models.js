@@ -1,3 +1,4 @@
+const { name } = require("ejs");
 const { throwError, createQr } = require("../../utils/helper");
 const { prisma } = require("../../utils/prisma");
 const logsModel = require("./logs.models");
@@ -14,30 +15,27 @@ const getFromOrderId = async (id) => {
 const getTableData = async (category) => {
   try {
     const detailTrans = await prisma.detailTrans.findMany({
-      where: category
-        ? {
-            order: {
-              category: {
-                name: category,
-              },
-            },
-          }
-        : {},
+      where: {
+        order: {
+          deleted: false,
+          disabled: false,
+          ...(category && {
+            category: {
+              name: category
+            }
+          })
+        }
+      },
       include: {
         transaction: true,
+        event: {},
         order: { include: { category: true } },
       },
+      orderBy: { transaction: { plannedDate: 'desc' } }
     });
 
     // Menghitung total harga pesanan dan menggabungkannya dengan hasil
-    const finalDetailTrans = detailTrans.map((detailTrans) => ({
-      ...detailTrans,
-      total_price: detailTrans.amount * detailTrans.order.price,
-    }));
-    finalDetailTrans.sort((a, b) => {
-      return new Date(b.createdDate) - new Date(a.createdDate);
-    });
-    return finalDetailTrans;
+    return detailTrans;
   } catch (err) {
     throwError;
   }
@@ -64,6 +62,24 @@ const getUnavailableGuide = async (date) => {
     throwError;
   }
 };
+const getOneDaySellCategory = async (gte, lte) => {
+  try{
+    return await prisma.detailTrans.findMany({
+      where: {
+        transaction: {
+          plannedDate: { gte, lte }
+        },
+        order: {
+          deleted: false,
+          disabled: false
+        }
+      },
+      select: { amount: true , order: { select: {category: { select: { name: true } } } } }
+    })
+  }catch(err){
+    throwError(err)
+  }
+}
 
 const create = async (order, transaction, customer) => {
   try {
@@ -78,10 +94,10 @@ const create = async (order, transaction, customer) => {
           },
           guide: o.guideId
             ? {
-                connect: {
-                  id: o.guideId,
-                },
-              }
+              connect: {
+                id: o.guideId,
+              },
+            }
             : {},
           order: {
             connect: {
@@ -109,6 +125,7 @@ const create = async (order, transaction, customer) => {
 
 module.exports = {
   getFromOrderId,
+  getOneDaySellCategory,
   getTableData,
   getUnavailableGuide,
   create,
