@@ -93,6 +93,14 @@ expressRouter.post("/create-transaction", async (req, res) => {
     return error(res, err.message);
   }
 });
+expressRouter.delete('/:id', async (req, res) => {
+  try{
+    const data = await transactionModel.deleteHard(req.params.id)
+    return success(res, 'Data Transaksi Dihapus', data)
+  }catch(err){
+    return error(res, err.message)
+  }
+})
 expressRouter.get('/list-tax', async (req, res) => {
   try {
     const data = await keratonParamModel.getOne({ identifier: process.env.TAX_PARAMS_IDENTIFIER })

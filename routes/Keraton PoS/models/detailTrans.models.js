@@ -27,8 +27,9 @@ const getTableData = async (category) => {
         }
       },
       include: {
-        transaction: true,
-        event: {},
+        transaction: {
+          include: { user: true }
+        },
         order: { include: { category: true } },
       },
       orderBy: { transaction: { plannedDate: 'desc' } }
@@ -122,6 +123,7 @@ const create = async (order, transaction, customer) => {
     throwError(err);
   }
 };
+
 
 module.exports = {
   getFromOrderId,

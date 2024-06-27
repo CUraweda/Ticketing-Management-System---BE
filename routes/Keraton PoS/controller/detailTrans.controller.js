@@ -1,7 +1,7 @@
 const { expressRouter } = require("../../utils/router");
 const { error, success } = require("../../utils/response");
 const detailTransModel = require("../models/detailTrans.models");
-const { startDate, endDate } = require('../../utils/helper')
+const { startDate, endDate, throwError } = require('../../utils/helper')
 
 expressRouter.get("/table-data", async (req, res) => {
   try {
@@ -26,7 +26,6 @@ expressRouter.get('/category-sell', async (req,  res) => {
       start = startDate
       end = endDate
     }
-    console.log(start, end)
     const data = await detailTransModel.getOneDaySellCategory(start, end)
     return success(res, 'Data Penjualan Category berhasil di fetch', data)
   }catch(err){

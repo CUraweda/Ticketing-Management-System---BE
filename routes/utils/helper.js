@@ -193,7 +193,6 @@ function groupMonthData(data, categories, colors, daysInMonth) {
       data: [...Array.from({ length: daysInMonth }, () => 0)], // Menambahkan data kosong di index 0
     };
   });
-  console.log(monthlyData)
 
   // Mengisi data langsung dengan amount
   data.forEach((order) => {
@@ -203,15 +202,12 @@ function groupMonthData(data, categories, colors, daysInMonth) {
     order.detailTrans.forEach((detail) => {
       const day = detail.transaction.plannedDate.getDate();
       const amount = detail.amount;
-      console.log(monthlyData[categoryIndex].data.length)
-      console.log(day,  monthlyData[categoryIndex].data[day])
       if (categoryIndex !== -1) {
         monthlyData[categoryIndex].data[day - 1] += amount;
       }
     });
   });
 
-  console.log(monthlyData)
 
   const monthlyCategory = generateMonthlyCategory(daysInMonth);
 

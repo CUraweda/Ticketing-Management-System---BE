@@ -164,9 +164,10 @@ const getRevenueCurawedaKeraton = async (args) => {
   let todayRevenue = { revenueKeraton: { COH: 0, CIA: 0 }, revenueCuraweda: { COH: 0, CIA: 0 }, total: 0 }
   try {
     const transaction = await prisma.transaction.findMany({
-      where: { plannedDate: { gte: startDate, lte: endDate } },
+      where: { plannedDate: { gte: startDate, lte: endDate }, detailTrans: { some: { order: { deleted: false, disabled: false, category: { disabled: false } } } } },
       select: { plannedDate: true, keratonIncome: true, curawedaIncome: true, total: true }
     })
+    console.log(transaction, startDate, endDate)
     transaction.forEach(trans => {
       todayRevenue.revenueKeraton.COH += trans.keratonIncome.COH
       todayRevenue.revenueKeraton.CIA += trans.keratonIncome.CIA
@@ -273,10 +274,10 @@ const create = async (data) => {
       revenueKeraton[paramRevenueMethod] = total
       switch (param.paidBy) {
         case "user":
+          total += totalRawTax
           revenueCuraweda[paramRevenueMethod] += totalRawTax
           break;
         case "keraton":
-          total += totalRawTax
           revenueKeraton[paramRevenueMethod] = revenueKeraton[paramRevenueMethod] - totalRawTax
           revenueCuraweda[paramRevenueMethod] += totalRawTax
           break;
@@ -590,10 +591,19 @@ const sendEmailToUser = async (data) => {
     throwError(err);
   }
 };
+const deleteHard = async (id) => {
+  try{
+    await prisma.detailTrans.deleteMany({ where: { transactionId: id } })
+    return await prisma.transaction.delete({ where: { id } })
+  }catch(err){
+    
+  }
+}
 module.exports = {
   getInvoice,
   getAllDetail,
   getAll,
+  deleteHard,
   getOne,
   getTickets,
   getRevenueCurawedaTabel,
