@@ -61,13 +61,13 @@ const update = async (id, data) => {
       )
     );
   } catch (err) {
-  await logsModel.logUpdate(
-    `Mengubah kategori ${id} menjadi ${data.name}`,
-    "Category",
-    "Failed"
-  );
-  throwError(err);
-}
+    await logsModel.logUpdate(
+      `Mengubah kategori ${id} menjadi ${data.name}`,
+      "Category",
+      "Failed"
+    );
+    throwError(err);
+  }
 };
 const deleteCategory = async (id) => {
   try {
