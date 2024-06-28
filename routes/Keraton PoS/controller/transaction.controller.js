@@ -93,7 +93,7 @@ expressRouter.post("/create-transaction", async (req, res) => {
     return error(res, err.message);
   }
 });
-expressRouter.get('delete-transaction/:id', async (req, res) => {
+expressRouter.get('/delete-transaction/:id', async (req, res) => {
   try {
     const data = await transactionModel.deleteHard(req.params.id)
     return success(res, 'Data Transaksi Dihapus', data)
