@@ -22,7 +22,7 @@ const isExist = async (id) => {
 const getOne = async (id) => {
   try {
     return await prisma.order.findFirst({
-      where: { id: id, disabled: false },
+      where: { id: id },
       include: {
         category: true,
         orderSubType: { include: { orderType: true } },
@@ -48,10 +48,21 @@ const getAll = async () => {
     throwError(err);
   }
 };
+const getAllData = async () => {
+  return await prisma.order.findMany({
+    include: {
+      category: true,
+      orderSubType: { include: { orderType: true } },
+  }
+  }).catch ((err) => {
+  throwError(err)
+})
+}
+
 const getRecentData = async (start, end) => {
   try {
     return await prisma.order.findMany({
-      where: { 
+      where: {
         detailTrans: {
           some: {
             transaction: {
@@ -59,10 +70,11 @@ const getRecentData = async (start, end) => {
                 gte: start,
                 lte: end,
               },
-          }
+            }
           }
         },
-        disabled: false, deleted: false, category: { disabled: false }},
+        disabled: false, deleted: false, category: { disabled: false }
+      },
       include: {
         category: true,
         detailTrans: {
@@ -121,10 +133,14 @@ const update = async (id, data) => {
 const recentPurchase = async () => {
   try {
     const order = await prisma.detailTrans.findMany({
-      where: { transaction: { plannedDate: {
-        gte: startDate,
-        lte: endDate
-      } }, order: { deleted: false, disabled: false, category: { disabled: false } } }
+      where: {
+        transaction: {
+          plannedDate: {
+            gte: startDate,
+            lte: endDate
+          }
+        }, order: { deleted: false, disabled: false, category: { disabled: false } }
+      }
     })
     return order
   } catch (err) {
@@ -179,7 +195,7 @@ const deleteOrder = async (id) => {
     const order = await isExist(id);
     if (!order) throw Error("Order ID tidak ditemukan");
     await prisma.order
-      .update({ where: { id }, data: { disabled: true, deleted: true} })
+      .update({ where: { id }, data: { disabled: true, deleted: true } })
       .then(
         await logsModel.logDelete(
           `Menghapus pesanan ${order.name} (${order.category.name}) dengan ID ${order.id}.`,
@@ -200,6 +216,7 @@ module.exports = {
   create,
   update,
   recentPurchase,
+  getAllData,
   getYearData,
   getMonthData,
   deleteOrder,

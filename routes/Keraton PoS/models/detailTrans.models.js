@@ -14,7 +14,6 @@ const getFromOrderId = async (id) => {
 };
 const getTableData = async (query) => {
   const { category, date } = query
-  console.log(date)
   try {
     const detailTrans = await prisma.detailTrans.findMany({
       where: {
