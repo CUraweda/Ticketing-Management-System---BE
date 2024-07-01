@@ -14,6 +14,14 @@ expressRouter.get("/order-details/:id?", async (req, res) => {
     return error(res, err.message);
   }
 });
+expressRouter.get('/order-data-all', async (req, res) => {
+  try{
+    const data = await orderModel.getAllData()
+    return success(res, 'Data Order behasil di fetch', data)
+  }catch(err){
+    return error(res, err.message)
+  }
+})
 expressRouter.post(
   "/order-action/:action/:id?",
   upload.single("image"),

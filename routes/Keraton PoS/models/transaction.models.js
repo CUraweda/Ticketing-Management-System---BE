@@ -167,7 +167,6 @@ const getRevenueCurawedaKeraton = async (args) => {
       where: { plannedDate: { gte: startDate, lte: endDate }, detailTrans: { some: { order: { deleted: false, disabled: false, category: { disabled: false } } } } },
       select: { plannedDate: true, keratonIncome: true, curawedaIncome: true, total: true }
     })
-    console.log(transaction, startDate, endDate)
     transaction.forEach(trans => {
       todayRevenue.revenueKeraton.COH += trans.keratonIncome.COH
       todayRevenue.revenueKeraton.CIA += trans.keratonIncome.CIA

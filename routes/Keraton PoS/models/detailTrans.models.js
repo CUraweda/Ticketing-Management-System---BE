@@ -12,10 +12,19 @@ const getFromOrderId = async (id) => {
     throwError(err);
   }
 };
-const getTableData = async (category) => {
+const getTableData = async (query) => {
+  const { category, date } = query
   try {
     const detailTrans = await prisma.detailTrans.findMany({
       where: {
+        transaction: {
+          ...(date && {
+            plannedDate: {
+              gte: `${date}T00:00:00.000Z`,
+              lte: `${date}T23:59:59.999Z`,
+            }
+          })
+        },
         order: {
           deleted: false,
           disabled: false,
@@ -32,7 +41,7 @@ const getTableData = async (category) => {
         },
         order: { include: { category: true } },
       },
-      orderBy: { transaction: { plannedDate: 'desc' } }
+      orderBy: { transaction: { createdDate: 'desc' } }
     });
 
     // Menghitung total harga pesanan dan menggabungkannya dengan hasil
@@ -64,7 +73,7 @@ const getUnavailableGuide = async (date) => {
   }
 };
 const getOneDaySellCategory = async (gte, lte) => {
-  try{
+  try {
     return await prisma.detailTrans.findMany({
       where: {
         transaction: {
@@ -75,9 +84,9 @@ const getOneDaySellCategory = async (gte, lte) => {
           disabled: false
         }
       },
-      select: { amount: true , order: { select: {category: { select: { name: true } } } } }
+      select: { amount: true, order: { select: { category: { select: { name: true } } } } }
     })
-  }catch(err){
+  } catch (err) {
     throwError(err)
   }
 }

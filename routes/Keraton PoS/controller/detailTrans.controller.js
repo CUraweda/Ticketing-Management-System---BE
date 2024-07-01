@@ -5,7 +5,7 @@ const { startDate, endDate, throwError } = require('../../utils/helper')
 
 expressRouter.get("/table-data", async (req, res) => {
   try {
-    const data = await detailTransModel.getTableData(req.query.category);
+    const data = await detailTransModel.getTableData(req.query);
     return success(res, "Data Tabel berhasil di-fetch!", data);
   } catch (err) {
     return error(res, err.message);
