@@ -6,11 +6,11 @@ const { auth } = require("../middlewares/auth");
 expressRouter.get('/order-data-dashboard', auth, async (req, res) => {
   const { shownCategory } = req.user
   const data = await orderModel.getAllData({
-  ...(shownCategory?.id && {
+    deleted: false,
     category: {
-      id: { in: shownCategory.id }
+      disabled: false,
+      ...(shownCategory?.id && { id: { in: shownCategory.id } })
     }
-  })
   }).catch(err => { return error(res, err.message) })
   return success(res, 'Data order berhasil di fetch', data)
 })
@@ -41,9 +41,9 @@ expressRouter.post(
       if (req.file) req.body.image = convertFilesToURL(req.file.path)
       if (req.body.image === "null") delete req.body.image
       delete req.body.imgName;
-      req.body.categoryId = parseInt(req.body.categoryId);
-      req.body.orderSubTypeId = parseInt(req.body.orderSubTypeId);
-      req.body.price = parseFloat(req.body.price);
+      if (req.body.categoryId) req.body.categoryId = parseInt(req.body.categoryId);
+      if (req.body.orderSubTypeId) req.body.orderSubTypeId = parseInt(req.body.orderSubTypeId);
+      if (req.body.price) req.body.price = parseFloat(req.body.price);
 
       switch (req.params.action) {
         case "create":
@@ -52,10 +52,6 @@ expressRouter.post(
         case "update":
           await orderModel.update(req.params.id, req.body);
           return success(res, "Update pesanan berhasil!");
-        case "updateStatus":
-          await orderModel.hideorder(req.params.id, req.body);
-          return success(res, "Update pesanan berhasil!");
-
         case "delete":
           await orderModel.deleteOrder(req.params.id);
           return success(res, "Penghapusan pesanan berhasil!");

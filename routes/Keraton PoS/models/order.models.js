@@ -212,10 +212,6 @@ const deleteOrder = async (id) => {
   }
 };
 
-const getStatus = async (id) => {
-
-}
-
 const hideorder = async (id, data) => {
   const idData = id
   console.log(data.status, id)
