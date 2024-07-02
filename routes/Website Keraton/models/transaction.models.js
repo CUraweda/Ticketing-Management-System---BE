@@ -21,6 +21,7 @@ const getAll = async (userId, args) => {
             ...(userId && {
                 where: {
                     userId,
+                    deleted: false,
                     ...(s && {
                         detailTrans: {
                             some: {
@@ -48,7 +49,7 @@ const getAll = async (userId, args) => {
 
 const getOneTransaction = async (id) => {
     try {
-        return await prisma.transaction.findFirstOrThrow({ where: { id }, include: { detailTrans: true } })
+        return await prisma.transaction.findFirstOrThrow({ where: { id, deleted: false }, include: { detailTrans: true } })
     } catch (err) {
         throwError(err)
     }

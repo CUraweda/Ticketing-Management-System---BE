@@ -68,6 +68,7 @@ const getRecentData = async (start, end) => {
         detailTrans: {
           some: {
             transaction: {
+              deleted: false,
               plannedDate: {
                 gte: start,
                 lte: end,
@@ -138,6 +139,7 @@ const recentPurchase = async () => {
     const order = await prisma.detailTrans.findMany({
       where: {
         transaction: {
+          deleted: false,
           plannedDate: {
             gte: startDate,
             lte: endDate
