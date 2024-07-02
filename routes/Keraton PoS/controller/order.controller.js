@@ -52,6 +52,10 @@ expressRouter.post(
         case "update":
           await orderModel.update(req.params.id, req.body);
           return success(res, "Update pesanan berhasil!");
+        case "updateStatus":
+          await orderModel.hideorder(req.params.id, req.body);
+          return success(res, "Update pesanan berhasil!");
+
         case "delete":
           await orderModel.deleteOrder(req.params.id);
           return success(res, "Penghapusan pesanan berhasil!");

@@ -90,6 +90,7 @@ model Order {
   orderSubType   OrderSubType  @relation(fields: [orderSubTypeId], references: [id])
   orderSubTypeId Int
   deleted        Boolean       @default(false)
+  status         Boolean       @default(false)
 }
 
 model Category {
