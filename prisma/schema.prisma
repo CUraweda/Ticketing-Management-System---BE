@@ -54,6 +54,7 @@ model User {
   number        String?
   password      String
   role          Role
+  shownCategory Json?         @default("{}")
   nationality   Nationality?  @relation(fields: [nationalityId], references: [id])
   nationalityId String?
   carts         Json?         @default("{}")
@@ -74,7 +75,7 @@ model Token {
 model Order {
   id             String        @id @default(uuid())
   disabled       Boolean       @default(false)
-  image          String?
+  image          String?      
   name           String
   desc           String?
   price          Float
@@ -95,6 +96,7 @@ model Order {
 model Category {
   id       Int     @id @default(autoincrement())
   disabled Boolean @default(false)
+  posOnly Boolean @default(false)
   name     String  @unique
   color    String?
   order    Order[]

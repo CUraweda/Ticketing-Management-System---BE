@@ -2,7 +2,18 @@ const { expressRouter } = require("../../utils/router");
 const { error, success } = require("../../utils/response");
 const { upload, convertFilesToURL } = require("../../utils/helper");
 const orderModel = require("../models/order.models");
-
+const { auth } = require("../middlewares/auth");
+expressRouter.get('/order-data-dashboard', auth, async (req, res) => {
+  const { shownCategory } = req.user
+  const data = await orderModel.getAllData({
+  ...(shownCategory?.id && {
+    category: {
+      id: { in: shownCategory.id }
+    }
+  })
+  }).catch(err => { return error(res, err.message) })
+  return success(res, 'Data order berhasil di fetch', data)
+})
 expressRouter.get("/order-details/:id?", async (req, res) => {
   try {
     const { id } = req.params;
