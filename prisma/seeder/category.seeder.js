@@ -14,6 +14,25 @@ const categories = [
     name: "Mancanegara",
     color: "#7C0428",
   },
+  {
+    name: "Terusan",
+    color: "#7C0428",
+  },
+  {
+    name: "Makanan",
+    posOnly: true, 
+    color: "#35E490",
+  },
+  {
+    name: "Minuman",
+    posOnly: true, 
+    color: "#5855EE",
+  },
+  {
+    name: "Suvenir",
+    posOnly: true, 
+    color: "#7C0428",
+  }
 ];
 
 const categorySeed = async () => {

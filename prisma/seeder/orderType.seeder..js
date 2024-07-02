@@ -3,7 +3,8 @@ const { prisma } = require("../../routes/utils/prisma")
 
 const types = [
     'Tiket',
-    'Paket'
+    'Paket',
+    'Essential'
 ]
 
 const typeSeed = async () => {

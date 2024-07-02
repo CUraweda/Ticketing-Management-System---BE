@@ -4,45 +4,41 @@ const bcrypt = require('bcrypt')
 
 const users = [
     {
-        name: 'Teddy Lazuardi',
-        email: 'TeddyLazuardi@gmail.com',
-        role: "CASHIER",
-        number: '085678901234',
-        password: 'Teddy1234',
-    },
-    {
-        name: "Admin 1",
+        name: "admin",
         email: "admin1@gmail.com",
         role: "ADMIN",
         password: "password"
     },
     {
-        name: "adminpos",
-        email: "user1@gmail.com",
+        name: "kasirpos",
+        email: "cashierpos@gmail.com",
         role: "CASHIER",
-        password: "tesadm1"
-    },
-    {
-        name: "Customers 1",
-        email: "customer1@gmail.com",
-        role: "CUSTOMER",
+        shownCategory: { id: [1, 2, 3] },
         password: "password"
     },
     {
-        name: "Customers 2",
-        email: "customer2@gmail.com",
-        role: "CUSTOMER",
+        name: "kasirsuvenir",
+        email: "cashiersuvenir@gmail.com",
+        role: "CASHIER",
+        shownCategory: { id: [7] },
         password: "password"
     },
     {
-        name: "superadmincuraweda",
-        email: "curaweda@gmail.com",
+        name: "kasirfnb",
+        email: "cashierfnb@gmail.com",
+        role: "CASHIER",
+        shownCategory: { id: [5, 6] },
+        password: "password"
+    },
+    {
+        name: "superadmin",
+        email: "superadmin@gmail.com",
         role: "SUPER_ADMIN",
-        password: "curawedasuper"
+        password: "password"
     },
     {
         name: "curaweda",
-        email: "curaweda1@gmail.com",
+        email: "curaweda@gmail.com",
         role: "CURAWEDA",
         password: "password"
     },

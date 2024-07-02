@@ -1,10 +1,9 @@
 const {
   throwError,
-  startDate,
-  endDate,
   groupedPurchase,
   groupYearData,
   groupMonthData,
+  generateTodayDate,
 } = require("../../utils/helper");
 const { prisma } = require("../../utils/prisma");
 const logsModel = require("./logs.models");
@@ -48,15 +47,18 @@ const getAll = async () => {
     throwError(err);
   }
 };
-const getAllData = async () => {
+const getAllData = async (query) => {
   return await prisma.order.findMany({
+    where: {
+      ...(query && { ...query }),
+    },
     include: {
       category: true,
       orderSubType: { include: { orderType: true } },
-  }
-  }).catch ((err) => {
-  throwError(err)
-})
+    }
+  }).catch((err) => {
+    throwError(err)
+  })
 }
 
 const getRecentData = async (start, end) => {
@@ -132,6 +134,7 @@ const update = async (id, data) => {
 };
 const recentPurchase = async () => {
   try {
+    const { startDate, endDate } = generateTodayDate()
     const order = await prisma.detailTrans.findMany({
       where: {
         transaction: {
@@ -198,7 +201,7 @@ const deleteOrder = async (id) => {
       .update({ where: { id }, data: { disabled: true, deleted: true } })
       .then(
         await logsModel.logDelete(
-          `Menghapus pesanan ${order.name} (${order.category.name}) dengan ID ${order.id}.`,
+          `Menghapus pesanan ${order.name} (${order.category.name}) dengan ID $ {order.id}.`,
           "Order",
           "Success"
         )
@@ -206,6 +209,31 @@ const deleteOrder = async (id) => {
   } catch (err) {
     await logsModel.logDelete(`Menghapus pesanan ${id}.`, "Order", "Failed");
     throwError(err);
+  }
+};
+
+const hideorder = async (id, data) => {
+  const idData = id
+  console.log(data.status, id)
+  try {
+    const order = await prisma.order.findUnique({ where: { id: idData } });
+
+    if (!order) throw new Error("Order ID tidak ditemukan!");
+    if (order.status === true) {
+      await prisma.order.update({
+        where: { id: idData },
+        data: { status: false }
+      });
+      console.log("Status order diubah menjadi false.");
+    } else {
+      await prisma.order.update({
+        where: { id: idData },
+        data: { status: true }
+      });
+      console.log("Status order sudah false.");
+    }
+  } catch (err) {
+    console.error(err);
   }
 };
 
@@ -220,4 +248,5 @@ module.exports = {
   getYearData,
   getMonthData,
   deleteOrder,
+  hideorder,
 };

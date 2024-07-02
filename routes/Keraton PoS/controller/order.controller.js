@@ -2,7 +2,18 @@ const { expressRouter } = require("../../utils/router");
 const { error, success } = require("../../utils/response");
 const { upload, convertFilesToURL } = require("../../utils/helper");
 const orderModel = require("../models/order.models");
-
+const { auth } = require("../middlewares/auth");
+expressRouter.get('/order-data-dashboard', auth, async (req, res) => {
+  const { shownCategory } = req.user
+  const data = await orderModel.getAllData({
+    deleted: false,
+    category: {
+      disabled: false,
+      ...(shownCategory?.id && { id: { in: shownCategory.id } })
+    }
+  }).catch(err => { return error(res, err.message) })
+  return success(res, 'Data order berhasil di fetch', data)
+})
 expressRouter.get("/order-details/:id?", async (req, res) => {
   try {
     const { id } = req.params;
@@ -15,10 +26,10 @@ expressRouter.get("/order-details/:id?", async (req, res) => {
   }
 });
 expressRouter.get('/order-data-all', async (req, res) => {
-  try{
+  try {
     const data = await orderModel.getAllData()
     return success(res, 'Data Order behasil di fetch', data)
-  }catch(err){
+  } catch (err) {
     return error(res, err.message)
   }
 })
@@ -27,12 +38,12 @@ expressRouter.post(
   upload.single("image"),
   async (req, res) => {
     try {
-      if(req.file) req.body.image = convertFilesToURL(req.file.path)
-      if(req.body.image === "null") delete req.body.image
+      if (req.file) req.body.image = convertFilesToURL(req.file.path)
+      if (req.body.image === "null") delete req.body.image
       delete req.body.imgName;
-      req.body.categoryId = parseInt(req.body.categoryId);
-      req.body.orderSubTypeId = parseInt(req.body.orderSubTypeId);
-      req.body.price = parseFloat(req.body.price);
+      if (req.body.categoryId) req.body.categoryId = parseInt(req.body.categoryId);
+      if (req.body.orderSubTypeId) req.body.orderSubTypeId = parseInt(req.body.orderSubTypeId);
+      if (req.body.price) req.body.price = parseFloat(req.body.price);
 
       switch (req.params.action) {
         case "create":

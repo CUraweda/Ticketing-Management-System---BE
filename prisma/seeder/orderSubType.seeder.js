@@ -21,6 +21,10 @@ const subTypes = [
         orderTypeId: 2,
         minimumUnits: 50
     },
+    {
+        name: "Essential Item",
+        orderTypeId: 3,
+    },
 ]
 
 const subTypeSeed = async () => {

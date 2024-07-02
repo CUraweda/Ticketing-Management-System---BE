@@ -1,7 +1,7 @@
 const { expressRouter } = require("../../utils/router");
 const { error, success } = require("../../utils/response");
 const detailTransModel = require("../models/detailTrans.models");
-const { startDate, endDate, throwError } = require('../../utils/helper')
+const { throwError, generateTodayDate } = require('../../utils/helper')
 
 expressRouter.get("/table-data", async (req, res) => {
   try {
@@ -23,6 +23,7 @@ expressRouter.get('/category-sell', async (req,  res) => {
   let { start, end } = req.query
   try{
     if(!start || !end){
+      const { startDate, endDate } = generateTodayDate()
       start = startDate
       end = endDate
     }
