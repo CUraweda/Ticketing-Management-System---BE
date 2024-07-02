@@ -20,14 +20,14 @@ const users = [
         name: "kasirsuvenir",
         email: "cashiersuvenir@gmail.com",
         role: "CASHIER",
-        shownCategory: { id: [6] },
+        shownCategory: { id: [7] },
         password: "password"
     },
     {
         name: "kasirfnb",
         email: "cashierfnb@gmail.com",
         role: "CASHIER",
-        shownCategory: { id: [4, 5] },
+        shownCategory: { id: [5, 6] },
         password: "password"
     },
     {
