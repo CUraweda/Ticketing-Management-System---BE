@@ -1,10 +1,9 @@
 const {
   throwError,
-  startDate,
-  endDate,
   groupedPurchase,
   groupYearData,
   groupMonthData,
+  generateTodayDate,
 } = require("../../utils/helper");
 const { prisma } = require("../../utils/prisma");
 const logsModel = require("./logs.models");
@@ -48,8 +47,11 @@ const getAll = async () => {
     throwError(err);
   }
 };
-const getAllData = async () => {
+const getAllData = async (query) => {
   return await prisma.order.findMany({
+    where: {
+      ...(query && { ...query }),
+    },
     include: {
       category: true,
       orderSubType: { include: { orderType: true } },
@@ -132,6 +134,7 @@ const update = async (id, data) => {
 };
 const recentPurchase = async () => {
   try {
+    const { startDate, endDate } = generateTodayDate()
     const order = await prisma.detailTrans.findMany({
       where: {
         transaction: {

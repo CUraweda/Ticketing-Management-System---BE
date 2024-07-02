@@ -10,12 +10,11 @@ const transactionModelWeb = require('../../Website Keraton/models/transaction.mo
 const barcodeModel = require('../../Website Keraton/models/barcode.model')
 const {
   throwError,
-  startDate,
-  endDate,
   searchQr,
   createQr,
   splitDate,
   formatCurrency,
+  generateTodayDate,
 } = require("../../utils/helper");
 const { prisma } = require("../../utils/prisma");
 const logsModel = require("./logs.models");
@@ -148,6 +147,7 @@ const getTickets = async (id) => {
 };
 const getRevenue = async () => {
   try {
+    const { startDate, endDate } = generateTodayDate()
     const transaction = await prisma.transaction.findMany({
       where: { createdDate: { gte: startDate, lte: endDate } },
     });
@@ -162,6 +162,7 @@ const getRevenue = async () => {
 
 const getRevenueCurawedaKeraton = async (args) => {
   let todayRevenue = { revenueKeraton: { COH: 0, CIA: 0 }, revenueCuraweda: { COH: 0, CIA: 0 }, total: 0 }
+  const { startDate, endDate } = generateTodayDate()
   try {
     const transaction = await prisma.transaction.findMany({
       where: { plannedDate: { gte: startDate, lte: endDate }, detailTrans: { some: { order: { deleted: false, disabled: false, category: { disabled: false } } } } },
@@ -183,6 +184,7 @@ const getRevenueCurawedaKeraton = async (args) => {
 const getRevenueCurawedaTabel = async (args) => {
   try {
     const { from, to } = args
+    const { startDate, endDate } = generateTodayDate()
     try {
       return await prisma.transaction.findMany({
         where: {

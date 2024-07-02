@@ -92,11 +92,14 @@ const decodeQr = (data) => { };
 // QR End
 
 // Detail Trans Initialization
-const today = new Date();
-const startDate = new Date(today);
-startDate.setHours(7, 0, 0, 0);
-const endDate = new Date(today);
-endDate.setHours(30, 59, 59, 999);
+function generateTodayDate(){
+  const today = new Date();
+  const startDate = new Date(today);
+  startDate.setHours(7, 0, 0, 0);
+  const endDate = new Date(today);
+  endDate.setHours(30, 59, 59, 999);
+  return { today, startDate, endDate }
+}
 
 function generateYearlyCategory() {
   const months = {
@@ -279,9 +282,6 @@ function formatCurrency(value) {
 }
 module.exports = {
   upload,
-  today,
-  startDate,
-  endDate,
   createQr,
   searchQr,
   generateYearlyCategory,
@@ -293,6 +293,7 @@ module.exports = {
   throwError,
   generateRandomString,
   convertFilesToURL,
+  generateTodayDate,
   splitDate,
   formatCurrency
 };
