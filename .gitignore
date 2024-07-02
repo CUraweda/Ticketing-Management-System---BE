@@ -1,11 +1,13 @@
 node_modules
+.env
 public/assets/content/*
 public/assets/items/*
 public/assets/events/*
+public/assets/news/*
 public/qrcodes/*
 public/uploads/*
 public/pdfs/*
 prisma/migrations/*
 logs
 *.log
-
+package-lock.json
