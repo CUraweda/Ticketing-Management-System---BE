@@ -15,10 +15,10 @@ expressRouter.get("/order-details/:id?", async (req, res) => {
   }
 });
 expressRouter.get('/order-data-all', async (req, res) => {
-  try{
+  try {
     const data = await orderModel.getAllData()
     return success(res, 'Data Order behasil di fetch', data)
-  }catch(err){
+  } catch (err) {
     return error(res, err.message)
   }
 })
@@ -27,8 +27,8 @@ expressRouter.post(
   upload.single("image"),
   async (req, res) => {
     try {
-      if(req.file) req.body.image = convertFilesToURL(req.file.path)
-      if(req.body.image === "null") delete req.body.image
+      if (req.file) req.body.image = convertFilesToURL(req.file.path)
+      if (req.body.image === "null") delete req.body.image
       delete req.body.imgName;
       req.body.categoryId = parseInt(req.body.categoryId);
       req.body.orderSubTypeId = parseInt(req.body.orderSubTypeId);
@@ -41,6 +41,10 @@ expressRouter.post(
         case "update":
           await orderModel.update(req.params.id, req.body);
           return success(res, "Update pesanan berhasil!");
+        case "updateStatus":
+          await orderModel.hideorder(req.params.id, req.body);
+          return success(res, "Update pesanan berhasil!");
+
         case "delete":
           await orderModel.deleteOrder(req.params.id);
           return success(res, "Penghapusan pesanan berhasil!");

@@ -53,10 +53,10 @@ const getAllData = async () => {
     include: {
       category: true,
       orderSubType: { include: { orderType: true } },
-  }
-  }).catch ((err) => {
-  throwError(err)
-})
+    }
+  }).catch((err) => {
+    throwError(err)
+  })
 }
 
 const getRecentData = async (start, end) => {
@@ -198,7 +198,7 @@ const deleteOrder = async (id) => {
       .update({ where: { id }, data: { disabled: true, deleted: true } })
       .then(
         await logsModel.logDelete(
-          `Menghapus pesanan ${order.name} (${order.category.name}) dengan ID ${order.id}.`,
+          `Menghapus pesanan ${order.name} (${order.category.name}) dengan ID $ {order.id}.`,
           "Order",
           "Success"
         )
@@ -206,6 +206,35 @@ const deleteOrder = async (id) => {
   } catch (err) {
     await logsModel.logDelete(`Menghapus pesanan ${id}.`, "Order", "Failed");
     throwError(err);
+  }
+};
+
+const getStatus = async (id) => {
+
+}
+
+const hideorder = async (id, data) => {
+  const idData = id
+  console.log(data.status, id)
+  try {
+    const order = await prisma.order.findUnique({ where: { id: idData } });
+
+    if (!order) throw new Error("Order ID tidak ditemukan!");
+    if (order.status === true) {
+      await prisma.order.update({
+        where: { id: idData },
+        data: { status: false }
+      });
+      console.log("Status order diubah menjadi false.");
+    } else {
+      await prisma.order.update({
+        where: { id: idData },
+        data: { status: true }
+      });
+      console.log("Status order sudah false.");
+    }
+  } catch (err) {
+    console.error(err);
   }
 };
 
@@ -220,4 +249,5 @@ module.exports = {
   getYearData,
   getMonthData,
   deleteOrder,
+  hideorder,
 };
