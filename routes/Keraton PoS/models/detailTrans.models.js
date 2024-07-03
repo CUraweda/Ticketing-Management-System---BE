@@ -18,6 +18,7 @@ const getTableData = async (query) => {
     const detailTrans = await prisma.detailTrans.findMany({
       where: {
         transaction: {
+          deleted: false,
           ...(date && {
             plannedDate: {
               gte: `${date}T00:00:00.000Z`,
