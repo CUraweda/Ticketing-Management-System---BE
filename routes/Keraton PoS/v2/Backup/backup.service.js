@@ -15,7 +15,6 @@ const getAllTabel = async () => {
     while ((match = modelRegex.exec(schema)) !== null) {
       models.push(match[1]);
     }
-    console.log(models)
     return models;
 }
 
