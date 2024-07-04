@@ -37,6 +37,8 @@ const upload = multer({
 });
 // Multer End
 
+
+
 // QR Start
 const qrDir = "./public/qrcodes";
 
