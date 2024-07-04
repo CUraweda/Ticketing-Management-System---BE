@@ -75,7 +75,7 @@ model Token {
 model Order {
   id             String        @id @default(uuid())
   disabled       Boolean       @default(false)
-  image          String?      
+  image          String?
   name           String
   desc           String?
   price          Float
@@ -95,7 +95,7 @@ model Order {
 model Category {
   id       Int     @id @default(autoincrement())
   disabled Boolean @default(false)
-  posOnly Boolean @default(false)
+  posOnly  Boolean @default(false)
   name     String  @unique
   color    String?
   order    Order[]
@@ -138,6 +138,7 @@ model Transaction {
   createdDate    DateTime       @default(now())
   discount       String?
   cashback       String?
+  deleted        Boolean?       @default(false)
   user           User?          @relation(fields: [userId], references: [id])
   userId         String?
   detailTrans    DetailTrans[]

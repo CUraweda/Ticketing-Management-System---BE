@@ -41,10 +41,8 @@ const getInvoice = async (search) => {
   try {
     const data = await prisma.transaction.findMany({
       where: {
+        deleted: false,
         ...(search && {
-          // user: {
-          //   name: { contains: search }
-          // }
           detailTrans: {
             some: {
               OR: [
@@ -53,12 +51,6 @@ const getInvoice = async (search) => {
               ]
             }
           }
-          // OR: [
-          // {
-          // },
-          // {
-          // }
-          // ]
         }),
       },
       include: {
@@ -114,7 +106,7 @@ const getOne = async (id) => {
 const getAll = async (id) => {
   try {
     return await prisma.transaction.findMany({
-      where: { id: id },
+      where: { id: id, deleted: false },
     });
   } catch (err) {
     throwError(err);
@@ -124,7 +116,7 @@ const getAll = async (id) => {
 const getTickets = async (id) => {
   try {
     let transaction = await prisma.transaction.findUnique({
-      where: { id: id },
+      where: { id: id, deleted: false },
       include: {
         user: true,
         detailTrans: {
@@ -149,7 +141,7 @@ const getRevenue = async () => {
   try {
     const { startDate, endDate } = generateTodayDate()
     const transaction = await prisma.transaction.findMany({
-      where: { createdDate: { gte: startDate, lte: endDate } },
+      where: { deleted: false, createdDate: { gte: startDate, lte: endDate } },
     });
     const total = parseInt(
       transaction.reduce((acc, curr) => acc + parseInt(curr.total), 0)
@@ -165,7 +157,7 @@ const getRevenueCurawedaKeraton = async (args) => {
   const { startDate, endDate } = generateTodayDate()
   try {
     const transaction = await prisma.transaction.findMany({
-      where: { plannedDate: { gte: startDate, lte: endDate }, detailTrans: { some: { order: { deleted: false, disabled: false, category: { disabled: false } } } } },
+      where: {deleted: false,  plannedDate: { gte: startDate, lte: endDate }, detailTrans: { some: { order: { deleted: false, disabled: false, category: { disabled: false } } } } },
       select: { plannedDate: true, keratonIncome: true, curawedaIncome: true, total: true }
     })
     transaction.forEach(trans => {
@@ -188,6 +180,7 @@ const getRevenueCurawedaTabel = async (args) => {
     try {
       return await prisma.transaction.findMany({
         where: {
+          deleted: false,
           plannedDate: {
             gte: from ? `${from}T00:00:00.000Z` : startDate,
             lte: to ? `${to}T23:59:59.999Z` : endDate
@@ -204,7 +197,7 @@ const getRevenueCurawedaTabel = async (args) => {
 }
 const getDistinctDate = async () => {
   try {
-    return await prisma.transaction.findMany({ distinct: ["createdDate"] });
+    return await prisma.transaction.findMany({ where: { deleted: false }, distinct: ["createdDate"] });
   } catch (err) {
     throwError(err);
   }
@@ -592,19 +585,18 @@ const sendEmailToUser = async (data) => {
     throwError(err);
   }
 };
-const deleteHard = async (id) => {
+const deleteSoft = async (id) => {
   try{
-    await prisma.detailTrans.deleteMany({ where: { transactionId: id } })
-    return await prisma.transaction.delete({ where: { id } })
+    return await prisma.transaction.update({ where: { id }, data: { deleted: true }})
   }catch(err){
-    
+    throwError(err)
   }
 }
 module.exports = {
   getInvoice,
   getAllDetail,
   getAll,
-  deleteHard,
+  deleteSoft,
   getOne,
   getTickets,
   getRevenueCurawedaTabel,

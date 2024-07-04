@@ -11,7 +11,7 @@ const controlNationality = require("./nationality.controller");
 const controlCategory = require("./category.controller");
 const controlLogs = require("./logs.controller");
 const controlKeratonTransaction = require('../controller/keratonTransaction.controller')
-
+const controlBackup = require('../v2/Backup/backup.controller')
 router.use("/user", controlUser);
 router.use("/order", controlOrder);
 router.use("/order-type", controlOrderType);
@@ -22,6 +22,7 @@ router.use("/guide", controlGuide);
 router.use("/nationality", controlNationality);
 router.use("/category", controlCategory);
 router.use("/logs", controlLogs);
+router.use('/backup', controlBackup)
 router.use('/curaweda-income', controlKeratonTransaction)
 
 module.exports = router;

@@ -26,10 +26,10 @@ const getTableData = async (query) => {
           })
         },
         order: {
-          deleted: false,
           disabled: false,
           ...(category && {
             category: {
+              disabled: false,
               name: category
             }
           })
@@ -58,6 +58,7 @@ const getUnavailableGuide = async (date) => {
     return await prisma.detailTrans.findMany({
       where: {
         transaction: {
+          deleted: false,
           plannedDate: {
             gte: startTarget,
             lte: endTarget,
@@ -77,6 +78,7 @@ const getOneDaySellCategory = async (gte, lte) => {
     return await prisma.detailTrans.findMany({
       where: {
         transaction: {
+          deleted: false,
           plannedDate: { gte, lte }
         },
         order: {

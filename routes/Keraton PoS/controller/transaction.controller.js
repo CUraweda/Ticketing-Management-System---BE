@@ -25,7 +25,7 @@ expressRouter.get('/get-all-detail', async (req, res) => {
     const lastDayISO = lastDay.toISOString().split('T')[0];
 
     const data = await transactionModel.getAllDetail({
-      transaction: { plannedDate: { gte: `${firstDayISO}T00:00:00.000Z`, lte: `${lastDayISO}T23:59:59.999Z` } },
+      transaction: { deleted: false, plannedDate: { gte: `${firstDayISO}T00:00:00.000Z`, lte: `${lastDayISO}T23:59:59.999Z` } },
       OR: [
         { nationalityId: { not: null } },
         { cityName: { not: null } }
@@ -95,7 +95,7 @@ expressRouter.post("/create-transaction", async (req, res) => {
 });
 expressRouter.get('/delete-transaction/:id', async (req, res) => {
   try {
-    const data = await transactionModel.deleteHard(req.params.id)
+    const data = await transactionModel.deleteSoft(req.params.id)
     return success(res, 'Data Transaksi Dihapus', data)
   } catch (err) {
     return error(res, err.message)

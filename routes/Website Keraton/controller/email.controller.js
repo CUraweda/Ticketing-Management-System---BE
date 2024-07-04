@@ -170,7 +170,7 @@ router.get("/render/subscription", async (req, res) => {
 router.get("/invoice/:id", auth([]), async (req, res) => {
   try {
     const transactionExist = await prisma.transaction.findFirstOrThrow({
-      where: { id: req.params.id },
+      where: { id: req.params.id, deleted: false },
       include: {
         user: true,
         detailTrans: { include: { order: true, event: true } },
