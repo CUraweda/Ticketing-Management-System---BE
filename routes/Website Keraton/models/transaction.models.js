@@ -67,6 +67,7 @@ const getOne = async (id) => {
 
 const createNew = async (data) => {
     let { user, carts, args } = data, payloads = [], tiketUses = 0, revenueKeraton = { COH: 0, CIA: 0 }, revenueCuraweda = { COH: 0, CIA: 0 }, paramRevenueMethod, paramTax, countryReference = {}
+    const taxParam = await globalParamModel.getOne({ identifier: process.env.TAX_PARAMS_IDENTIFIER })
     try {
         if (carts.length < 1) throw Error('No Item to Checkout')
         if (user) args.userId = user.id
@@ -74,7 +75,6 @@ const createNew = async (data) => {
         await prisma.nationality.findMany().then((datas) => {
             datas.forEach((data) => countryReference[data.code] = data.id)
         })
-        const taxParam = await globalParamModel.getOne({ identifier: process.env.TAX_PARAMS_IDENTIFIER })
         for (let cart of carts) {
             if (cart.quantity < 1) continue
             switch (cart.type) {
@@ -126,7 +126,6 @@ const createNew = async (data) => {
                     revenueCuraweda[paramRevenueMethod] += totalRawTax
                     break;
                 case "keraton":
-                    args.total += totalRawTax
                     revenueKeraton[paramRevenueMethod] = revenueKeraton[paramRevenueMethod] - totalRawTax
                     revenueCuraweda[paramRevenueMethod] += totalRawTax
                     break;
