@@ -4,7 +4,7 @@ const crypto = require('crypto');
 const { error, success } = require("../../../utils/response");
 const expressRouter = require("../../controller/user.controller");
 const { auth } = require("../../middlewares/auth");
-const backupService = require('./backup.service')
+const backupService = require('./backup.service');
 
 // Multer Initialization
 const allowedMimeTypes = [
@@ -37,7 +37,7 @@ expressRouter.get('/get-dataref/:databaseName?', async (req, res) => {
     const { databaseName } = req.params
     try{
         const data = databaseName ? await backupService.getDataReference(databaseName) : await backupService.getAllTabel()
-        return success(res, 'Data Reference berhasil didapatkan', data)
+      return success(res, 'Data Reference berhasil didapatkan', data)
     }catch(err){
         return error(res, err.message)
     }
@@ -45,8 +45,10 @@ expressRouter.get('/get-dataref/:databaseName?', async (req, res) => {
 
 expressRouter.post('/backup-data', upload.single('jsonFile'), async (req, res) => {
     try{
-        console.log(req.file)
+        if(req.file) await backupService.storeBackup(req.file.path)
+        return success(res, 'Backup berhasil', "Data stored successfully")
     }catch(err){
+        console.log(err)
         return error(res, err.message)
     }
 })

@@ -6,6 +6,7 @@
     "start": "nodemon app.js",
     "migrate": "npx prisma migrate dev",
     "seeder": "npx prisma db seed",
+    "deploy": "npx prisma migrate deploy",
     "dbd": "npx prisma migrate dev",
     "dbr": "npx prisma migrate reset"
   },
@@ -39,8 +40,5 @@
   },
   "prisma": {
     "seed": "node prisma/seeder/index.seeder.js"
-  },
-  "devDependencies": {
-    "prisma": "^5.15.0"
   }
 }

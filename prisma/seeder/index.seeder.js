@@ -22,12 +22,12 @@ async function main() {
   await guideData();
   await iterationSeed();
   await pageSeed();
-  await categorySeed()
-  await typeSeed();
-  await subTypeSeed();
+  // await categorySeed()
+  // await typeSeed();
+  // await subTypeSeed();
   await objekWisataSeed()
-  await orderSeed();
-  await eventSeed();
+  // await orderSeed();
+  // await eventSeed();
   await contentSeed();
 }
 
