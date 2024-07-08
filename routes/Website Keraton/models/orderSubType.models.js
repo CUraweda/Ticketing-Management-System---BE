@@ -61,17 +61,17 @@ const createUpdate = async (ident, data = { name, typeId }) => {
             where: { ...(data.id ? { id: data.id } : { name: data.name }) },
             create: data, update: data
         }).then(async (dbData) => {
-            ident != "create" ? await logsModel.logUpdate( `Mengubah sub-tipe pesanan ${dbData.name}`, "Order Subtype", "Success") : await logsModel.logCreate(`Membuat sub-tipe pesanan ${dbData.name}`, "Order Subtype", "Success")
+            ident != "create" ? await logsModel.logUpdate(`Mengubah sub-tipe pesanan ${dbData.name}`, "Order Subtype", "Success") : await logsModel.logCreate(`Membuat sub-tipe pesanan ${dbData.name}`, "Order Subtype", "Success")
         })
     } catch (err) {
-        ident != "create" ? await logsModel.logUpdate( `Mengubah sub-tipe pesanan ${data.name}`, "Order Subtype", "Failed") : await logsModel.logCreate(`Membuat sub-tipe pesanan ${data.name}`, "Order Subtype", "Failed")
+        ident != "create" ? await logsModel.logUpdate(`Mengubah sub-tipe pesanan ${data.name}`, "Order Subtype", "Failed") : await logsModel.logCreate(`Membuat sub-tipe pesanan ${data.name}`, "Order Subtype", "Failed")
         throwError(err);
     }
 };
 
 const deleteSoft = async (id) => {
     try {
-        return await prisma.orderSubType.update({ where: { id }, data: { disabled: true } }).then( async (data) => {
+        return await prisma.orderSubType.update({ where: { id }, data: { disabled: true } }).then(async (data) => {
             await logsModel.logDelete(`Menghapus sub-tipe pesanan ${data.name}`, "Order Subtype", "Success")
         })
     } catch (err) {

@@ -42,7 +42,6 @@ const getOne = async (id) => {
 const createUpdate = async (ident, data = { name, id }) => {
     try {
         const alreadyExist = await nameExist(data.name)
-        console.log('ajdanjdnjadnjajn')
         if (ident != 'create') if (alreadyExist) throw Error('Type name already exist')
         if (alreadyExist && alreadyExist.disabled) data.disabled = false
         return await prisma.orderType.upsert({
@@ -59,10 +58,10 @@ const createUpdate = async (ident, data = { name, id }) => {
 const deleteSoft = async (id) => {
     try {
         return await prisma.orderType.update({ where: { id }, data: { disabled: true } }).then(async (data) => {
-            await logsModel.logDelete(`Menghapus tipe pesanan ${data.name}, "Order Type`, "Success")
+            await logsModel.logDelete(`Menghapus tipe pesanan ${data.name}`, "Order Type", "Success")
         })
     } catch (err) {
-        await logsModel.logDelete(`Menghapus tipe pesanan ID : ${id}, "Order Type`, "Failed")
+        await logsModel.logDelete(`Menghapus tipe pesanan ID : ${id}`, "Order Type", "Failed")
         throwError(err)
     }
 }

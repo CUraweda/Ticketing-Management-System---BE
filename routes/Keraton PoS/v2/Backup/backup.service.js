@@ -10,7 +10,7 @@ const getDataReference = async (databaseName) => {
 }
 
 const getAllTabel = async () => {
-    const schema = fs.readFileSync('C:/VCS/PKL/Code/Tefa-Backend/prisma/schema.prisma', 'utf-8');
+    const schema = fs.readFileSync('prisma/schema.prisma', 'utf-8');
     const modelRegex = /model\s+(\w+)\s+{([^}]*)}/gs;
     let models = [];
     let match;
@@ -29,7 +29,7 @@ const getAllTabel = async () => {
 }
 
 const getPropertiesForModel = async (modelName) => {
-    const schema = fs.readFileSync('C:/VCS/PKL/Code/Tefa-Backend/prisma/schema.prisma', 'utf-8');
+    const schema = fs.readFileSync('prisma/schema.prisma', 'utf-8');
     const modelRegex = new RegExp(`model\\s+${modelName}\\s+{([^}]*)}`, 'gs');
     let properties = [];
 
