@@ -1,7 +1,9 @@
 const path = require('path')
 const fs = require('fs');
 const LocalJson = require("../../../utils/localJson")
-const { prisma } = require("../../../utils/prisma")
+const { prisma } = require("../../../utils/prisma");
+const { clear, table } = require('console');
+const { update } = require('../../models/order.models');
 
 const getDataReference = async (databaseName) => {
     return await prisma[databaseName].findMany()
@@ -18,29 +20,96 @@ const getAllTabel = async () => {
         const modelBody = match[2];
 
         const relationCount = (modelBody.match(/@relation/g) || []).length;
-        // const arrayCount = (modelBody.match(/\[\]/g) || []).length;
+        const arrayFieldTypes = [...modelBody.matchAll(/\w+\s+(\w+)\[\]/g)].map(match => match[1]);
+        const uniqueFields = [...modelBody.matchAll(/(\w+)\s+\w+\s+@unique/g)].map(match => match[1]);
 
-        models.push({ name: modelName, relationships: relationCount });
+        models.push({ name: modelName, relationships: relationCount, depended: arrayFieldTypes, uniqueFields });
     }
     return models
 }
 
-const storeBackup = async (filePath) => {
+const getPropertiesForModel = async (modelName) => {
+    const schema = fs.readFileSync('C:/VCS/PKL/Code/Tefa-Backend/prisma/schema.prisma', 'utf-8');
+    const modelRegex = new RegExp(`model\\s+${modelName}\\s+{([^}]*)}`, 'gs');
+    let properties = [];
+
+    const match = modelRegex.exec(schema);
+    if (!match) {
+        throw new Error(`Model '${modelName}' not found in schema.`);
+    }
+
+    const modelBody = match[1];
+    const propertyRegex = /(\w+)\s+[\w\[\]]+(?![?])\s+@?/g;
+
+    let propertyMatch;
+    while ((propertyMatch = propertyRegex.exec(modelBody)) !== null) {
+        properties.push(propertyMatch[1]);
+    }
+
+    return properties;
+}
+
+const storeBackup = async (filePath, deleteDatabase) => {
     try {
         const jsonFile = new LocalJson(filePath)
-        const { dataReferences, backups } = jsonFile.fileData
-        dataReferences.sort((a, b) => a.load - b.load);
-        console.log(dataReferences)
-        for(let client of dataReferences){
-            await prisma[client.dbName].deleteMany({}).then(async () => { 
-                console.log(`${client.dbName} berhasil di hapus, memasuki stage backup...`)
-                await prisma[client.dbName].createMany({ data: backups[client.dbName].backupDatas }).then(() => { console.log(`Backup ${client.dbName} berhasil`) }).catch(err => { console.log(err) })
-         }).catch(err => { console.log(`${client.dbName} gagal dihapus, Error occured`) })
+        let { dataReferences, backups } = jsonFile.fileData
+        dataReferences.sort((a, b) => a['load'] - b['load'])
+        
+        //Delete Databases
+        if (deleteDatabase) {
+            const tableData = await getAllTabel()
+            tableData.sort((a, b) => a.depended.length - b.depended.length)
+            while (tableData.length > 0) {
+                for (let dataIndex in tableData) {
+                    const data = tableData[dataIndex]
+                    const dependedData = []
+                    if (data.depended.length < 1) {
+                        await prisma[data.name].deleteMany().catch(err => { console.log(`${client.dbName} gagal dihapus, Error occured`) })
+                        console.log(`${data.name} berhasil di hapus, memasuki stage backup...`)
+                        tableData.splice(dataIndex, 1)
+                        continue
+                    }
+                    for (let dependedName of data.depended) {
+                        const dependedReference = tableData.find(model => model.name === dependedName)
+                        if (dependedReference) dependedData.push(dependedReference)
+                    }
+                    if (dependedData.length < 1) {
+                        await prisma[data.name].deleteMany().catch(err => { console.log(`${data.name} berhasil di hapus, memasuki stage backup...`) })
+                        console.log(`${data.name} berhasil di hapus, memasuki stage backup...`)
+                        tableData.splice(dataIndex, 1)
+                    }
+                }
+            }
+        }
+
+        //Create Backup Data
+        for (let client of dataReferences) {
+            let uniqueFields = client.uniqueFields[0]
+            if (!uniqueFields) uniqueFields = "id"
+            const backupDatas = backups[client.dbName].backupDatas
+            const dataToCheck = await getPropertiesForModel(capitalizeFirstChar(client.dbName))
+            if (!dataToCheck) throw Error(`${client.dbName} didnt exist, please check!`)
+            for (let dataIndex in backupDatas) {
+                const dataBackup = backupDatas[dataIndex]
+                if (!dataBackup[uniqueFields]) throw Error(`Data ${uniqueFields} didnt exist in ${client.dbName} | ${dataIndex} `)
+                if (!deleteDatabase) delete dataBackup.id
+                await prisma[client.dbName].upsert({
+                    where: { [uniqueFields]: dataBackup[uniqueFields] },
+                    create: dataBackup, update: dataBackup
+                })
+            }
+            console.log(`${client.dbName} berhasil di backup`)
         }
     } catch (err) {
         console.log(err)
     }
 }
+
+const capitalizeFirstChar = (str) => {
+    if (!str || typeof str !== 'string') return ''
+    return str.charAt(0).toUpperCase() + str.slice(1)
+}
+
 
 module.exports = {
     getDataReference,
