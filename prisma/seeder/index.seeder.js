@@ -19,21 +19,19 @@ const runMigrate = () => {
   globalJson.addEntry('databaseIsFresh', true)
 }
 
-
-
 async function main() {
   await userSeed();
-  // await guideData();
-  // await iterationSeed();
-  // await pageSeed();
-  // await categorySeed()
-  // await typeSeed();
-  // await subTypeSeed();
-  // await objekWisataSeed()
-  // await orderSeed();
-  // await eventSeed();
-  // await contentSeed();
-  // runMigrate()
+  await guideData();
+  await iterationSeed();
+  await pageSeed();
+  await categorySeed()
+  await typeSeed();
+  await subTypeSeed();
+  await objekWisataSeed()
+  await orderSeed();
+  await eventSeed();
+  await contentSeed();
+  runMigrate()
 }
 
 main();
