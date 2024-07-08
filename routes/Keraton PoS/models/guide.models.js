@@ -80,7 +80,17 @@ const createUpdate = async (action, data) => {
         update: data,
       });
     }
+    await logsModel.logUpdate(
+      `${action != "update" ? "Menambahkan" : "Mengganti data"} guide ${guide.name}`,
+      "Guide",
+      "Success"
+    )
   } catch (err) {
+    await logsModel.logUpdate(
+      `${action != "update" ? "Menambahkan" : "Mengganti data"} guide ${guide.name}`,
+      "Guide",
+      "Success"
+    )
     throwError(err);
   }
 };

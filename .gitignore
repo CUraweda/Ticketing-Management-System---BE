@@ -6,6 +6,7 @@ public/assets/events/*
 public/assets/news/*
 public/qrcodes/*
 public/uploads/*
+public/backup/*
 public/pdfs/*
 prisma/migrations/*
 logs

@@ -54,11 +54,11 @@ model User {
   number        String?
   password      String
   role          Role
-  shownCategory Json?         @default("{}")
+  shownCategory Json?        
   nationality   Nationality?  @relation(fields: [nationalityId], references: [id])
   nationalityId String?
-  carts         Json?         @default("{}")
-  cartsKeraton  Json?         @default("{}")
+  carts         Json?        
+  cartsKeraton  Json?         
   deleted       Boolean       @default(false)
   transaction   Transaction[]
   logs          Logs[]

@@ -1,5 +1,6 @@
 const { throwError } = require("../../utils/helper")
 const { prisma } = require("../../utils/prisma")
+const logsModel = require('../../Keraton PoS/models/logs.models')
 
 const isExist = async (id) => {
     try {
@@ -43,19 +44,24 @@ const createUpdate = async (ident, data = { name, id }) => {
         const alreadyExist = await nameExist(data.name)
         if (ident != 'create') if (alreadyExist) throw Error('Type name already exist')
         if (alreadyExist && alreadyExist.disabled) data.disabled = false
+        ident != 'create' ? await logsModel.logUpdate(`Membuat tipe pesanan baru ${data.name}`, "Order Type", "Success") : await logsModel.logUpdate( `Mengubah tipe pesanan ${alreadyExist.name} menjadi ${data.name}`, "Order Type", "Success")
         return await prisma.orderType.upsert({
             where: { ...(data.id ? { id: data.id } : { name: data.name }) },
             create: data, update: data
         })
     } catch (err) {
+        ident != 'create' ? await logsModel.logUpdate(`Membuat tipe pesanan baru ${data.name}`, "Order Type", "Failed") : await logsModel.logUpdate( `Mengubah tipe pesanan ${alreadyExist.name} menjadi ${data.name}`, "Order Type", "Failed")
         throwError(err)
     }
 }
 
 const deleteSoft = async (id) => {
     try {
-        return await prisma.orderType.update({ where: { id }, data: { disabled: true } })
+        return await prisma.orderType.update({ where: { id }, data: { disabled: true } }).then( async (data) => {
+            await logsModel.logDelete(`Menghapus tipe pesanan ${data.name}, "Order Type`, "Success")
+        })
     } catch (err) {
+        await logsModel.logDelete(`Menghapus tipe pesanan ID : ${id}, "Order Type`, "Failed")
         throwError(err)
     }
 }

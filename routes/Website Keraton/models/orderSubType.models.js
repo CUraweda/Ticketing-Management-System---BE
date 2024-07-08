@@ -2,6 +2,7 @@ const { throwIfDetached } = require("puppeteer");
 const { throwError } = require("../../utils/helper");
 const { prisma } = require("../../utils/prisma");
 const orderTypeModel = require('./orderType.models');
+const logsModel = require('../../Keraton PoS/models/logs.models')
 
 const isExist = async (id) => {
     try {
@@ -22,10 +23,10 @@ const nameExist = async (name) => {
 const getAll = async () => {
     try {
         return await prisma.orderSubType.findMany({
-            where: { disabled: false},
+            where: { disabled: false },
             include: {
                 orders: {
-                    where: {deleted: false, disabled: false }
+                    where: { deleted: false, disabled: false }
                 }
             }
         });
@@ -59,16 +60,22 @@ const createUpdate = async (ident, data = { name, typeId }) => {
         return await prisma.orderSubType.upsert({
             where: { ...(data.id ? { id: data.id } : { name: data.name }) },
             create: data, update: data
-        });
+        }).then(async (dbData) => {
+            ident != "create" ? await logsModel.logUpdate( `Mengubah sub-tipe pesanan ${alreadyExist.name} menjadi ${dbData.name}`, "Order Subtype", "Success") : await logsModel.logCreate(`Membuat sub-tipe pesanan ${dbData.name}`, "Order Subtype", "Success")
+        })
     } catch (err) {
+        ident != "create" ? await logsModel.logUpdate( `Mengubah sub-tipe pesanan ${alreadyExist.name} menjadi ${dbData.name}`, "Order Subtype", "Failed") : await logsModel.logCreate(`Membuat sub-tipe pesanan ${dbData.name}`, "Order Subtype", "Failed")
         throwError(err);
     }
 };
 
 const deleteSoft = async (id) => {
     try {
-        return await prisma.orderSubType.update({ where: { id }, data: { disabled: true } })
+        return await prisma.orderSubType.update({ where: { id }, data: { disabled: true } }).then( async (data) => {
+            await logsModel.logDelete(`Menghapus sub-tipe pesanan ${data.name}`, "Order Subtype", "Success")
+        })
     } catch (err) {
+        await logsModel.logDelete(`Menghapus sub-tipe pesanan ID : ${id}`, "Order Subtype", "Failed")
         throwError(err)
     }
 }
