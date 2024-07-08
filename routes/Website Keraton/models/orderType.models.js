@@ -45,22 +45,20 @@ const createUpdate = async (ident, data = { name, id }) => {
         console.log('ajdanjdnjadnjajn')
         if (ident != 'create') if (alreadyExist) throw Error('Type name already exist')
         if (alreadyExist && alreadyExist.disabled) data.disabled = false
-        console.log(alreadyExist)
-        ident != 'create' ? await logsModel.logUpdate(`Mengubah tipe pesanan ${alreadyExist.name} menjadi ${data.name}`, "Order Type", "Success") : await logsModel.logCreate(`Membuat tipe pesanan baru ${data.name}`, "Order Type", "Success")
         return await prisma.orderType.upsert({
             where: { ...(data.id ? { id: data.id } : { name: data.name }) },
             create: data, update: data
-        })
+        }).then(async (dbData) => { ident != 'create' ? await logsModel.logUpdate(`Mengubah tipe pesanan ${dbData.name}`, "Order Type", "Success") : await logsModel.logCreate(`Membuat tipe pesanan baru ${dbData.name}`, "Order Type", "Success") })
     } catch (err) {
         console.log(err)
-        ident != 'create' ? await logsModel.logUpdate(`Mengubah tipe pesanan ${alreadyExist.name} menjadi ${data.name}`, "Order Type", "Success") : await logsModel.logCreate(`Membuat tipe pesanan baru ${data.name}`, "Order Type", "Success")
+        ident != 'create' ? await logsModel.logUpdate(`Mengubah tipe pesanan ${data.name} menjadi ${data.name}`, "Order Type", "Success") : await logsModel.logCreate(`Membuat tipe pesanan baru ${data.name}`, "Order Type", "Success")
         throwError(err)
     }
 }
 
 const deleteSoft = async (id) => {
     try {
-        return await prisma.orderType.update({ where: { id }, data: { disabled: true } }).then( async (data) => {
+        return await prisma.orderType.update({ where: { id }, data: { disabled: true } }).then(async (data) => {
             await logsModel.logDelete(`Menghapus tipe pesanan ${data.name}, "Order Type`, "Success")
         })
     } catch (err) {
