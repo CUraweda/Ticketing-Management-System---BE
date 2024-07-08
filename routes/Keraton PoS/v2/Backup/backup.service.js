@@ -54,7 +54,7 @@ const storeBackup = async (filePath, deleteDatabase) => {
         const jsonFile = new LocalJson(filePath)
         let { dataReferences, backups } = jsonFile.fileData
         dataReferences.sort((a, b) => a['load'] - b['load'])
-        
+
         //Delete Databases
         if (deleteDatabase) {
             const tableData = await getAllTabel()
@@ -83,10 +83,13 @@ const storeBackup = async (filePath, deleteDatabase) => {
         }
 
         //Create Backup Data
+        console.log(dataReferences)
         for (let client of dataReferences) {
+            console.log(client)
             let uniqueFields = client.uniqueFields[0]
             if (!uniqueFields) uniqueFields = "id"
             const backupDatas = backups[client.dbName].backupDatas
+            if(backupDatas.length < 1) continue
             const dataToCheck = await getPropertiesForModel(capitalizeFirstChar(client.dbName))
             if (!dataToCheck) throw Error(`${client.dbName} didnt exist, please check!`)
             for (let dataIndex in backupDatas) {

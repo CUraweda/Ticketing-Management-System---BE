@@ -42,15 +42,18 @@ const getOne = async (id) => {
 const createUpdate = async (ident, data = { name, id }) => {
     try {
         const alreadyExist = await nameExist(data.name)
+        console.log('ajdanjdnjadnjajn')
         if (ident != 'create') if (alreadyExist) throw Error('Type name already exist')
         if (alreadyExist && alreadyExist.disabled) data.disabled = false
-        ident != 'create' ? await logsModel.logUpdate(`Membuat tipe pesanan baru ${data.name}`, "Order Type", "Success") : await logsModel.logUpdate( `Mengubah tipe pesanan ${alreadyExist.name} menjadi ${data.name}`, "Order Type", "Success")
+        console.log(alreadyExist)
+        ident != 'create' ? await logsModel.logUpdate(`Mengubah tipe pesanan ${alreadyExist.name} menjadi ${data.name}`, "Order Type", "Success") : await logsModel.logCreate(`Membuat tipe pesanan baru ${data.name}`, "Order Type", "Success")
         return await prisma.orderType.upsert({
             where: { ...(data.id ? { id: data.id } : { name: data.name }) },
             create: data, update: data
         })
     } catch (err) {
-        ident != 'create' ? await logsModel.logUpdate(`Membuat tipe pesanan baru ${data.name}`, "Order Type", "Failed") : await logsModel.logUpdate( `Mengubah tipe pesanan ${alreadyExist.name} menjadi ${data.name}`, "Order Type", "Failed")
+        console.log(err)
+        ident != 'create' ? await logsModel.logUpdate(`Mengubah tipe pesanan ${alreadyExist.name} menjadi ${data.name}`, "Order Type", "Success") : await logsModel.logCreate(`Membuat tipe pesanan baru ${data.name}`, "Order Type", "Success")
         throwError(err)
     }
 }
