@@ -83,25 +83,22 @@ const storeBackup = async (filePath, deleteDatabase) => {
         }
 
         //Create Backup Data
-        console.log(dataReferences)
+        const unUsedData = []
         for (let client of dataReferences) {
-            console.log(client)
+            if (client.dbName === "nationality") continue
             let uniqueFields = client.uniqueFields[0]
             if (!uniqueFields) uniqueFields = "id"
             const backupDatas = backups[client.dbName].backupDatas
-            if(backupDatas.length < 1) continue
+            if (backupDatas.length < 1) continue
             const dataToCheck = await getPropertiesForModel(capitalizeFirstChar(client.dbName))
             if (!dataToCheck) throw Error(`${client.dbName} didnt exist, please check!`)
-            for (let dataIndex in backupDatas) {
-                const dataBackup = backupDatas[dataIndex]
-                if (!dataBackup[uniqueFields]) throw Error(`Data ${uniqueFields} didnt exist in ${client.dbName} | ${dataIndex} `)
-                if (!deleteDatabase) delete dataBackup.id
-                await prisma[client.dbName].upsert({
-                    where: { [uniqueFields]: dataBackup[uniqueFields] },
-                    create: dataBackup, update: dataBackup
-                })
-            }
-            console.log(`${client.dbName} berhasil di backup`)
+            const dataToDb = backupDatas.filter(dataBackup => dataBackup[uniqueFields]).map((dataBackup, i) => {
+                if (!deleteDatabase) delete dataBackup.id;
+                return dataBackup;
+            });
+            await prisma[client.dbName].createMany({ data: dataToDb }).catch(err => {
+                console.log(err);
+            }).then(() => { console.log(`${client.dbName} successfully backuped`) })
         }
     } catch (err) {
         console.log(err)
