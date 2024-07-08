@@ -12,23 +12,28 @@ const { contentSeed } = require("./contents.seeder");
 const { newsSeed } = require("./news.seeder");
 const { paramSeed } = require("./globalParam.seeder");
 const { objekWisataSeed } = require("./objekWisata.seeder");
+const LocalJson = require("../../routes/utils/localJson");
+
+const runMigrate = () => {
+  const globalJson = new LocalJson('./global.json')
+  globalJson.addEntry('databaseIsFresh', true)
+}
+
+
 
 async function main() {
-  // await pageSeed();
-  // await paramSeed()
-  // await newsSeed();
-  // await nationalitySeed();
   await userSeed();
-  // await guideData();
-  // await iterationSeed();
-  // await pageSeed();
-  // await categorySeed()
-  // await typeSeed();
-  // await subTypeSeed();
-  // await objekWisataSeed()
-  // await orderSeed();
-  // await eventSeed();
-  // await contentSeed();
+  await guideData();
+  await iterationSeed();
+  await pageSeed();
+  await categorySeed()
+  await typeSeed();
+  await subTypeSeed();
+  await objekWisataSeed()
+  await orderSeed();
+  await eventSeed();
+  await contentSeed();
+  runMigrate()
 }
 
 main();
