@@ -12,6 +12,19 @@ const getFromOrderId = async (id) => {
     throwError(err);
   }
 };
+
+const getAllData = async () => {
+  return await prisma.detailTrans.findMany({
+    include: {
+      transaction: {
+        include: { user: true }
+      },
+      order: { include: { category: true } },
+    },
+    orderBy: { transaction: { createdDate: 'desc' } }
+  })
+}
+
 const getTableData = async (query) => {
   const { category, date } = query
   try {
@@ -141,6 +154,7 @@ module.exports = {
   getFromOrderId,
   getOneDaySellCategory,
   getTableData,
+  getAllData, 
   getUnavailableGuide,
   create,
 };
