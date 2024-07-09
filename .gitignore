@@ -11,4 +11,5 @@ public/pdfs/*
 prisma/migrations/*
 logs
 *.log
+app.js
 package-lock.json
