@@ -19,6 +19,7 @@ const getAllData = async () => {
       transaction: {
         include: { user: true }
       },
+      event: { include: { iteration: true } },
       order: { include: { category: true } },
     },
     orderBy: { transaction: { createdDate: 'desc' } }
@@ -26,7 +27,8 @@ const getAllData = async () => {
 }
 
 const getTableData = async (query) => {
-  const { category, date } = query
+  let { category, date } = query
+  if(!category) category = "All"
   try {
     const detailTrans = await prisma.detailTrans.findMany({
       where: {
@@ -39,21 +41,44 @@ const getTableData = async (query) => {
             }
           })
         },
-        order: {
-          disabled: false,
-          ...(category && {
-            category: {
-              disabled: false,
-              name: category
-            }
-          })
-        }
+        OR: [
+          ...(category === "All" ? [
+            {
+              order: {
+                disabled: false,
+              },
+            },
+            {
+              event: {
+                deleted: false,
+              },
+            },
+          ] : []),
+          ...(category === "Event" ? [
+            {
+              event: {
+                deleted: false,
+              },
+            },
+          ] : []),
+          // Condition for other categories
+          ...((category && category !== "All" && category !== "Event") ? [
+            {
+              order: {
+                disabled: false,
+                category: {
+                  disabled: false,
+                  name: category,
+                },
+              },
+            },
+          ] : []),
+        ],
       },
       include: {
-        transaction: {
-          include: { user: true }
-        },
+        transaction: { include: { user: true } },
         order: { include: { category: true } },
+        event: true
       },
       orderBy: { transaction: { createdDate: 'desc' } }
     });
@@ -95,12 +120,25 @@ const getOneDaySellCategory = async (gte, lte) => {
           deleted: false,
           plannedDate: { gte, lte }
         },
-        order: {
-          deleted: false,
-          disabled: false
-        }
+        OR: [
+          {
+            event: {
+              deleted: false
+            }
+          },
+          {
+            order: {
+              deleted: false,
+              disabled: false
+            },
+          }
+        ]
       },
-      select: { amount: true, order: { select: { category: { select: { name: true } } } } }
+      select: {
+        amount: true,
+        order: { select: { category: { select: { name: true } } } },
+        event: true
+      }
     })
   } catch (err) {
     throwError(err)
@@ -154,7 +192,7 @@ module.exports = {
   getFromOrderId,
   getOneDaySellCategory,
   getTableData,
-  getAllData, 
+  getAllData,
   getUnavailableGuide,
   create,
 };

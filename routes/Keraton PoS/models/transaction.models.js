@@ -123,6 +123,7 @@ const getTickets = async (id) => {
           include: {
             guide: true,
             order: { include: { category: true } },
+            event: true
           },
         },
         BarcodeUsage: true
@@ -157,7 +158,20 @@ const getRevenueCurawedaKeraton = async (args) => {
   const { startDate, endDate } = generateTodayDate()
   try {
     const transaction = await prisma.transaction.findMany({
-      where: {deleted: false,  plannedDate: { gte: startDate, lte: endDate }, detailTrans: { some: { order: { deleted: false, disabled: false, category: { disabled: false } } } } },
+      where: {
+        deleted: false, plannedDate: { gte: startDate, lte: endDate }, detailTrans: {
+          some: {
+            OR: [
+              {
+                event: { deleted: false }
+              },
+              {
+                order: { deleted: false, disabled: false, category: { disabled: false } },
+              }
+            ]
+          }
+        }
+      },
       select: { plannedDate: true, keratonIncome: true, curawedaIncome: true, total: true }
     })
     transaction.forEach(trans => {
@@ -586,9 +600,9 @@ const sendEmailToUser = async (data) => {
   }
 };
 const deleteSoft = async (id) => {
-  try{
-    return await prisma.transaction.update({ where: { id }, data: { deleted: true }})
-  }catch(err){
+  try {
+    return await prisma.transaction.update({ where: { id }, data: { deleted: true } })
+  } catch (err) {
     throwError(err)
   }
 }
