@@ -66,7 +66,6 @@ expressRouter.post(
 expressRouter.get("/recent-purchase", async (req, res) => {
   try {
     const data = await orderModel.recentPurchase();
-    console.log(data)
     return success(res, "Data Purchase Info berhasil di-fetch!", data);
   } catch (err) {
     return error(res, err.message);

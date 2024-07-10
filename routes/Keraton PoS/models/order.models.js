@@ -216,7 +216,6 @@ const deleteOrder = async (id) => {
 
 const hideorder = async (id, data) => {
   const idData = id
-  console.log(data.status, id)
   try {
     const order = await prisma.order.findUnique({ where: { id: idData } });
 
