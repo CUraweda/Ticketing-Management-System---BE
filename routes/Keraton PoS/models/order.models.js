@@ -144,7 +144,7 @@ const recentPurchase = async () => {
             gte: startDate,
             lte: endDate
           }
-        }, order: { deleted: false, disabled: false, category: { disabled: false } }
+        }
       }
     })
     return order
