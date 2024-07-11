@@ -1,5 +1,5 @@
 node_modules
-.env
+# .env
 public/assets/content/*
 public/assets/items/*
 public/assets/events/*
@@ -9,7 +9,7 @@ public/uploads/*
 public/backup/*
 public/pdfs/*
 prisma/migrations/*
-certs
+# certs
 logs
 *.log
 app.js

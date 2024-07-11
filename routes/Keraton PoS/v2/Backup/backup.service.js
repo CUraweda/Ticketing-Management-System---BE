@@ -120,51 +120,15 @@ const storeBackup = async (filePath, deleteDatabase) => {
                 });
 
                 if (client.load.length < 1) {
-                    if (deleteDatabase != "false") {
-                        await prisma[client.dbName].createMany({ data: dataToDb }).catch((err) => { console.log(err) })
-                        console.log(`${client.dbName} successfully backed up`);
-                        dataReferences.splice(clientIndex, 1);
-                    } else {
-                        if (uniqueFields != "id") {
-                            for (let singleDbData of dataToDb) {
-                                await prisma[client.dbName].upsert({
-                                    where: { [uniqueFields]: singleDbData[uniqueFields] },
-                                    create: singleDbData, update: singleDbData
-                                })
-                            }
-                            console.log(`${client.dbName} successfully backed up`);
-                            dataReferences.splice(clientIndex, 1);
-                        }else {
-                            await prisma[client.dbName].createMany({ data: dataToDb })
-                            console.log(`${client.dbName} successfully backed up`);
-                            dataReferences.splice(clientIndex, 1);
-                        }
-                    }
+                    await backupClientData(client, dataToDb, uniqueFields, deleteDatabase);
+                    dataReferences.splice(clientIndex, 1);
                     continue
                 }
 
                 const dependedData = client.load.map(loadName => dataReferences.find(model => model.dbName === changeToDBName(loadName))).filter(dependedReference => dependedReference);
                 if (dependedData.length < 1) {
-                    if (deleteDatabase != "false") {
-                        await prisma[client.dbName].createMany({ data: dataToDb }).catch((err) => { console.log(err) })
-                        console.log(`${client.dbName} successfully backed up`);
-                        dataReferences.splice(clientIndex, 1);
-                    } else {
-                        if (uniqueFields != "id") {
-                            for (let singleDbData of dataToDb) {
-                                await prisma[client.dbName].upsert({
-                                    where: { [uniqueFields]: singleDbData[uniqueFields] },
-                                    create: singleDbData, update: singleDbData
-                                }).catch((err) => { console.log(err) })
-                            }
-                            console.log(`${client.dbName} successfully backed up`);
-                            dataReferences.splice(clientIndex, 1);
-                        }else {
-                            await prisma[client.dbName].createMany({ data: dataToDb }).catch((err) => { console.log(err) })
-                            console.log(`${client.dbName} successfully backed up`);
-                            dataReferences.splice(clientIndex, 1);
-                        }
-                    }
+                    await backupClientData(client, dataToDb, uniqueFields, deleteDatabase);
+                    dataReferences.splice(clientIndex, 1);
                 }
             }
         }
@@ -173,9 +137,24 @@ const storeBackup = async (filePath, deleteDatabase) => {
     }
 }
 
-const capitalizeFirstChar = (str) => {
-    if (!str || typeof str !== 'string') return ''
-    return str.charAt(0).toUpperCase() + str.slice(1)
+const backupClientData = async (client, dataToDb, uniqueFields, deleteDatabase) => {
+    if (deleteDatabase !== "false") {
+        await prisma[client.dbName].createMany({ data: dataToDb }).catch((err) => { console.log(err); });
+        console.log(`${client.dbName} successfully backed up`);
+    } else {
+        if (uniqueFields !== "id") {
+            for (let singleDbData of dataToDb) {
+                await prisma[client.dbName].upsert({
+                    where: { [uniqueFields]: singleDbData[uniqueFields] },
+                    create: singleDbData,
+                    update: singleDbData
+                }).catch((err) => { console.log(err); });
+            }
+        } else {
+            await prisma[client.dbName].createMany({ data: dataToDb }).catch((err) => { console.log(err); });
+        }
+        console.log(`${client.dbName} successfully backed up`);
+    }
 }
 
 
