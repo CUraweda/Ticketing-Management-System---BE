@@ -9,7 +9,7 @@ public/uploads/*
 public/backup/*
 public/pdfs/*
 prisma/migrations/*
-certs
+# certs
 logs
 *.log
 app.js
