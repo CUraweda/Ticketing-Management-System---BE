@@ -1,5 +1,5 @@
 node_modules
-.env
+# .env
 public/assets/content/*
 public/assets/items/*
 public/assets/events/*
