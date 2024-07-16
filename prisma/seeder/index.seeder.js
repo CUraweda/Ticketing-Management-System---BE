@@ -20,17 +20,18 @@ const runMigrate = () => {
 }
 
 async function main() {
-  await userSeed();
-  await guideData();
-  await iterationSeed();
-  await pageSeed();
-  await categorySeed()
-  await typeSeed();
-  await subTypeSeed();
-  await objekWisataSeed()
-  await orderSeed();
-  await eventSeed();
-  await contentSeed();
+  // await userSeed();
+  // await guideData();
+  // await iterationSeed();
+  // await pageSeed();
+  // await categorySeed()
+  // await typeSeed();
+  // await subTypeSeed();
+  // await objekWisataSeed()
+  // await orderSeed();
+  // await eventSeed();
+  // await contentSeed();
+  await paramSeed()
   runMigrate()
 }
 

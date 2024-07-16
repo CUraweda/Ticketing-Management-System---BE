@@ -27,7 +27,7 @@ router.post("/:id?", auth(['SUPER_ADMIN']), async (req, res) => {
             if (userExist.deleted) req.body.deleted = false
             updatedUser = await userModel.update(userExist.id, req.body)
         } else updatedUser = await userModel.create(req.body)
-        return success(res, 'Update Success', updatedUser)
+        return success(res, `${req.params.id ? "Update" : "Create"} Success`, updatedUser)
     } catch (err) {
         return error(res, err.message)
     }
