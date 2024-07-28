@@ -27,17 +27,21 @@ const getAllData = async () => {
 }
 
 const getTableData = async (query) => {
-  let { category, date } = query
+  let { category, startDate, endDate } = query
   if(!category) category = "All"
+  if(startDate || endDate){
+    if(!startDate && endDate) startDate = endDate
+    if(startDate && !endDate) endDate = startDate
+  }
   try {
     const detailTrans = await prisma.detailTrans.findMany({
       where: {
         transaction: {
           deleted: false,
-          ...(date && {
+          ...(startDate && {
             plannedDate: {
-              gte: `${date}T00:00:00.000Z`,
-              lte: `${date}T23:59:59.999Z`,
+              gte: `${startDate}T00:00:00.000Z`,
+              lte: `${endDate}T23:59:59.999Z`,
             }
           })
         },

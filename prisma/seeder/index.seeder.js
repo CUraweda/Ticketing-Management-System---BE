@@ -18,19 +18,18 @@ const runMigrate = () => {
   const globalJson = new LocalJson('./global.json')
   globalJson.addEntry('databaseIsFresh', true)
 }
-
 async function main() {
-  // await userSeed();
-  // await guideData();
-  // await iterationSeed();
-  // await pageSeed();
-  // await categorySeed()
-  // await typeSeed();
-  // await subTypeSeed();
-  // await objekWisataSeed()
-  // await orderSeed();
-  // await eventSeed();
-  // await contentSeed();
+  await userSeed();
+  await guideData();
+  await iterationSeed();
+  await pageSeed();
+  await categorySeed()
+  await typeSeed();
+  await subTypeSeed();
+  await objekWisataSeed()
+  await orderSeed();
+  await eventSeed();
+  await contentSeed();
   await paramSeed()
   runMigrate()
 }

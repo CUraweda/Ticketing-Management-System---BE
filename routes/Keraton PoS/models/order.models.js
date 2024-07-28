@@ -63,28 +63,21 @@ const getAllData = async (query) => {
 
 const getRecentData = async (start, end) => {
   try {
-    return await prisma.order.findMany({
+    return await prisma.detailTrans.findMany({
       where: {
-        detailTrans: {
-          some: {
-            transaction: {
-              deleted: false,
-              plannedDate: {
-                gte: start,
-                lte: end,
-              },
-            }
+        transaction: {
+          deleted: false,
+          plannedDate: {
+            gte: start, lte: end
           }
         },
-        disabled: false, deleted: false, category: { disabled: false }
+        order: {
+          deleted: false, disabled: false, category: { disabled: false }
+        }
       },
       include: {
-        category: true,
-        detailTrans: {
-          include: {
-            transaction: true,
-          }
-        },
+        transaction: true,
+        order: { include: { category: true } }
       },
     });
   } catch (err) {
@@ -158,12 +151,10 @@ const getYearData = async (targetYear) => {
     startTarget.setHours(7, 0, 0, 0);
     const endTarget = new Date(`${targetYear}-12-31`);
     endTarget.setHours(30, 59, 59, 999);
-    const categories = await prisma.category.findMany({
-      where: { disabled: false },
-    });
 
+    const categories = await prisma.category.findMany({ where: { disabled: false } });
     const data = await getRecentData(startTarget, endTarget);
-
+    
     const names = categories.map((category) => category.name);
     const colors = categories.map((category) => category.color);
 
@@ -177,14 +168,10 @@ const getMonthData = async (targetYear, targetMonthInt) => {
     const daysInMonth = new Date(targetYear, targetMonthInt, 0).getDate();
     const startTarget = new Date(`${targetYear}-${targetMonthInt}-01`);
     startTarget.setHours(7, 0, 0, 0);
-    const endTarget = new Date(
-      `${targetYear}-${targetMonthInt}-${daysInMonth}`
-    );
+    const endTarget = new Date(`${targetYear}-${targetMonthInt}-${daysInMonth}`);
     endTarget.setHours(30, 59, 59, 999);
-    const categories = await prisma.category.findMany({
-      where: { disabled: false },
-    });
 
+    const categories = await prisma.category.findMany({ where: { disabled: false } });
     const data = await getRecentData(startTarget, endTarget);
 
     const names = categories.map((category) => category.name);

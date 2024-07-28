@@ -94,12 +94,12 @@ const decodeQr = (data) => { };
 // QR End
 
 // Detail Trans Initialization
-function generateTodayDate(){
+function generateTodayDate() {
   const today = new Date();
   const startDate = new Date(today);
-  startDate.setHours(7, 0, 0, 0);
+  startDate.setUTCHours(0, 0, 0, 0);
   const endDate = new Date(today);
-  endDate.setHours(30, 59, 59, 999);
+  endDate.setUTCHours(23, 59, 59, 999);
   return { today, startDate, endDate }
 }
 
@@ -162,63 +162,47 @@ function groupedPurchase(orders, category) {
   return orderInfo;
 }
 function groupYearData(data, categories, colors) {
-  const yearlyData = categories.map((category, index) => {
-    return {
+  const categoryRaw = {}
+  categories.forEach((category, index) => {
+    categoryRaw[category] = {
       name: category,
       color: colors[index],
       data: [...Array.from({ length: 12 }, () => 0)],
-    };
+    }
   });
 
-  data.forEach((order) => {
-    const categoryIndex = categories
-      .map((cat) => cat)
-      .indexOf(order.category.name);
-    order.detailTrans.forEach((detail) => {
-      const month = detail.transaction.plannedDate.getMonth() + 1;
-      const amount = detail.amount;
-      if (categoryIndex !== -1) {
-        yearlyData[categoryIndex].data[month - 1] += parseInt(amount);
-      }
-    });
+  data.forEach((detailTrans) => {
+    const { name } = detailTrans.order.category
+    const { amount } = detailTrans
+    const month = detailTrans.transaction.plannedDate.getMonth() + 1;
+    if (categoryRaw[name]) categoryRaw[name].data[month] += amount;
   });
-
   const yearlyCategory = generateYearlyCategory();
-
   return {
     yearlyCategory,
-    yearlyData,
+    yearlyData: Object.values(categoryRaw),
   };
 }
 function groupMonthData(data, categories, colors, daysInMonth) {
-  const monthlyData = categories.map((category, index) => {
-    return {
+  const categoryRaw = {}
+  categories.forEach((category, index) => {
+    categoryRaw[category] = {
       name: category,
       color: colors[index],
-      data: [...Array.from({ length: daysInMonth }, () => 0)], // Menambahkan data kosong di index 0
-    };
+      data: [...Array.from({ length: daysInMonth }, () => 0)],
+    }
   });
 
-  // Mengisi data langsung dengan amount
-  data.forEach((order) => {
-    const categoryIndex = categories
-      .map((cat) => cat)
-      .indexOf(order.category.name);
-    order.detailTrans.forEach((detail) => {
-      const day = detail.transaction.plannedDate.getDate();
-      const amount = detail.amount;
-      if (categoryIndex !== -1) {
-        monthlyData[categoryIndex].data[day - 1] += amount;
-      }
-    });
+  data.forEach((detailTrans) => {
+    const { name } = detailTrans.order.category
+    const { amount } = detailTrans
+    const day = detailTrans.transaction.plannedDate.getDate()
+    if (categoryRaw[name]) categoryRaw[name].data[day - 1] += amount;
   });
-
-
   const monthlyCategory = generateMonthlyCategory(daysInMonth);
-
   return {
     monthlyCategory,
-    monthlyData: Object.values(monthlyData),
+    monthlyData: Object.values(categoryRaw),
   };
 }
 // Order End
