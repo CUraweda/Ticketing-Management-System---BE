@@ -10,7 +10,8 @@ const Emails = require("../../Website Keraton/emails/email");
 
 expressRouter.get("/detail-invoice", async (req, res) => {
   try {
-    const data = await transactionModel.getInvoice(req.query.search);
+    const limit = req.query.limit || "10"
+    const data = await transactionModel.getInvoice(req.query.search, limit);
     return success(res, "Data Invoice berhasil di-fetch!", data);
   } catch (err) {
     return error(res, err.message);

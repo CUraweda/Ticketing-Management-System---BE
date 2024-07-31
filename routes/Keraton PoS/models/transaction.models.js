@@ -37,7 +37,7 @@ function transformUrl(url) {
   return transformedUrl;
 }
 
-const getInvoice = async (search) => {
+const getInvoice = async (search, limit) => {
   try {
     const data = await prisma.transaction.findMany({
       where: {
@@ -53,6 +53,7 @@ const getInvoice = async (search) => {
           }
         }),
       },
+      ...(limit != "0" && { take: +limit }),
       include: {
         user: true,
         detailTrans: {

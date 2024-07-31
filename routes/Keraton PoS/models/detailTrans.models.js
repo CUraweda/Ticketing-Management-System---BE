@@ -27,7 +27,8 @@ const getAllData = async () => {
 }
 
 const getTableData = async (query) => {
-  let { category, startDate, endDate } = query
+  let { category, startDate, endDate, limit } = query
+  if(!limit || limit === "") limit = "10"
   if(!category) category = "All"
   if(startDate || endDate){
     if(!startDate && endDate) startDate = endDate
@@ -79,6 +80,7 @@ const getTableData = async (query) => {
           ] : []),
         ],
       },
+      ...(limit != "0" && { take: +limit }),
       include: {
         transaction: { include: { user: true } },
         order: { include: { category: true } },

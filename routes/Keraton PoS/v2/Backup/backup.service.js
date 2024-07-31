@@ -71,7 +71,6 @@ const storeBackup = async (filePath, deleteDatabase) => {
     let { dataReferences, backups } = jsonFile.fileData;
     dataReferences.sort((a, b) => a.load.length - b.load.length);
 
-    console.log(dataReferences);
     //Delete Databases
     if (deleteDatabase != "false") {
       const tableData = await getAllTabel();

@@ -3,12 +3,8 @@ var router = express.Router();
 const path = require("path");
 const Email = require("../emails/email");
 const { error, success } = require("../../utils/response");
-const { userInfo } = require("os");
-const { splitDate } = require("../../utils/helper");
 const { prisma } = require("../../utils/prisma");
 const { auth } = require("../middlewares/auth");
-const { route } = require("./contents.controller");
-const emailClass = new Email();
 const orderModel = require("../models/order.models");
 const eventModel = require("../models/events.models");
 

@@ -50,7 +50,6 @@ expressRouter.post(
     try {
       if (req.file)
         await backupService.storeBackup(req.file.path, req.body.rdb);
-      console.log("bdshabdbahdbahdb");
       return success(res, "Backup berhasil", "Data stored successfully");
     } catch (err) {
       console.log(err);

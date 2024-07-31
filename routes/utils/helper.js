@@ -97,9 +97,9 @@ const decodeQr = (data) => { };
 function generateTodayDate() {
   const today = new Date();
   const startDate = new Date(today);
-  startDate.setUTCHours(0, 0, 0, 0);
+  startDate.setHours(0, 0, 0, 0);
   const endDate = new Date(today);
-  endDate.setUTCHours(23, 59, 59, 999);
+  endDate.setHours(23, 59, 59, 999);
   return { today, startDate, endDate }
 }
 
@@ -174,7 +174,7 @@ function groupYearData(data, categories, colors) {
   data.forEach((detailTrans) => {
     const { name } = detailTrans.order.category
     const { amount } = detailTrans
-    const month = detailTrans.transaction.plannedDate.getMonth() + 1;
+    const month = detailTrans.transaction.plannedDate.getMonth();
     if (categoryRaw[name]) categoryRaw[name].data[month] += amount;
   });
   const yearlyCategory = generateYearlyCategory();

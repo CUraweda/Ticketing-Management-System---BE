@@ -148,13 +148,13 @@ const recentPurchase = async () => {
 const getYearData = async (targetYear) => {
   try {
     const startTarget = new Date(`${targetYear}-01-01`);
-    startTarget.setHours(7, 0, 0, 0);
+    startTarget.setHours(0, 0, 0, 0);
     const endTarget = new Date(`${targetYear}-12-31`);
-    endTarget.setHours(30, 59, 59, 999);
+    endTarget.setHours(23, 59, 59, 999);
 
     const categories = await prisma.category.findMany({ where: { disabled: false } });
     const data = await getRecentData(startTarget, endTarget);
-    
+
     const names = categories.map((category) => category.name);
     const colors = categories.map((category) => category.color);
 
@@ -167,9 +167,9 @@ const getMonthData = async (targetYear, targetMonthInt) => {
   try {
     const daysInMonth = new Date(targetYear, targetMonthInt, 0).getDate();
     const startTarget = new Date(`${targetYear}-${targetMonthInt}-01`);
-    startTarget.setHours(7, 0, 0, 0);
+    startTarget.setHours(0, 0, 0, 0);
     const endTarget = new Date(`${targetYear}-${targetMonthInt}-${daysInMonth}`);
-    endTarget.setHours(30, 59, 59, 999);
+    endTarget.setHours(23, 59, 59, 999);
 
     const categories = await prisma.category.findMany({ where: { disabled: false } });
     const data = await getRecentData(startTarget, endTarget);
