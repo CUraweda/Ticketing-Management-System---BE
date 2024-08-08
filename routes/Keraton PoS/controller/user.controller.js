@@ -50,6 +50,15 @@ expressRouter.post('/update-user-data/:id', auth,  async (req, res) => {
   }
 })
 
+expressRouter.get("/", auth, async (req, res) => {
+  try {
+      const userData = await userKeratonModel.getAll()
+      return success(res, 'Success', userData)
+  } catch (err) {
+      return error(res, err.message)
+  }
+})
+
 
 expressRouter.post("/:id?", auth, async (req, res) => {
   let updatedUser
