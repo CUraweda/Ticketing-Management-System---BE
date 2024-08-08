@@ -96,10 +96,9 @@ const decodeQr = (data) => { };
 // Detail Trans Initialization
 function generateTodayDate() {
   const today = new Date();
-  const startDate = new Date(today);
-  startDate.setHours(0, 0, 0, 0);
-  const endDate = new Date(today);
-  endDate.setHours(23, 59, 59, 999);
+  const todayDate = today.toISOString().split("T")[0]
+  const startDate = `${todayDate}T00:00:00.000Z`
+  const endDate = `${todayDate}T23:59:59.999Z`
   return { today, startDate, endDate }
 }
 

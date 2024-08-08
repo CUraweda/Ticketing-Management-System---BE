@@ -95,16 +95,18 @@ const storeBackup = async (filePath, deleteDatabase) => {
             );
             if (dependedReference) dependedData.push(dependedReference);
           }
+          console.log(dependedData)
           if (dependedData.length < 1) {
-            await prisma[data.name].deleteMany().catch((err) => {
+            await prisma[data.name].deleteMany().then(() => {
               console.log(
                 `${data.name} berhasil di hapus, memasuki stage backup...`
               );
+              tableData.splice(dataIndex, 1);
+            }).catch((err) => {
+              console.log(
+                `${data.name} gagal di hapus, memasuki stage backup...`
+              );
             });
-            console.log(
-              `${data.name} berhasil di hapus, memasuki stage backup...`
-            );
-            tableData.splice(dataIndex, 1);
           }
         }
       }
@@ -185,10 +187,11 @@ const backupClientData = async (
   deleteDatabase
 ) => {
   if (deleteDatabase !== "false") {
-    await prisma[client.dbName].createMany({ data: dataToDb }).catch((err) => {
+    await prisma[client.dbName].createMany({ data: dataToDb }).then(() => {
+      console.log(`${client.dbName} successfully backed up`);
+    }).catch((err) => {
       console.log(err);
     });
-    console.log(`${client.dbName} successfully backed up`);
   } else {
     if (uniqueFields !== "id") {
       for (let singleDbData of dataToDb) {

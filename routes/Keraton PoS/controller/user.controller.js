@@ -50,4 +50,36 @@ expressRouter.post('/update-user-data/:id', auth,  async (req, res) => {
   }
 })
 
+
+expressRouter.post("/:id?", auth, async (req, res) => {
+  let updatedUser
+  try {
+      if(req.body.email){
+          const emailExist = await userKeratonModel.emailExist(req.body.email)
+          if(emailExist) throw Error('Email already used')
+      }
+      if (req.params.id) {
+          const userExist = await userKeratonModel.isExist(req.params.id)
+          if (!userExist) throw Error('User didnt exist')
+          if (userExist.deleted) req.body.deleted = false
+          updatedUser = await userKeratonModel.update(userExist.id, req.body)
+      } else updatedUser = await userKeratonModel.create(req.body)
+      return success(res, `${req.params.id ? "Update" : "Create"} Success`, updatedUser)
+  } catch (err) {
+      return error(res, err.message)
+  }
+})
+
+expressRouter.delete('/:id', auth, async (req, res) => {
+  try {
+      const userExist = await userKeratonModel.isExist(id)
+      if (!userExist) throw Error('User didnt exist')
+      const deletedUser = await userKeratonModel.deleteSoftUser(userExist.id)
+      return success(res, 'Deleted Successfully', deletedUser)
+  } catch (err) {
+      throwError(err)
+  }
+})
+
+
 module.exports = expressRouter;

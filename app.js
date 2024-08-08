@@ -9,7 +9,6 @@ const keratonWebsiteRouter = require("./routes/Website Keraton/controller/index"
 const keratonPosRouter = require("./routes/Keraton PoS/controller/index");
 const { error } = require("console");
 const { success } = require("./routes/utils/response");
-const morgan = require("morgan");
 
 var app = express();
 var port = normalizePort(process.env.PORT || "3000");
@@ -95,6 +94,8 @@ app.get("/ping", async (req, res) => {
 //? ROUTES
 app.use("/keraton", keratonWebsiteRouter);
 app.use("/keraton-pos", keratonPosRouter);
+
+
 app.use("/uploads", express.static(path.join(__dirname, "public", "uploads")));
 app.use("/qrcodes", express.static(path.join(__dirname, "public", "qrcodes")));
 app.use("/pdfs", express.static(path.join(__dirname, "public", "pdfs")));

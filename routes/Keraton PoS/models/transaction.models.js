@@ -157,6 +157,7 @@ const getRevenue = async () => {
 const getRevenueCurawedaKeraton = async (args) => {
   let todayRevenue = { revenueKeraton: { COH: 0, CIA: 0 }, revenueCuraweda: { COH: 0, CIA: 0 }, total: 0 }
   const { startDate, endDate } = generateTodayDate()
+  console.log(startDate, endDate)
   try {
     const transaction = await prisma.transaction.findMany({
       where: {
