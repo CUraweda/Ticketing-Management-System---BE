@@ -50,7 +50,7 @@ expressRouter.post('/update-user-data/:id', auth,  async (req, res) => {
   }
 })
 
-expressRouter.get("/", auth, async (req, res) => {
+expressRouter.get("/get-all-data", auth, async (req, res) => {
   try {
       const userData = await userKeratonModel.getAll()
       return success(res, 'Success', userData)
@@ -60,7 +60,7 @@ expressRouter.get("/", auth, async (req, res) => {
 })
 
 
-expressRouter.post("/:id?", auth, async (req, res) => {
+expressRouter.post("/update-user/:id?", auth, async (req, res) => {
   let updatedUser
   try {
       if(req.body.email){
@@ -79,7 +79,7 @@ expressRouter.post("/:id?", auth, async (req, res) => {
   }
 })
 
-expressRouter.delete('/:id', auth, async (req, res) => {
+expressRouter.delete('/delete-user/:id', auth, async (req, res) => {
   try {
       const userExist = await userKeratonModel.isExist(id)
       if (!userExist) throw Error('User didnt exist')
