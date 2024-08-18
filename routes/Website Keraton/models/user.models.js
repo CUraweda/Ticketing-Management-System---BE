@@ -22,7 +22,7 @@ const getAll = async () => {
 const isExist = async (id) => {
   try {
     id = id?.id ? id.id : id
-    return await prisma.user.findFirst({ where: { id }});
+    return await prisma.user.findFirst({ where: { id } });
   } catch (err) {
     throwError(err);
   }
@@ -85,6 +85,23 @@ const update = async (id, data) => {
     throwError(err)
   }
 }
+const updatePassword = async (id, data) => {
+  try {
+    const { password, oldpassword } = data
+    const userExist = await prisma.user.findFirst({ where: { id } })
+    if (!userExist) throw Error('Id User tidak ada')
+
+    const validPassword = bcrypt.compare(oldpassword, userExist.password)
+    if (!validPassword) throw Error("Old Password salah")
+
+    if (!data.password) throw Error("Tidak ada data password yang dikirim")
+    data.password = bcrypt.hash(data.password, 10)
+
+    return await prisma.user.update({ where: { id }, data: { password: data.password } })
+  } catch (err) {
+    throwError(err)
+  }
+}
 
 const create = async (data) => {
   try {
@@ -99,7 +116,7 @@ const create = async (data) => {
 }
 
 const logOUt = async (token) => {
-try {
+  try {
     const isExist = await prisma.token.findFirst({ where: { token } })
     if (!isExist) throw Error('Token didnt exist in db')
     return await prisma.token.delete({ where: { id: isExist.id } })
@@ -116,4 +133,4 @@ const deleteSoftUser = async (id) => {
   }
 }
 
-module.exports = { getUser, isExist, logIn, signUp, update, logOUt, getAll, deleteSoftUser, create, emailExist };
+module.exports = { getUser, isExist, logIn, signUp, update, logOUt, getAll, deleteSoftUser, create, updatePassword, emailExist };

@@ -29,64 +29,75 @@ expressRouter.put("/update-carts", async (req, res) => {
     return error(res, err.message);
   }
 });
-expressRouter.get('/get-user-data/:id?', auth,  async (req, res) => {
+expressRouter.get('/get-user-data/:id?', auth, async (req, res) => {
   const { id } = req.params
-  try{
+  try {
     const data = id ? await userKeratonModel.isExist(id) : await userKeratonModel.getAll()
     return success(res, 'Data user berhasil di fetch', data)
-  }catch(err){
+  } catch (err) {
     return error(res, err.message)
   }
 })
-expressRouter.post('/update-user-data/:id', auth,  async (req, res) => {
+expressRouter.post('/update-user-data/:id', auth, async (req, res) => {
   const { id } = req.params
-  try{
+  try {
     const userExist = await userKeratonModel.isExist(id)
-    if(!userExist) throw Error('User tidak ada di database')
+    if (!userExist) throw Error('User tidak ada di database')
     const data = await userKeratonModel.update(id, req.body)
     return success(res, 'Data user behasil di perbaiki', data)
-  }catch(err){
+  } catch (err) {
     return error(res, err.message)
   }
 })
 
 expressRouter.get("/get-all-data", auth, async (req, res) => {
   try {
-      const userData = await userKeratonModel.getAll()
-      return success(res, 'Success', userData)
+    const userData = await userKeratonModel.getAll()
+    return success(res, 'Success', userData)
   } catch (err) {
-      return error(res, err.message)
+    return error(res, err.message)
   }
 })
 
 
-expressRouter.post("/update-user/:id?", auth, async (req, res) => {
+expressRouter.post("/create-update-user/:id?", auth, async (req, res) => {
   let updatedUser
   try {
-      if(req.body.email){
-          const emailExist = await userKeratonModel.emailExist(req.body.email)
-          if(emailExist) throw Error('Email already used')
-      }
-      if (req.params.id) {
-          const userExist = await userKeratonModel.isExist(req.params.id)
-          if (!userExist) throw Error('User didnt exist')
-          if (userExist.deleted) req.body.deleted = false
-          updatedUser = await userKeratonModel.update(userExist.id, req.body)
-      } else updatedUser = await userKeratonModel.create(req.body)
-      return success(res, `${req.params.id ? "Update" : "Create"} Success`, updatedUser)
+    if (req.body.email) {
+      const emailExist = await userKeratonModel.emailExist(req.body.email)
+      if (emailExist) throw Error('Email already used')
+    }
+    if (req.params.id) {
+      const userExist = await userKeratonModel.isExist(req.params.id)
+      if (!userExist) throw Error('User didnt exist')
+      if (userExist.deleted) req.body.deleted = false
+      updatedUser = await userKeratonModel.update(userExist.id, req.body)
+    } else updatedUser = await userKeratonModel.create(req.body)
+    return success(res, `${req.params.id ? "Update" : "Create"} Success`, updatedUser)
   } catch (err) {
-      return error(res, err.message)
+    return error(res, err.message)
+  }
+})
+
+expressRouter.post('/change-password-user/:id', auth, async (req, res) => {
+  try {
+    const { id } = req.params
+    const data = await userKeratonModel.updatePassword(id, req.body)
+
+    return success(res, "Password berhasil diubah", data)
+  } catch (err) {
+    return error(res, err.message)
   }
 })
 
 expressRouter.delete('/delete-user/:id', auth, async (req, res) => {
   try {
-      const userExist = await userKeratonModel.isExist(id)
-      if (!userExist) throw Error('User didnt exist')
-      const deletedUser = await userKeratonModel.deleteSoftUser(userExist.id)
-      return success(res, 'Deleted Successfully', deletedUser)
+    const userExist = await userKeratonModel.isExist(req.params.id)
+    if (!userExist) throw Error('User didnt exist')
+    const deletedUser = await userKeratonModel.deleteSoftUser(userExist.id)
+    return success(res, 'Deleted Successfully', deletedUser)
   } catch (err) {
-      throwError(err)
+    return error(res, err.message)
   }
 })
 
