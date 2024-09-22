@@ -4,6 +4,7 @@ const userModel = require("../models/user.models");
 const userKeratonModel = require('../../Website Keraton/models/user.models')
 const { verif } = require("../middlewares/verif");
 const { auth } = require("../middlewares/auth");
+const { generateRandomEmail } = require("../../utils/helper");
 
 expressRouter.post("/admin-login", async (req, res) => {
   try {
@@ -43,6 +44,14 @@ expressRouter.post('/update-user-data/:id', auth, async (req, res) => {
   try {
     const userExist = await userKeratonModel.isExist(id)
     if (!userExist) throw Error('User tidak ada di database')
+    if (req.body.email) {
+      const emailExist = await userKeratonModel.emailExist(req.body.email)
+      if(emailExist){
+        if (!emailExist.deleted) throw Error('Email already been used by another active user')
+        const temporaryDeletedEmail = generateRandomEmail()
+        await userKeratonModel.update(emailExist.id, { email: temporaryDeletedEmail })
+      }
+    }
     const data = await userKeratonModel.update(id, req.body)
     return success(res, 'Data user behasil di perbaiki', data)
   } catch (err) {
@@ -65,7 +74,11 @@ expressRouter.post("/create-update-user/:id?", auth, async (req, res) => {
   try {
     if (req.body.email) {
       const emailExist = await userKeratonModel.emailExist(req.body.email)
-      if (emailExist) throw Error('Email already used')
+      if(emailExist){
+        if (!emailExist.deleted) throw Error('Email already been used by another active user')
+        const temporaryDeletedEmail = generateRandomEmail()
+        await userKeratonModel.update(emailExist.id, { email: temporaryDeletedEmail })
+      }
     }
     if (req.params.id) {
       const userExist = await userKeratonModel.isExist(req.params.id)

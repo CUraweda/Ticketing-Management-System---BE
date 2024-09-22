@@ -265,6 +265,21 @@ const shaHash256 = async (input) => {
 function formatCurrency(value) {
   return Number(value).toLocaleString("id-ID");
 }
+
+function generateRandomEmail() {
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    const domain = 'gmail.com'; // You can change this to any domain you'd like
+  
+    // Generate a random username between 5 to 10 characters
+    let username = '';
+    const usernameLength = Math.floor(Math.random() * 6) + 5; // random length between 5 and 10
+    for (let i = 0; i < usernameLength; i++) {
+      username += chars[Math.floor(Math.random() * chars.length)];
+    }
+
+    return `${username}@${domain}`
+    
+}
 module.exports = {
   upload,
   createQr,
@@ -275,6 +290,7 @@ module.exports = {
   groupYearData,
   groupMonthData,
   shaHash256,
+  generateRandomEmail,
   throwError,
   generateRandomString,
   convertFilesToURL,
