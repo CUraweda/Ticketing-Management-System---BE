@@ -54,11 +54,11 @@ model User {
   number        String?
   password      String
   role          Role
-  shownCategory Json?        
+  shownCategory Json?
   nationality   Nationality?  @relation(fields: [nationalityId], references: [id])
   nationalityId String?
-  carts         Json?        
-  cartsKeraton  Json?         
+  carts         Json?
+  cartsKeraton  Json?
   deleted       Boolean       @default(false)
   transaction   Transaction[]
   logs          Logs[]
@@ -126,23 +126,24 @@ model KeratonTransaction {
 }
 
 model Transaction {
-  id             String         @id @default(uuid())
+  id             String          @id @default(uuid())
   customer       Json?
-  total          Decimal        @db.Decimal(18, 2)
+  total          Decimal         @db.Decimal(18, 2)
   additionalFee  Float
   keratonIncome  Json
   curawedaIncome Json
   method         String
-  status         Status         @default(MENUNGGU_PEMBAYARAN)
+  status         Status          @default(MENUNGGU_PEMBAYARAN)
   plannedDate    DateTime
-  createdDate    DateTime       @default(now())
+  createdDate    DateTime        @default(now())
   discount       String?
   cashback       String?
-  deleted        Boolean?       @default(false)
-  user           User?          @relation(fields: [userId], references: [id])
+  deleted        Boolean?        @default(false)
+  user           User?           @relation(fields: [userId], references: [id])
   userId         String?
   detailTrans    DetailTrans[]
   BarcodeUsage   BarcodeUsage[]
+  BookTimetable  BookTimetable[]
 }
 
 model DetailTrans {
@@ -257,4 +258,23 @@ model ObjekWisata {
   label           String
   to              String
   orderIdentifier String
+}
+
+model BookTimetable {
+  id             Int              @id @default(autoincrement())
+  disabled       Boolean @default(false)
+  transaction    Transaction      @relation(fields: [transactionId], references: [id])
+  transactionId  String
+  availability   AvailabilityTime @relation(fields: [availabilityId], references: [id])
+  availabilityId Int
+}
+
+model AvailabilityTime {
+  id            Int             @id @default(autoincrement())
+  in_use        Boolean @default(false)
+  disabled      Boolean @default(false)
+  datetime      DateTime
+  updatedAt     DateTime        @updatedAt
+  createdAt     DateTime        @default(now())
+  BookTimetable BookTimetable[]
 }

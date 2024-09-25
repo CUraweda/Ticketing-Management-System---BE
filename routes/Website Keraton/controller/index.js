@@ -18,6 +18,8 @@ const controlUser =  require('../controller/user.controller')
 const controlSubType = require('../controller/orderSubType.controller')
 const controlType = require('../controller/orderType.controller')
 const controlCategory = require('../controller/category.controller')
+const controlBookTimetable = require('../controller/bookTimetable.controller')
+const controlAvailabilityTime = require('../controller/availabilityTime.controller')
 
 router.use("/content", controlContent);
 router.use("/type", controlType)
@@ -37,5 +39,7 @@ router.use("/iteration", controlIteration);
 router.use('/param', controlParam)
 router.use('/wisata', controlObjekWisata)
 router.use('/user', controlUser)
+router.use('/book-timetable', controlBookTimetable)
+router.use('/availability-time', controlAvailabilityTime)
 
 module.exports = router;

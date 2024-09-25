@@ -19,7 +19,7 @@ app.set('view engine', 'ejs');
 //? INITIALIZE DEVELOPMENT SERVER
 const server = http.createServer(app);
 
-//? CORS SECTION START
+// //? CORS SECTION START
 const allowedOrigins = [
   "http://localhost:9000", //Development
   "http://localhost:5173", // POS Development
@@ -27,18 +27,19 @@ const allowedOrigins = [
 ];
 const corsOptions = {
   origin: function (origin, callback) {
-    if (origin) {
-      if (allowedOrigins.indexOf(origin) !== -1) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    } else callback(null, true);
+    // if (origin) {
+    //   if (allowedOrigins.indexOf(origin) !== -1) {
+    //     callback(null, true);
+    //   } else {
+    //     callback(new Error("Not allowed by CORS"));
+    //   }
+    // } else callback(null, true);
+    callback(null, true)
   },
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTION",
   credentials: true,
 };
-//? CORS SECTION END
+// ? CORS SECTION END
 
 //? SOCKET INTIALIZATION
 const io = require("socket.io")(
@@ -95,7 +96,6 @@ app.get("/ping", async (req, res) => {
 //? ROUTES
 app.use("/keraton", keratonWebsiteRouter);
 app.use("/keraton-pos", keratonPosRouter);
-
 
 app.use("/uploads", express.static(path.join(__dirname, "public", "uploads")));
 app.use("/qrcodes", express.static(path.join(__dirname, "public", "qrcodes")));
