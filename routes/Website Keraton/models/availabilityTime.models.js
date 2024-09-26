@@ -9,17 +9,17 @@ const checkAvailability = async (id) => {
     return await prisma.availabilityTime.findFirst({ where: { id, in_use: false, disabled: false } })
 }
 const getAll = async (query) => {
-    const { month, year } = query
+    const { month, year, only_active } = query
     try {
         let startDate, endDate
         if (month && year) {
             startDate = new Date(year, month - 1, 1);
             endDate = new Date(year, month, 0, 23, 59, 59, 999); // End of the month
         }
-
         return await prisma.availabilityTime.findMany({
             where: {
                 disabled: false,
+                ...(only_active && { in_use: only_active === "1" ? true : false }),
                 ...(startDate && { datetime: { gte: startDate, lte: endDate } })
             },
             include: { BookTimetable: true}
