@@ -48,21 +48,22 @@ model Guide {
 }
 
 model User {
-  id            String        @id @default(uuid())
+  id            String          @id @default(uuid())
   name          String
-  email         String        @unique
+  email         String          @unique
   number        String?
   password      String
   role          Role
   shownCategory Json?
-  nationality   Nationality?  @relation(fields: [nationalityId], references: [id])
+  nationality   Nationality?    @relation(fields: [nationalityId], references: [id])
   nationalityId String?
   carts         Json?
   cartsKeraton  Json?
-  deleted       Boolean       @default(false)
+  deleted       Boolean         @default(false)
   transaction   Transaction[]
   logs          Logs[]
   token         Token[]
+  BookTimetable BookTimetable[]
 }
 
 model Token {
@@ -265,6 +266,11 @@ model ObjekWisata {
 model BookTimetable {
   id             Int              @id @default(autoincrement())
   disabled       Boolean          @default(false)
+  booker_name    String
+  booker_email   String
+  booker_phone   String
+  user           User             @relation(fields: [userId], references: [id])
+  userId         String
   transaction    Transaction      @relation(fields: [transactionId], references: [id])
   transactionId  String
   availability   AvailabilityTime @relation(fields: [availabilityId], references: [id])

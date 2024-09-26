@@ -3,6 +3,15 @@ var router = express.Router();
 const { error, success } = require('../../utils/response');
 const categoryModel = require('../../Keraton PoS/models/category.models')
 
+router.get('/', async (req, res) => {
+    try{
+        const data = await categoryModel.getAll()
+        return success(res, 'Success',data)
+    }catch(err){
+        return error(res, err.message)
+    }
+})
+
 router.post('/:id?', async (req, res) => {
     try {
         req.params.id = +req.params.id

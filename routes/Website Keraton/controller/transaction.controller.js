@@ -2,7 +2,8 @@ const { error, success } = require("../../utils/response");
 const { auth } = require("../middlewares/auth");
 const expressRouter = require("./auth.controller");
 const transactionModel = require('../models/transaction.models')
-const { validateCheckout } = require("../validation/checkout.valid");
+const bookTimetableModel = require('../models/bookTimetable.model')
+const { validateCheckout, validateCheckoutJanji } = require("../validation/checkout.valid");
 var express = require('express');
 const { throwError } = require("../../utils/helper");
 var router = express.Router()
@@ -34,6 +35,30 @@ router.get('/', auth(), async (req, res) => {
         const data = await transactionModel.getAll(req.user.id, req.query)
         return success(res, 'Success', data)
     } catch (err) {
+        return error(res, err.message)
+    }
+})
+
+router.post('/janji', validateCheckoutJanji, auth(), async(req, res) => {
+    const { temp_cart, temp_user_data, method } = req.body
+    try{
+        const payload = {
+            user: req.user,
+            carts: Object.values(temp_cart),
+            args: {
+                plannedDate: temp_user_data.datetime,
+                method,
+                ...(method === "CASH" && { status: "DAPAT_DIGUNAKAN" })
+            }
+        }
+        const data = await transactionModel.createNew(payload)
+        const bookTimetableData = await bookTimetableModel.create({ 
+            ...temp_user_data,
+            userId: req.user.id,
+            transactionId: data.createdTransacation.id
+         })
+        return success(res, 'Transaction successfully made', { data, bookTimetableData })
+    }catch(err){
         return error(res, err.message)
     }
 })

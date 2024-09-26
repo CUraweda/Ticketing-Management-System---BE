@@ -79,6 +79,7 @@ router.post('/:ident', upload.single('image'), async (req, res) => {
         if(price) req.body.price = parseFloat(price)
         if(categoryId) req.body.categoryId = parseInt(categoryId)
         if(subTypeId) req.body.orderSubTypeId = parseInt(subTypeId)
+        console.log(ident)
         const data = await orderModel.createUpdate(ident, req.body)
         return success(res, 'Action Success', data)
     } catch (err) {
