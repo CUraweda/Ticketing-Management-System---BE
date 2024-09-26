@@ -51,7 +51,7 @@ const getOne = async (id) => {
     }
 }
 
-const createUpdate = async (ident, data = { id, name, desc, unit, price, image, orderSubTypeId, categoryId }) => {
+const createUpdate = async (ident, data = { id }) => {
     try {
         if (data.categoryId) {
             data.category = {

@@ -73,11 +73,12 @@ router.get('/:id?', async (req, res) => {
 
 router.post('/:ident', upload.single('image'), async (req, res) => {
     const { ident } = req.params
+    const { price, categoryId, subTypeId } = req.body
     try {
         if (req.file) req.body.image = convertFilesToURL(req.file.path)
-        req.body.price = parseFloat(req.body.price)
-        req.body.categoryId = parseInt(req.body.categoryId)
-        req.body.orderSubTypeId = parseInt(req.body.subTypeId)
+        if(price) req.body.price = parseFloat(price)
+        if(categoryId) req.body.categoryId = parseInt(categoryId)
+        if(subTypeId) req.body.orderSubTypeId = parseInt(subTypeId)
         const data = await orderModel.createUpdate(ident, req.body)
         return success(res, 'Action Success', data)
     } catch (err) {
