@@ -22,6 +22,7 @@ const getAll = async (query) => {
                 disabled: false,
                 ...(startDate && { datetime: { gte: startDate, lte: endDate } })
             },
+            include: { BookTimetable: true}
         })
     } catch (err) {
         throwError(err)
