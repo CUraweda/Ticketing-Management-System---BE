@@ -40,11 +40,19 @@ const getOne = async (id) => {
 
 const create = async (data) => {
     try {
-        if (!data.availabilityId) throw Error("Availability ID is needed")
-        const timeIsAvailable = await availabilityTimeModel.checkAvailability(data.availabilityId)
+        const { availabilityId } = data
+        if (!availabilityId) throw Error("Availability ID is needed")
+        const timeIsAvailable = await availabilityTimeModel.checkAvailability(availabilityId)
         if (!timeIsAvailable) throw Error("Time is already used")
-        await availabilityTimeModel.update(data.availabilityId, { in_use: true })
-        return await prisma.bookTimetable.create({ data })
+        // await availabilityTimeModel.update(data.availabilityId, { in_use: true })
+
+        delete data.availabilityId
+        return await prisma.bookTimetable.create({
+            data: {
+                ...data,
+                availability: { connect: { id: availabilityId } }
+            }
+        })
     } catch (err) {
         throwError(err)
     }
@@ -68,7 +76,7 @@ const update = async (id, data) => {
 const deleteSoft = async (id) => {
     try {
         const softDeleteBookTime = await prisma.bookTimetable.update({ where: { id }, data: { disabled: true } })
-        if(!softDeleteBookTime) throw Error("Booking unsuccessfully deleted")
+        if (!softDeleteBookTime) throw Error("Booking unsuccessfully deleted")
         availabilityTimeModel.update(softDeleteBookTime.availabilityId, { in_use: false })
     } catch (err) {
         throwError(err)

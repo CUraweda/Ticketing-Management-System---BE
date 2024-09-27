@@ -54,8 +54,8 @@ router.post('/janji', validateCheckoutJanji, auth(), async(req, res) => {
         const data = await transactionModel.createNew(payload)
         const bookTimetableData = await bookTimetableModel.create({ 
             ...temp_user_data,
-            userId: req.user.id,
-            transactionId: data.createdTransacation.id
+            user: { connect: { id: req.user.id } },
+            transaction: { connect: { id: data.createdTransacation.id } }
          })
         return success(res, 'Transaction successfully made', { data, bookTimetableData })
     }catch(err){
