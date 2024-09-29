@@ -42,7 +42,7 @@ const update = async (id, data) => {
 const deleteData = async (id) => {
     try{
         return await prisma.news.delete({ where: { id } })
-    }catch(err){
+}catch(err){
         throwError(err)
     }
 }

@@ -44,7 +44,7 @@ const create = async (data) => {
         if (!availabilityId) throw Error("Availability ID is needed")
         const timeIsAvailable = await availabilityTimeModel.checkAvailability(availabilityId)
         if (!timeIsAvailable) throw Error("Time is already used")
-        // await availabilityTimeModel.update(data.availabilityId, { in_use: true })
+        await availabilityTimeModel.update(data.availabilityId, { in_use: true })
 
         delete data.availabilityId
         return await prisma.bookTimetable.create({
