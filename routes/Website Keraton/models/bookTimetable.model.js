@@ -43,7 +43,8 @@ const create = async (data) => {
         const { availabilityId } = data
         if (!availabilityId) throw Error("Availability ID is needed")
         const timeIsAvailable = await availabilityTimeModel.checkAvailability(availabilityId)
-        if (!timeIsAvailable) throw Error("Time is already used")
+        if (!timeIsAvailable) throw Error("Availability Time is already used")
+        console.log(timeIsAvailable)
         await availabilityTimeModel.update(data.availabilityId, { in_use: true })
 
         delete data.availabilityId
