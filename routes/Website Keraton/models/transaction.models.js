@@ -1,8 +1,9 @@
-const { throwError } = require("../../utils/helper")
+const { throwError, localNationality } = require("../../utils/helper")
 const cartModel = require('../models/carts.model')
 const { prisma } = require("../../utils/prisma")
 const globalParamModel = require('../models/params.models')
 const barcodeModel = require('../models/barcode.model')
+const discountModel = require('../models/discount.models')
 
 const isExist = async (id) => {
     try {
@@ -72,9 +73,6 @@ const createNew = async (data) => {
         if (carts.length < 1) throw Error('No Item to Checkout')
         if (user) args.userId = user.id
         args.total = cartModel.countTotal(carts)
-        await prisma.nationality.findMany().then((datas) => {
-            datas.forEach((data) => countryReference[data.code] = data.id)
-        })
         for (let cart of carts) {
             if (cart.quantity < 1) continue
             switch (cart.type) {
@@ -95,11 +93,28 @@ const createNew = async (data) => {
             }
             payloads.push({
                 amount: cart.quantity,
-                ...(cart.nationalityId && { nationalityId: countryReference[cart.nationalityId] }),
+                ...(cart.nationalityId && { nationalityId: localNationality.readPropertiesData(cart.nationalityId) }),
                 ...(cart.cityName && { cityName: cart.cityName }),
                 ...cart.typeData
             })
         }
+
+        // Discount Code
+        if(data.discount_code) {
+            const discountData = await discountModel.getByCode(data.discount_code)
+            if(discountData) {
+                args.total -= discountData.discount_price
+                args.discount_code = discountData.code
+                args.discount_cut_total = discountData.discount_price
+            }
+        }
+
+        // Payment Percentage
+        if(data.pay_percentage && data.pay_percentage >= 100) {
+            percentageTotal = args.total * data.pay_percentage
+            args.unpaid_total = args.total - percentageTotal
+            args.paid_total = percentageTotal
+        }else args.paid_total = args.total
 
         // PAYMENT METHOD
         switch (data.method) {

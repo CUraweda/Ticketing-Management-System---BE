@@ -64,7 +64,7 @@ router.post('/janji', validateCheckoutJanji, auth(), async(req, res) => {
 })
 
 router.post('/', validateCheckout, auth(), async (req, res) => {
-    const { carts, plannedDate, method } = req.body
+    const { carts, plannedDate, method, discount_code, pay_percentage } = req.body
     try {
         const payload = {
             user: req.user,
@@ -72,6 +72,8 @@ router.post('/', validateCheckout, auth(), async (req, res) => {
             args: {
                 plannedDate,
                 method,
+                discount_code,
+                pay_percentage,
                 ...(method === "CASH" && { status: "DAPAT_DIGUNAKAN" })
             }
         }

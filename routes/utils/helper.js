@@ -3,7 +3,8 @@ const fs = require("fs");
 const multer = require("multer");
 const qr = require("qr-image");
 const crypto = require('crypto');
-const path = require('path')
+const path = require('path');
+const LocalJson = require("./localJson");
 
 // Multer Initialization
 const allowedMimeTypes = [
@@ -267,19 +268,31 @@ function formatCurrency(value) {
 }
 
 function generateRandomEmail() {
-    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-    const domain = 'gmail.com'; // You can change this to any domain you'd like
-  
-    // Generate a random username between 5 to 10 characters
-    let username = '';
-    const usernameLength = Math.floor(Math.random() * 6) + 5; // random length between 5 and 10
-    for (let i = 0; i < usernameLength; i++) {
-      username += chars[Math.floor(Math.random() * chars.length)];
-    }
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  const domain = 'gmail.com'; // You can change this to any domain you'd like
 
-    return `${username}@${domain}`
-    
+  // Generate a random username between 5 to 10 characters
+  let username = '';
+  const usernameLength = Math.floor(Math.random() * 6) + 5; // random length between 5 and 10
+  for (let i = 0; i < usernameLength; i++) {
+    username += chars[Math.floor(Math.random() * chars.length)];
+  }
+
+  return `${username}@${domain}`
+
 }
+
+const localNationality = new LocalJson('nationality.json')
+const nationalityModel = require('../Keraton PoS/models/nationality.models')
+async function nationalityUpdateJson() {
+  let nationalityJson = {}
+  await nationalityModel.getAll().then((data) => {
+    data.map((nationality) => { nationalityJson[nationality.code] = nationality.id })
+  })
+  localNationality.writeData(nationalityJson)
+  console.log("Success updating nationality json")
+}
+
 module.exports = {
   upload,
   createQr,
@@ -296,5 +309,7 @@ module.exports = {
   convertFilesToURL,
   generateTodayDate,
   splitDate,
-  formatCurrency
+  formatCurrency,
+  nationalityUpdateJson,
+  localNationality,
 };

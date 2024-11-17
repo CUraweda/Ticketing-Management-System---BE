@@ -129,24 +129,29 @@ model KeratonTransaction {
 }
 
 model Transaction {
-  id             String          @id @default(uuid())
-  customer       Json?
-  total          Decimal         @db.Decimal(18, 2)
-  additionalFee  Float
-  keratonIncome  Json
-  curawedaIncome Json
-  method         String
-  status         Status          @default(MENUNGGU_PEMBAYARAN)
-  plannedDate    DateTime
-  createdDate    DateTime        @default(now())
-  discount       String?
-  cashback       String?
-  deleted        Boolean?        @default(false)
-  user           User?           @relation(fields: [userId], references: [id])
-  userId         String?
-  detailTrans    DetailTrans[]
-  BarcodeUsage   BarcodeUsage[]
-  BookTimetable  BookTimetable[]
+  id               String          @id @default(uuid())
+  customer         Json?
+  total            Decimal         @db.Decimal(18, 2)
+  additionalFee    Float
+  keratonIncome    Json
+  curawedaIncome   Json
+  method           String
+  status           Status          @default(MENUNGGU_PEMBAYARAN)
+  plannedDate      DateTime
+  createdDate      DateTime        @default(now())
+  discount         String?
+  cashback         String?
+  deleted          Boolean?        @default(false)
+  user             User?           @relation(fields: [userId], references: [id])
+  userId           String?
+  discountCode     String          @default("")
+  discountCutTotal Float           @default(0)
+  payPercentage    Int             @default(100)
+  unpaidTotal      Decimal         @default(0) @db.Decimal(18, 2)
+  paidTotal        Decimal         @default(0) @db.Decimal(18, 2)
+  detailTrans      DetailTrans[]
+  BarcodeUsage     BarcodeUsage[]
+  BookTimetable    BookTimetable[]
 }
 
 model DetailTrans {
@@ -286,4 +291,13 @@ model AvailabilityTime {
   updatedAt     DateTime        @updatedAt
   createdAt     DateTime        @default(now())
   BookTimetable BookTimetable[]
+}
+
+model Discount {
+  id             Int     @id @default(autoincrement())
+  discount_price Decimal @default(0) @db.Decimal(18, 2)
+  code           String
+  description    String  @default("")
+  is_active      Boolean @default(true)
+  is_deleted     Boolean @default(false)
 }

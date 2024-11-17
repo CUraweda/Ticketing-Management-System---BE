@@ -17,6 +17,9 @@ class LocalJson {
     readData() {
         return this.fileData
     }
+    readPropertiesData(identifer){
+        return this.fileData[identifer]
+    }
     readDataKey(){
         return Object.keys(this.fileData)
     }

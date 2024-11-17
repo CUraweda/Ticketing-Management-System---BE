@@ -25,6 +25,8 @@ const validateCheckoutJanji = validate({
     method: z.string({
         required_error: "Transaction Method is required",
     }),
+    discount_code: z.string().default(""),
+    pay_percentage: z.number().int().default(100)
 })
 
 module.exports = { validateCheckout, validateCheckoutJanji }
