@@ -7,10 +7,10 @@ const createUpdateValidation = validate({
     }),
     code: z.string({
         required_error: "Please send discount code"
-    }).parseAsync((data) => { console.log(data) }),
+    }),
     description: z.string().optional(),
-    is_active: z.string().default(true),
-    description: z.string().default(false),
+    is_active: z.boolean().default(true),
+    is_deleted: z.boolean().default(false),
 })
 
 

@@ -12,7 +12,9 @@ const isExist = async (id) => {
 
 const getAll = async (query) => {
     try {
-        return await prisma.discount.findMany()
+        return await prisma.discount.findMany({
+            where: { is_deleted: false }
+        })
     } catch (err) {
         throwError(err)
     }
@@ -21,7 +23,7 @@ const getAll = async (query) => {
 const getOne = async (id) => {
     try {
         return await prisma.discount.findFirstOrThrow({
-            where: { id, deleted: false}
+            where: { id, is_deleted: false }
         })
     } catch (err) {
         throwError(err)
@@ -29,9 +31,9 @@ const getOne = async (id) => {
 }
 
 const getByCode = async (code) => {
-    try{
+    try {
         return await prisma.discount.findFirst({ where: { code } })
-    }catch(err){
+    } catch (err) {
         throwError(err)
     }
 }
@@ -55,9 +57,9 @@ const update = async (id, data) => {
 }
 
 const deleteSoft = async (id) => {
-    try{
-        return await prisma.discount.update({ where: { id }, data: { deleted: true } })
-    }catch(err){
+    try {
+        return await prisma.discount.update({ where: { id }, data: { is_deleted: true } })
+    } catch (err) {
         throwError(err)
     }
 }

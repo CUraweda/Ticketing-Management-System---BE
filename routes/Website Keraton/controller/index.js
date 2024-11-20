@@ -20,6 +20,7 @@ const controlType = require('../controller/orderType.controller')
 const controlCategory = require('../controller/category.controller')
 const controlBookTimetable = require('../controller/bookTimetable.controller')
 const controlAvailabilityTime = require('../controller/availabilityTime.controller')
+const controlDiscount = require("../controller/discount.controller")
 
 router.use("/content", controlContent);
 router.use("/type", controlType)
@@ -41,5 +42,6 @@ router.use('/wisata', controlObjekWisata)
 router.use('/user', controlUser)
 router.use('/book-timetable', controlBookTimetable)
 router.use('/availability-time', controlAvailabilityTime)
+router.use('/discount', controlDiscount)
 
 module.exports = router;
