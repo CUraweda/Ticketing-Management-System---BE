@@ -10,7 +10,9 @@ const validateCheckout = validate({
     }),
     carts: z.any({
         required_error: "Carts is required"
-    })
+    }),
+    discount_code: z.string().default(""),
+    pay_percentage: z.number().int().default(100)
 })
 
 const validateCheckoutJanji = validate({

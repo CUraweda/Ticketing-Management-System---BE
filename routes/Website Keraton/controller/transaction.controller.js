@@ -72,8 +72,8 @@ router.post('/', validateCheckout, auth(), async (req, res) => {
             args: {
                 plannedDate,
                 method,
-                discount_code,
-                pay_percentage,
+                discountCode: discount_code,
+                payPercentage: pay_percentage,
                 ...(method === "CASH" && { status: "DAPAT_DIGUNAKAN" })
             }
         }

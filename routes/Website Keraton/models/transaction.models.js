@@ -71,7 +71,7 @@ const createNew = async (data) => {
     const taxParam = await globalParamModel.getOne({ identifier: process.env.TAX_PARAMS_IDENTIFIER })
     try {
         if (carts.length < 1) throw Error('No Item to Checkout')
-        if (user) args.userId = user.id
+        if (user) args.user = { connect: { id: user.id } }
         args.total = cartModel.countTotal(carts)
         for (let cart of carts) {
             if (cart.quantity < 1) continue
@@ -100,21 +100,21 @@ const createNew = async (data) => {
         }
 
         // Discount Code
-        if(data.discount_code) {
+        if(data.discountCode) {
             const discountData = await discountModel.getByCode(data.discount_code)
             if(discountData) {
                 args.total -= discountData.discount_price
-                args.discount_code = discountData.code
-                args.discount_cut_total = discountData.discount_price
+                args.discountCode = discountData.code
+                args.discountCutTotal = discountData.discount_price
             }
         }
 
         // Payment Percentage
-        if(data.pay_percentage && data.pay_percentage >= 100) {
-            percentageTotal = args.total * data.pay_percentage
-            args.unpaid_total = args.total - percentageTotal
-            args.paid_total = percentageTotal
-        }else args.paid_total = args.total
+        if(data.payPercentage && data.payPercentage >= 100) {
+            percentageTotal = args.total * data.payPercentage
+            args.unpaidTotal = args.total - percentageTotal
+            args.paidTotal = percentageTotal
+        }else args.paidTotal = args.total
 
         // PAYMENT METHOD
         switch (data.method) {
