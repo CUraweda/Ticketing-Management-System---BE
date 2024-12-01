@@ -99,22 +99,24 @@ const createNew = async (data) => {
             })
         }
 
+        args.paidTotal = args.total
         // Discount Code
-        if(data.discountCode) {
-            const discountData = await discountModel.getByCode(data.discount_code)
+        if(args.discountCode) {
+            const discountData = await discountModel.getByCode(args.discountCode)
             if(discountData) {
-                args.total -= discountData.discount_price
+                args.paidTotal -= discountData.discount_price
                 args.discountCode = discountData.code
                 args.discountCutTotal = discountData.discount_price
             }
         }
-
+        
+        if(args.paidTotal < 0) args.paidTotal = 0
         // Payment Percentage
-        if(data.payPercentage && data.payPercentage >= 100) {
-            percentageTotal = args.total * data.payPercentage
-            args.unpaidTotal = args.total - percentageTotal
+        if(args.payPercentage && args.payPercentage <= 100 && args.paidTotal != 0) {
+            const percentageTotal = args.paidTotal * args.payPercentage / 100
+            args.unpaidTotal = args.paidTotal - percentageTotal
             args.paidTotal = percentageTotal
-        }else args.paidTotal = args.total
+        }
 
         // PAYMENT METHOD
         switch (data.method) {
@@ -134,10 +136,10 @@ const createNew = async (data) => {
         taxParam.data[paramTax].forEach((param) => {
             const totalRawTax = param.multiply ? args.total * param.tax : param.tax
             totalTax += totalRawTax
-            revenueKeraton[paramRevenueMethod] = args.total
+            revenueKeraton[paramRevenueMethod] = args.paidTotal
             switch (param.paidBy) {
                 case "user":
-                    args.total += totalRawTax
+                    args.paidTotal += totalRawTax
                     revenueCuraweda[paramRevenueMethod] += totalRawTax
                     break;
                 case "keraton":
