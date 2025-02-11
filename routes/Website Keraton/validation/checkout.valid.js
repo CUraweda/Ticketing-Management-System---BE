@@ -12,7 +12,7 @@ const validateCheckout = validate({
         required_error: "Carts is required"
     }),
     discount_code: z.string().default(""),
-    pay_percentage: z.number().int().default(100)
+    // pay_percentage: z.number().int().default(100)
 })
 
 const validateCheckoutJanji = validate({
@@ -28,7 +28,7 @@ const validateCheckoutJanji = validate({
         required_error: "Transaction Method is required",
     }),
     discount_code: z.string().default(""),
-    pay_percentage: z.number().int().default(100)
+    // pay_percentage: z.number().int().default(100)
 })
 
 module.exports = { validateCheckout, validateCheckoutJanji }

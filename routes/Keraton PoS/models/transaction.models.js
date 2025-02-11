@@ -302,10 +302,7 @@ const create = async (data) => {
     data.discount = `${data.discount} | ${data.discount}%`
     data.cashback = `${data.cashback} | ${data.cashback}%`
 
-    const transaction = await prisma.transaction.create({
-      data: data,
-      include: { detailTrans: true }
-    });
+    const transaction = await prisma.transaction.create({ data, include: { detailTrans: true } });
     const plannedDate = new Date(transaction.plannedDate);
     const expiredAt = new Date(plannedDate);
     expiredAt.setDate(expiredAt.getDate() + 1);

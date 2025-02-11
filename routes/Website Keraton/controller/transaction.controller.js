@@ -64,7 +64,7 @@ router.post('/janji', validateCheckoutJanji, auth(), async(req, res) => {
 })
 
 router.post('/', validateCheckout, auth(), async (req, res) => {
-    const { carts, plannedDate, method, discount_code, pay_percentage } = req.body
+    const { carts, plannedDate, method, discount_code } = req.body
     try {
         const payload = {
             user: req.user,
@@ -72,9 +72,8 @@ router.post('/', validateCheckout, auth(), async (req, res) => {
             args: {
                 plannedDate,
                 method,
+                payPercentage: 100,
                 discountCode: discount_code,
-                payPercentage: pay_percentage,
-                ...(method === "CASH" && { status: "DAPAT_DIGUNAKAN" })
             }
         }
         const data = await transactionModel.createNew(payload)
@@ -82,6 +81,13 @@ router.post('/', validateCheckout, auth(), async (req, res) => {
     } catch (err) {
         return error(res, err.message)
     }
+})
+
+router.get("/notify/:id", async(req, res) => {
+    const data  = await transactionModel.notifyPayment(req.params.id, {
+        status: req.headers['x-status']
+    })
+    return success(res, 'Transaction successfully made', data)
 })
 
 module.exports = router

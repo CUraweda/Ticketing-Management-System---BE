@@ -28,7 +28,7 @@ expressRouter.put("/update-carts", async (req, res) => {
     return success(res, "Update carts user berhasil!", data);
   } catch (err) {
     return error(res, err.message);
-  }
+}
 });
 expressRouter.get('/get-user-data/:id?', auth, async (req, res) => {
   const { id } = req.params

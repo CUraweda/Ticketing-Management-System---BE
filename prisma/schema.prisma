@@ -149,6 +149,13 @@ model Transaction {
   payPercentage    Int             @default(100)
   unpaidTotal      Decimal         @default(0) @db.Decimal(18, 2)
   paidTotal        Decimal         @default(0) @db.Decimal(18, 2)
+  isPaid           Boolean         @default(false)
+  qrisLink         String?
+  virtualAccountNo String?
+  expiredDate      DateTime?
+  merchantTradeNo  String?
+  platformTradeNo  String?
+  
   detailTrans      DetailTrans[]
   BarcodeUsage     BarcodeUsage[]
   BookTimetable    BookTimetable[]

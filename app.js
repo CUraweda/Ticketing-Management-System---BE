@@ -7,6 +7,7 @@ const path = require("path");
 
 const keratonWebsiteRouter = require("./routes/Website Keraton/controller/index");
 const keratonPosRouter = require("./routes/Keraton PoS/controller/index");
+const paymentRouter = require('./routes/Payment/payment.controller')
 const { error } = require("console");
 const { success } = require("./routes/utils/response");
 
@@ -95,6 +96,7 @@ app.get("/ping", async (req, res) => {
 
 //? ROUTES
 app.use("/keraton", keratonWebsiteRouter);
+app.use('/payment', paymentRouter)
 app.use("/keraton-pos", keratonPosRouter);
 
 app.use("/uploads", express.static(path.join(__dirname, "public", "uploads")));

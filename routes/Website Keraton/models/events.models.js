@@ -22,7 +22,9 @@ const getAll = async (query) => {
                 ...(search && { name: { contains: search } }),
                 deleted: false
             },
-            include: { iteration: true }
+            ...(iterat && { 
+                include: { iteration: true }
+             })
         })
     } catch (err) {
         throwError(err)

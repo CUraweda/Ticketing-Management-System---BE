@@ -4,6 +4,9 @@ const { prisma } = require("../../utils/prisma")
 const globalParamModel = require('../models/params.models')
 const barcodeModel = require('../models/barcode.model')
 const discountModel = require('../models/discount.models')
+const PaymentHelper = require("../../utils/payment/payment")
+
+const paymentHelper = new PaymentHelper()
 
 const isExist = async (id) => {
     try {
@@ -100,23 +103,25 @@ const createNew = async (data) => {
         }
 
         args.paidTotal = args.total
+
         // Discount Code
-        if(args.discountCode) {
+        if (args.discountCode) {
             const discountData = await discountModel.getByCode(args.discountCode)
-            if(discountData) {
+            if (discountData) {
                 args.paidTotal -= discountData.discount_price
                 args.discountCode = discountData.code
                 args.discountCutTotal = discountData.discount_price
             }
         }
-        
-        if(args.paidTotal < 0) args.paidTotal = 0
-        // Payment Percentage
-        if(args.payPercentage && args.payPercentage <= 100 && args.paidTotal != 0) {
-            const percentageTotal = args.paidTotal * args.payPercentage / 100
-            args.unpaidTotal = args.paidTotal - percentageTotal
-            args.paidTotal = percentageTotal
-        }
+
+        if (args.paidTotal < 0) args.paidTotal = 0
+
+        // Payment Percentage //! [DEPRECATED!]
+        // if (args.payPercentage && args.payPercentage <= 100 && args.paidTotal != 0) {
+        //     const percentageTotal = args.paidTotal * args.payPercentage / 100
+        //     args.unpaidTotal = args.paidTotal - percentageTotal
+        //     args.paidTotal = percentageTotal
+        // }
 
         // PAYMENT METHOD
         switch (data.method) {
@@ -152,6 +157,8 @@ const createNew = async (data) => {
         args.additionalFee = totalTax
         args.keratonIncome = revenueKeraton
         args.curawedaIncome = revenueCuraweda
+        args['userData'] = user
+
         const createdTransacation = await prisma.transaction.create({ data: { ...args } })
 
         const plannedDate = new Date(createdTransacation.plannedDate);
