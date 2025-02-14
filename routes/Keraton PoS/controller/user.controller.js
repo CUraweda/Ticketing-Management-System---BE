@@ -113,6 +113,4 @@ expressRouter.delete('/delete-user/:id', auth, async (req, res) => {
     return error(res, err.message)
   }
 })
-
-
 module.exports = expressRouter;

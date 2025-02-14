@@ -242,7 +242,7 @@ const getMonth = async () => {
     throwError(err);
   }
 };
-const create = async (data) => {
+const create = async (data, user) => {
   let total = 0, revenueKeraton = { COH: 0, CIA: 0 }, revenueCuraweda = { COH: 0, CIA: 0 }, paramRevenueMethod, paramTax, possibleUses = 0
   const taxParam = await globalParamModel.getOne({ identifier: process.env.TAX_PARAMS_IDENTIFIER })
   try {
@@ -301,6 +301,7 @@ const create = async (data) => {
     data.curawedaIncome = revenueCuraweda
     data.discount = `${data.discount} | ${data.discount}%`
     data.cashback = `${data.cashback} | ${data.cashback}%`
+    data['userData'] = user
 
     const transaction = await prisma.transaction.create({ data, include: { detailTrans: true } });
     const plannedDate = new Date(transaction.plannedDate);

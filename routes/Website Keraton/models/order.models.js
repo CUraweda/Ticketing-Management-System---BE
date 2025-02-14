@@ -17,7 +17,7 @@ const getAll = async (query = { type, subType, search }) => {
             where: {
                 orderSubType: {
                     ...(subType != undefined && { id: +subType }),
-                    ...(type != undefined && { typeId: +type }),
+                    ...(type != undefined && { orderTypeId: +type }),
                 },
                 ...(search && {name: { contains: search }}),
                 // ...(search && { name: { contains: search } }),

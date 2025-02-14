@@ -17,6 +17,8 @@ const createPayment = async ({ args, query }) => {
 
     if (!result) throw Error("Error while creating transaction")
 
+    if(method == "CASH" || method == "TRANSFER") return result
+
     const paymentData = await pHelper.create({
         paymentType: method,
         transactionId: result.id,

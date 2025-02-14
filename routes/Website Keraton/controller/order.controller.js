@@ -38,6 +38,7 @@ const upload = multer({
     }
 })
 //End Multer
+
 router.get('/booking', async (req, res) => {
     try {
         const order = await orderSubTypeModel.getAll()

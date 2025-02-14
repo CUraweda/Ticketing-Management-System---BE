@@ -7,6 +7,7 @@ const keratonParamModel = require('../../Website Keraton/models/params.models')
 const transactionModel = require("../models/transaction.models");
 const { prisma } = require("../../utils/prisma");
 const Emails = require("../../Website Keraton/emails/email");
+const { auth } = require("../middlewares/auth");
 
 expressRouter.get("/detail-invoice", async (req, res) => {
   try {
@@ -86,9 +87,9 @@ expressRouter.post("/email-transaction", async (req, res) => {
     return error(res, err.message);
   }
 });
-expressRouter.post("/create-transaction", async (req, res) => {
+expressRouter.post("/create-transaction", auth, async (req, res) => {
   try {
-    const data = await transactionModel.create(req.body);
+    const data = await transactionModel.create(req.body, req.user);
     return success(res, "Penambahan pesanan berhasil", data);
   } catch (err) {
     return error(res, err.message);
