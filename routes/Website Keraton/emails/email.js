@@ -3,13 +3,22 @@ const Email = require('email-templates')
 const path = require('path');
 const { readFileSync } = require('fs');
 
+const EmailOptions = {
+    host: process.env.SMTP_HOST,
+    port: process.env.SMTP_PORT,
+    account: process.env.EMAIL_ACCOUNT,
+    password: process.env.PASSWORD
+}
 class Emails {
     constructor(from, to, subject = '', text = '', pathTemplate = 'routes/Website Keraton/emails/templates') {
         this.email = nodemailer.createTransport({
-            service: 'gmail',
+            // service: 'gmail',
+            host: EmailOptions.host,
+            port: EmailOptions.port,
+            secure: true,
             auth: {
-                user: process.env.EMAIL,
-                pass: process.env.PASSWORD
+                user: EmailOptions.account,
+                pass: EmailOptions.password
             }
         })
         this.emailTemplate = new Email({

@@ -259,7 +259,7 @@ expressRouter.get('/generate-email-invoice/:id', async (req, res) => {
     setImmediate(async () => {
       try {
         const emailClass = new Emails(
-          process.env.EMAIL_FROM,
+          process.env.EMAIL_ACCOUNT,
           emailData.to,
           emailData.subject
         );

@@ -121,11 +121,9 @@ class PaymentHelper {
         const method = this._checkMethod(body.paymentType, "create")
         if (!method) throw new Error("Invalid Payment Method")
 
-        console.log(body)
         body['appUrl'] = `${this.#bUrl}/payment/notify/${this._encryptTID(body.transactionId)}`
         body = await this._formatBody(method, body)
 
-        console.log(body)
         return await axios.post(`${this.#pUrl}/${method.path}`, body, { httpsAgent: this.#httpsAgent }).then((res) => {
             res.data['expiredDate'] = this._parseDate(res.data)
             return res.data

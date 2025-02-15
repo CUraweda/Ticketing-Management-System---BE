@@ -43,14 +43,30 @@ const getInvoice = async (search, limit) => {
       where: {
         deleted: false,
         ...(search && {
-          detailTrans: {
-            some: {
-              OR: [
-                { order: { name: { contains: search } } },
-                { event: { name: { contains: search } } }
-              ]
+          OR: [
+            {
+              id: search
+            },
+            {
+              customer: {
+                path: "name",
+                string_contains: search
+              },
+            },
+            {
+              user: { name: { contains: search } },
+            },
+            {
+              detailTrans: {
+                some: {
+                  OR: [
+                    { order: { name: { contains: search } } },
+                    { event: { name: { contains: search } } }
+                  ]
+                }
+              }
             }
-          }
+          ]
         }),
       },
       ...(limit != "0" && { take: +limit }),
@@ -157,7 +173,6 @@ const getRevenue = async () => {
 const getRevenueCurawedaKeraton = async (args) => {
   let todayRevenue = { revenueKeraton: { COH: 0, CIA: 0 }, revenueCuraweda: { COH: 0, CIA: 0 }, total: 0 }
   const { startDate, endDate } = generateTodayDate()
-  console.log(startDate, endDate)
   try {
     const transaction = await prisma.transaction.findMany({
       where: {

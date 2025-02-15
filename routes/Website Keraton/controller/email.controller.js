@@ -231,7 +231,7 @@ router.get("/invoice/:id", auth([]), async (req, res) => {
     setImmediate(async () => {
       try {
         const emailClass = new Email(
-          process.env.EMAIL_FROM,
+          process.env.EMAIL_ACCOUNT,
           emailData.to,
           emailData.subject
         );
@@ -280,7 +280,7 @@ router.post(
       setImmediate(async () => {
         console.log('Generating Email...')
         const emailClass = new Email(
-          process.env.EMAIL_FROM,
+          process.env.EMAIL_ACCOUNT,
           emailData.to,
           emailData.subject
         );
