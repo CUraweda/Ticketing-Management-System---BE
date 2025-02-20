@@ -56,7 +56,6 @@ const notify = async (id, args = {}) => {
                 attachment: ["public/assets/email/logo.png"],
             };
 
-            console.log(emailData)
             for (let barcode of transactionData.BarcodeUsage) {
                 emailData.data.qr_exist = true;
                 emailData.attachment.push(transformUrl(barcode.qrPath));
@@ -82,4 +81,32 @@ const notify = async (id, args = {}) => {
     return updatedData
 }
 
-module.exports = { notify }
+const generateNew = async (id, args = {}) => {
+    const { paymentType } = args
+    const transactionData = await prisma.transaction.findFirst({
+        where: { id },
+        include: { user: true }
+    })
+    if (!transactionData) throw Error("Couldn't find transaction data")
+    transactionData['paymentType'] = paymentType
+
+    const createdPayment = await paymentHelper.create({
+        paymentType,
+        transactionId: transactionData.id,
+        data: transactionData
+    })
+    if (!createdPayment) throw Error("Error on payment server")
+    return await prisma.transaction.update({
+        where: { id }, data: {
+            method: paymentType,
+            merchantTradeNo: createdPayment?.merchantTradeNo,
+            platformTradeNo: createdPayment?.platformTradeNo,
+            qrisLink: createdPayment?.qrisUrl,
+            customerNo: createdPayment?.virtualAccountData?.customerNo,
+            virtualAccountNo: createdPayment?.vaCode,
+            expiredDate: createdPayment.expiredDate,
+        }
+    })
+}
+
+module.exports = { notify, generateNew }
