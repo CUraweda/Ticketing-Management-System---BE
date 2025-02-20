@@ -22,9 +22,7 @@ const getAll = async (query) => {
                 ...(search && { name: { contains: search } }),
                 deleted: false
             },
-            ...(iterat && { 
-                include: { iteration: true }
-             })
+            include: { iteration: true }
         })
     } catch (err) {
         throwError(err)
@@ -34,7 +32,7 @@ const getAll = async (query) => {
 const getOne = async (id) => {
     try {
         return await prisma.events.findFirstOrThrow({
-            where: { id, deleted: false}
+            where: { id, deleted: false }
         })
     } catch (err) {
         throwError(err)
@@ -71,9 +69,9 @@ const update = async (id, data) => {
 }
 
 const deleteData = async (id) => {
-    try{
+    try {
         return await prisma.events.update({ where: { id }, data: { deleted: true } })
-    }catch(err){
+    } catch (err) {
         throwError(err)
     }
 }

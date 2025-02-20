@@ -41,7 +41,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.get("/auth", auth([]), async (req, res) => {
+router.get("/auth", auth(), async (req, res) => {
   try {
     return success(res, "Autentikasi berhasil!", req.user);
   } catch (err) {
