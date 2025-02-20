@@ -17,7 +17,7 @@ router.get('/notify/:id', async (req, res) => {
 router.post('/generate/:id', async (req, res) => {
     try {
         const data = await paymentModel.generateNew(req.params.id, req.body)
-        return success(res, 'Notify Success', data)
+        return success(res, 'Generating New Success', data)
     } catch (e) {
         return error(res, e.message, 400)
     }
