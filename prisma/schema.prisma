@@ -151,7 +151,7 @@ model Transaction {
   unpaidTotal      Decimal   @default(0) @db.Decimal(18, 2)
   paidTotal        Decimal   @default(0) @db.Decimal(18, 2)
   isPaid           Boolean   @default(false)
-  qrisLink         String?
+  qrisLink         String?   @db.Text
   virtualAccountNo String?
   expiredDate      DateTime?
   merchantTradeNo  String?

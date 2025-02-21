@@ -17,7 +17,7 @@ const createPayment = async ({ args, query }) => {
 
     if (!result) throw Error("Error while creating transaction")
 
-    if(method == "CASH" || method == "TRANSFER") return result
+    if(method == "CASH" || method == "TRANSFER" || method == "KARTU KREDIT/DEBIT" || method == "QRIS") return result
 
     const paymentData = await pHelper.create({
         paymentType: method,
